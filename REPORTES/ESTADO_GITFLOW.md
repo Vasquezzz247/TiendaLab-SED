@@ -69,3 +69,7 @@ Antes de publicar el cierre `cf1f807` se repitió el escaneo: 116 blobs históri
 Después del merge #5 aprobaron 53 comprobaciones HTTP, 8 PHP, 3 JS, sintaxis de 22 archivos PHP y 24 comprobaciones mysqli antes y después de reinicio/recreación. MariaDB quedó saludable en `127.0.0.1:3306`; el dato marcador persistió y fue restaurado. Los intentos iniciales con acceso restringido fallaron por EACCES/pipe Docker; sus salidas se conservan junto a las repeticiones exitosas con acceso autorizado.
 
 Evidencia y detalle: [cierre de fase 2](CIERRE_FASE_02_GITFLOW.md). Pendientes: revisión del usuario, fase 3, despliegue real Ubuntu/Apache, red desde otro equipo autorizado, instalación offline y cronometraje, pruebas visuales de selección de imagen/impresión, release y PR hacia main. No se configuraron políticas obligatorias de protección de ramas.
+
+## Actualización posterior: fase 3
+
+El estado de las secciones anteriores corresponde al cierre de fase 2. El usuario autorizó después fase 3: backend PHP/mysqli completo, sin fases 4/5. Se creó feature/fase-03-backend desde develop sincronizada en 4b5bbd5, con commits por módulo y pruebas contra MariaDB real. La publicación/PR/merge de esta fase se registran en REPORTES/FASE_03_BACKEND.md. Main conserva 98b499d01169def30fe277f0771efbaff903f8c7; la visibilidad sigue pública por autorización previa.

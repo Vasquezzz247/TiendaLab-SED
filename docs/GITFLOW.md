@@ -31,3 +31,7 @@ git ls-remote --heads origin
 ```
 
 El [estado de GitFlow](../REPORTES/ESTADO_GITFLOW.md) y el [cierre de fase 2](../REPORTES/CIERRE_FASE_02_GITFLOW.md) registran referencias, pruebas y pendientes. Fase 3 requiere nueva autorización.
+
+## Fase 3 — implementación posterior
+
+La autorización posterior permitió partir de develop limpia en 4b5bbd5 y crear feature/fase-03-backend. Se completaron módulos con commits edf2df6, 930319b, 942eb79 y 9fd70ce; las pruebas reales preceden al PR hacia develop. No se inicia fase 4/5 ni se toca main. Ver REPORTES/FASE_03_BACKEND.md para funcionalidades, pruebas y cierre real de publicación.

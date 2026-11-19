@@ -1,21 +1,21 @@
 # Guía de seguridad y defensa de TiendaLab
 
-**Estado vigente: fase 2 publicada e integrada en develop mediante PR #5, merge 19adb71; fase 3 no iniciada.** Las secciones 14 y 15 documentan base de datos y cierre. MariaDB, hashes ficticios, esquema y pruebas CLI ya existen; los formularios siguen siendo prototipos. GitHub es público por confirmación expresa del usuario; nunca subir .env. Los PDF académicos contienen nombres/carnets accesibles públicamente.
+**Estado vigente: fase 3 implementada y comprobada contra MariaDB real; fases 4/5 no iniciadas.** Las secciones 16 y 17 documentan el backend. Las secciones históricas conservan qué se hizo en fases previas; no describen el estado actual de las rutas reales. GitHub sigue público por autorización: los PDF incluyen nombres/carnets. Nunca publicar .env ni storage/.
 
-Actualización: 18 de noviembre de 2026. Fases autorizadas y trabajadas: **0, 1 y 2**, incluido cierre GitFlow. Esta guía se actualiza en cada fase; no presenta planes como implementaciones ni resultados futuros como pruebas realizadas.
+Actualización: 18 de noviembre de 2026. Fases autorizadas y trabajadas: **0, 1, 2 y 3**. Esta guía separa implementación, pruebas realmente ejecutadas y recomendaciones Ubuntu.
 
 ## 1. Qué puedes afirmar hoy
 
-“Tengo un frontend local en PHP puro y una base MariaDB en Docker con estructura, datos ficticios y volumen persistente. La conexión mysqli se probó desde scripts de consola. Los formularios todavía no usan esa base: la vista de comprador es un prototipo, no una sesión. Falta autenticación real, compra, despliegue en Ubuntu y las dos vulnerabilidades previstas.”
+“La tienda ya autentica usuarios, comprueba roles y guarda operaciones reales en MariaDB. Una compra bloquea existencias, crea factura y detalles y confirma todo o revierte todo. El vendedor solo edita lo suyo; el comprador solo consulta sus facturas. Lo probado es Windows/PHP con MariaDB en Docker Desktop. Ubuntu y las dos vulnerabilidades son fases posteriores.”
 
 | Componente | Estado real | Lo que falta |
 | --- | --- | --- |
-| Escape HTML, rutas permitidas y cabeceras PHP | Implementados y comprobados en fase 1 | Repetir con datos reales en fase 3 |
-| Prototipos locales y rechazo de POST | Implementados y comprobados | Sustituir por rutas autenticadas en fase 3 |
-| Formularios, roles visuales y carrito | Demostración; sin cambios en servidor | Validación y autorización reales |
+| Escape HTML, rutas y cabeceras PHP | Comprobados con entradas reales/persistidas y maquetas | Ampliar auditoría en fase 6 |
+| Prototipos locales y rechazo de POST | Maquetas aisladas y deshabilitadas por defecto; rutas reales separadas | No confundir con permisos reales |
+| Formularios, roles y carrito reales | Conectados a sesiones y MariaDB; pruebas HTTP aprobadas | Auditoría ampliada fase 6 |
 | Apache | No instalado/configurado por este trabajo | Fase 5 |
-| Sesiones, autenticación y autorización por roles | No implementadas; sí existen cuentas ficticias con hash en BD | Fase 3 |
-| MariaDB, mysqli, Docker y Compose | Implementados y probados en Windows/Docker Desktop; mysqli por CLI | Integración web fase 3 y Ubuntu fase 5 |
+| Sesiones, autenticación y autorización por roles | Implementadas y probadas; revocación por baja/contraseña/rol | HTTPS/Ubuntu pendientes |
+| MariaDB, mysqli, Docker y Compose | CLI y HTTP comprobados, privilegios limitados, transacciones reales | Ubuntu fase 5 |
 | VM, firewall y red Ubuntu | No modificados ni probados | Fase 5 |
 | IDOR y servicio TCP/8081 | No implementados; no se abrió 8081 | Fase 4 y prueba de red en fase 5 |
 | Auditoría completa e instalación cronometrada | No ejecutadas | Fases 6 y 7 |
@@ -137,7 +137,7 @@ La comprobación en Edge se hizo por la herramienta de navegador, no por comando
 
 Se comprobó además el ancho de las otras diez pantallas; todos los resultados fueron correctos y quedaron en `REPORTES/evidencias/responsive.json`. La inspección de consola al final devolvió una lista vacía de errores/avisos capturados. Dos intentos de captura de registro agotaron el tiempo de la herramienta; se volvió a esa pantalla y la captura final sí se guardó. La selección automatizada de un JPG local no pudo completarse porque la extensión de Edge no tenía permiso de acceso a URLs de archivo. No se cambió ese permiso ni se afirmó que la previsualización de archivo quedara probada. Las imágenes de fixtures y la previsualización de un producto existente sí se observaron.
 
-## 4. Controles realmente implementados: archivos, motivo y defensa
+## 4. Controles iniciales de fase 1 (histórico; fase 3 en sección 17)
 
 ### 4.1 Raíz pública pequeña
 
@@ -196,7 +196,7 @@ Explicación oral: “El navegador recibe reglas para cargar solo nuestros recur
 
 Explicación oral: “En fase 1 pruebo cómo se usa la tienda. Los precios del navegador nunca serán la autoridad para cobrar o descontar inventario.”
 
-## 5. Autenticación, sesiones y roles: plan, todavía no implementado
+## 5. Plan original de autenticación (histórico; implementado en fase 3, sección 17)
 
 ### Autenticación y contraseñas
 
@@ -222,7 +222,7 @@ Los cambios usarán POST y un token CSRF ligado a la sesión. SameSite ayuda, pe
 
 Pruebas futuras: comprador solicitando una acción administrativa, vendedor editando producto ajeno, POST sin token, compra con stock insuficiente, concurrencia y rollback. No ejecutadas en fase 1.
 
-## 6. MariaDB, mysqli y Docker: plan
+## 6. Plan original de MariaDB (histórico; implementación en secciones 14 y 17)
 
 - MariaDB almacenará usuarios, productos, facturas y detalles. Su usuario de aplicación tendrá los permisos mínimos necesarios; la aplicación no usará root. Las credenciales reales de instalación no entrarán a Git, capturas ni esta guía.
 - mysqli enviará consultas preparadas con parámetros; separar estructura SQL y valores evita tratar un dato como parte de la consulta. Parametrizar no comprueba permisos ni propiedad: una consulta preparada puede seguir teniendo IDOR. [Consultas preparadas mysqli](https://www.php.net/manual/en/mysqli.quickstart.prepared-statements.php).
@@ -273,7 +273,7 @@ No se ejecutaron `apt install`, `ufw enable`, reglas `ufw allow`, `netplan apply
 ### A. IDOR de factura (prevista para fase 4)
 
 - **Qué significa:** referencia directa a un objeto sin comprobar si pertenece al solicitante. Identificar un objeto por número no es el fallo; omitir autorización sobre ese objeto sí.
-- **Ubicación prevista:** `factura.php?id=`, detrás de autenticación real. La fase 1 no crea esa ruta.
+- **Ubicación prevista:** `factura.php?id=`, detrás de autenticación real. En fase 3 esa ruta ya existe y está protegida por `buyer_invoice` en app/shop.php: exige id y comprador_id de sesión. La prueba entre dos compradores rechaza la lectura ajena con 404. No se ha introducido la omisión de fase 4.
 - **Por qué existirá:** demostrar una falla de autorización sobre datos ficticios en el ejercicio aprobado. No se omitirá la sesión ni se extenderá a historial o productos.
 - **Impacto acotado:** un comprador de laboratorio podría leer un documento ficticio ajeno; no debe modificarlo, borrar datos ni obtener control del equipo.
 - **Cómo corregir:** exigir en servidor que la factura pertenezca al comprador autenticado o que exista un permiso explícito para esa operación. Validar el ID o usar una consulta preparada no basta para corregir propiedad.
@@ -292,7 +292,7 @@ No se ejecutaron `apt install`, `ufw enable`, reglas `ufw allow`, `netplan apply
 
 El entorno se limita a VM y red del laboratorio. No se prueban otros equipos, infraestructura institucional o internet. No se introducen SQLi, XSS, RCE ni un login deliberadamente sin límites. La ausencia absoluta de defectos no se garantiza por declaración: se audita.
 
-## 10. Cómo practicar la explicación y las comprobaciones actuales
+## 10. Práctica histórica de maquetas de fase 1 (backend actual en sección 17)
 
 1. Inicia la vista previa siguiendo README y abre el catálogo. Explica que las tarjetas son HTML generado por PHP con datos de `demo/datos.php`.
 2. Muestra el aviso de fase 1. Recorre comprador/vendedor/admin desde “Revisar pantallas”, explicando que no has iniciado sesión.
@@ -489,7 +489,7 @@ La auditoría revisó 116 blobs, cero coincidencias con los dos secretos y ambos
 
 La secuencia de entrega del propio documento repite commit/push normal y merge remoto con `merge_method=merge`, comprobando el SHA de head de #6; después fetch, switch develop y merge --ff-only. Se comprueban por API el PR fusionado, privacidad pública y main intacta, más igualdad local/remota y ascendencia de ebf814f/da4e8b1. El SHA del merge de este mismo texto se consulta en #6, porque no se puede escribir dentro del contenido que determina ese SHA. Si esas comprobaciones no terminan, no debe presentarse el cierre como completado.
 
-## 16. Fase 3 — bitácora en desarrollo
+## 16. Fase 3 — bitácora de implementación
 
 Autorización recibida: backend completo PHP/mysqli, sin fases 4/5. Se releyeron ambos PDF con pypdf (6 y 11 páginas), AGENTS, alcance, matriz, base, guía y reportes. `git status --short --branch`, `git fetch origin`, `git merge --ff-only origin/develop` y `git switch -c feature/fase-03-backend` partieron de develop limpia en 4b5bbd5.
 
@@ -502,3 +502,113 @@ Fuentes técnicas consultadas: [sesiones PHP](https://www.php.net/manual/en/sess
 Segundo módulo: `app/shop.php` implementa catálogo/carrito y compra transaccional con bloqueo de comprador y productos en orden de ID, precios leídos de BD, descuento, factura y detalles, commit/rollback. `app/management.php` autoriza vendedor/administrador, protege propiedad y conserva referencias; DELETE de usuario con FK se convierte en activo=0 y DELETE de producto deja detalle.producto_id NULL. `app/images.php` comprueba MIME/extensión/tamaño/dimensiones, decodifica con GD y guarda PNG aleatorio fuera de public; nunca ejecuta el archivo subido.
 
 La primera ejecución de `scripts/verificar-backend.ps1 2>&1 | Tee-Object REPORTES/evidencias/fase03-primer-intento.txt` aprobó 104 comprobaciones HTTP/BD, 8 utilidades PHP y 3 JS. Ejecutó dos servidores PHP independientes para concurrencia, fixtures aislados, compra simultánea de la última unidad y dos rollback: stock insuficiente tras primer UPDATE y error SQL 1205 real por bloqueo. Los argumentos exactos de PHP, los pasos de creación/limpieza y los SQL de comprobación están versionados en scripts/verificar-backend.ps1 y tests/backend-fixtures.php. No se alteraron ni reinicializaron las filas iniciales; limpieza compara hash de todas las filas previas.
+
+## 17. Backend de fase 3: guía de estudio y defensa
+
+### Mapa del recorrido real
+
+```mermaid
+flowchart TD
+  B[Navegador y formulario] --> R[public/*.php: ruta fija]
+  R --> W[app/web.php: sesión, rol y CSRF]
+  W --> S[Servicio PHP: validar datos y propiedad]
+  S --> Q[mysqli: consulta preparada con tiendalab_app]
+  Q --> D[MariaDB Docker: restricciones, transacción y volumen]
+  D --> V[Vista HTML: salida escapada]
+  V --> B
+```
+
+La ruta pública decide una página constante; no incluye archivos a partir del nombre enviado por el navegador. `app/web.php` coordina, los módulos aplican reglas y `app/views/live/` dibuja. Las maquetas antiguas llaman a render_page y fixtures; las rutas reales llaman a dispatch/live_page y MariaDB. Reutilizan CSS, marca, cabecera/pie y disposición visual. No se usa un framework ni un ORM.
+
+### Conexión y credenciales
+
+`app/database.php` crea una conexión mysqli única por petición. Toma DB_PASSWORD, DB_HOST y DB_PORT primero del entorno; si no están definidos lee esas claves del `.env` fuera de public. Usuario y base están fijados a `tiendalab_app` y `tiendalab`: ninguna operación web utiliza root. Configura utf8mb4 y zona SQL -06:00. `sql()` usa mysqli::execute_query, que prepara la consulta y enlaza sus parámetros. Los datos del usuario son parámetros; las partes SQL variables del código solo proceden de decisiones internas cerradas.
+
+Esto separa consulta y datos: buscar comillas o texto parecido a SQL no altera la estructura de SELECT. No sustituye comprobar roles o propiedad. Las FK, CHECK y UNIQUE siguen activos. Las pruebas verificaron conexión real, alta/edición/borrado con la cuenta app y rechazo de CREATE TABLE. No se modificaron grants, esquema, seed, Compose ni volumen.
+
+Defensa: “PHP recibe lo que el usuario quiere hacer; MariaDB recibe una consulta fija y los valores por separado. La aplicación puede operar datos, pero no administrar el esquema.”
+
+### Sesiones, contraseñas, roles y CSRF
+
+| Control / archivo | Qué hace y cómo funciona | Comprobación real y explicación sencilla |
+| --- | --- | --- |
+| password_hash/password_verify, auth.php y management.php | PHP genera el hash con sal; en PHP 8.3 utilizado es bcrypt. Contraseñas nuevas de 12–72 bytes evitan truncamiento bcrypt | Registro, login correcto/incorrecto, hash verificable. “Guardo un verificador, no la contraseña en claro” |
+| Registro comprador fijo, auth.php | La sentencia INSERT fija rol comprador; ignora rol/activo de registros públicos; correo UNIQUE y error 1062 controlado | Enviar administrador/activo=0 crea comprador activo; duplicado=409 |
+| ID de sesión, auth.php | Cookie TiendaLabSID, strict mode, cookies solamente, sin ID en URL; session_regenerate_id(true) tras login | Cookie nueva comprobada, ID impuesto rechazado, ID previo al login no autentica |
+| HttpOnly / SameSite=Lax | HttpOnly impide leer la cookie con JS; SameSite limita su envío entre sitios. Secure se activa si PHP recibe HTTPS | HttpOnly/SameSite observados por HTTP. HTTPS no ejecutado; en loopback HTTP no hay cifrado de transporte |
+| Expiración | 30 minutos de inactividad y 8 horas absolutas comprobadas en servidor al comenzar una solicitud; no depender solo de cierre del navegador | Código revisado; no se esperaron 8 horas ni se simula haberlo probado por tiempo real |
+| Sesión fuera de public | Archivos en storage/sessions, directorio con modo solicitado 0700 al crearlo, ignorado por Git | HTTP directo a storage devuelve 404. En Windows no se afirma haber configurado ACL Unix |
+| Usuario vigente por solicitud | La sesión guarda ID y huella del hash; PHP consulta rol/activo actuales. Cambio de contraseña invalida la huella | Baja lógica o nueva contraseña revoca cookie existente; cambio de rol modifica permisos inmediatamente |
+| require_role en web.php | Matriz de rutas en PHP; comprador/vendedor/admin separados, incluso si se manipula la URL | Anónimo redirigido; rol incorrecto=403. “Ocultar botones no protege; PHP rechaza la operación” |
+| CSRF, auth.php | Token aleatorio de 32 bytes en sesión y campo oculto; hash_equals en todo POST, incluidos login, registro y logout | Login/productos/usuarios con token inválido=403; compra repite POST viejo=403 tras rotación |
+| Logout | Limpia datos, destruye sesión y expira cookie con los mismos atributos | La cookie anterior ya no puede entrar al historial |
+| Límites compartidos | storage/limits usa nombres SHA-256, JSON sin correo/IP en claro y flock exclusivo. Cinco accesos por correo, 60 por IP, ventana 900 s; registro 20 por IP | Sexto intento=429 y nueva cookie sigue bloqueada. No se confía en X-Forwarded-For. El límite cuenta también éxitos; puede bloquear temporalmente un correo hasta terminar la ventana |
+
+Los límites son sencillos para un único host de laboratorio: no son una plataforma distribuida. CSRF es distinto de XSS y de autorización: se necesitan los tres controles. `form-action 'self'` permite formularios locales, mientras object-src/base-uri/frame-ancestors siguen cerrados. Las maquetas conservan form-action none y POST=405. `e()` aplica htmlspecialchars a texto y atributos; JavaScript visual no decide permisos ni precios.
+
+### Compra transaccional, paso por paso
+
+1. La sesión del comprador conserva solo IDs y cantidades, no precios confiables del navegador. Validación estricta de enteros, máximo 20 productos y 999 unidades por producto; stock y disponibilidad se vuelven a comprobar.
+2. `purchase()` inicia la transacción y bloquea la cuenta del comprador, comprobando activo/rol. Ordena IDs de productos y obtiene cada fila con SELECT ... FOR UPDATE.
+3. Relee precio/stock/activo, valida, calcula centavos y descuenta mediante UPDATE con stock>=cantidad. Una segunda compra debe esperar el bloqueo y después ver el stock actualizado.
+4. Inserta la factura y las líneas con nombre y precio históricos. MariaDB calcula importes, IVA y total con DECIMAL y ROUND; PHP limita el total para evitar desbordar las columnas.
+5. Commit hace permanente todo el conjunto. Cualquier Throwable provoca rollback, incluso si ya se descontó un producto. En HTTP, después del éxito se vacía el carrito, se renueva CSRF y se redirige a la factura.
+
+Pruebas reales: $73.99 + $9.62 = $83.61; precios/comprador falsificados ignorados; stock decrementado una vez; detalle completo; dos procesos PHP intentando la última unidad dieron un éxito y un rechazo; no quedó stock negativo ni doble detalle. Otra prueba descontó el primer producto y falló por stock del segundo; ambas existencias y facturas se conservaron. Un proceso CLI mantuvo el segundo producto bloqueado: otro recibió error MariaDB 1205 tras el primer UPDATE y revirtió la operación. Este error se provocó con SET SESSION innodb_lock_wait_timeout=1 **solo en la conexión de prueba**, sin cambiar la configuración global.
+
+Defensa: “Una transacción es una operación completa o ninguna. El bloqueo impide que dos compradores crean que la misma última unidad sigue disponible.” Los bloqueos y el orden reducen conflictos; un deadlock/timeout aún puede ocurrir y se trata como fallo controlado con rollback. No hay reintento automático ni promesa de carga de producción.
+
+### Propiedad, administración e historia
+
+El catálogo público solo muestra productos activos. En vendedor, PHP toma vendedor_id del usuario autenticado; ni un campo oculto ni un POST pueden cambiarlo. Antes de editar se bloquea y verifica el dueño de la fila. El administrador puede elegir un vendedor activo; un comprador no llega a esos servicios. `buyer_invoice` combina `id=? AND comprador_id=?`, con comprador de sesión: una factura ajena responde 404. El historial también filtra por sesión.
+
+`save_user` valida roles con lista cerrada, exige mantener acceso administrativo y no permite al administrador eliminarse o quitarse su propio acceso. Los hashes no aparecen en formularios. Al borrar una cuenta con referencias, la FK rechaza DELETE; el servicio captura solo el error 1451 y usa activo=0. No borra productos/facturas para forzar la eliminación. Al borrar un producto, la FK SET NULL deja el nombre/precio/cantidad históricos en sus líneas. El nombre/correo de comprador se consultan de usuarios actuales: una edición posterior se reflejará en el encabezado de facturas; no se añadió una instantánea fiscal del cliente fuera del alcance del modelo.
+
+### Archivos e imágenes
+
+`save_image` exige una subida PHP válida, error UPLOAD_ERR_OK, hasta 2 MB, extensión JPG/JPEG/PNG/WEBP concordante con MIME detectado por fileinfo, dimensiones <=4096 por lado y <=16 millones de píxeles. GD decodifica y escribe **un PNG nuevo** con nombre aleatorio de 32 caracteres hexadecimales. No se conserva nombre original ni contenido añadido al archivo; se verificó eliminando un marcador añadido a un PNG válido.
+
+Se almacena en storage/uploads fuera de public. `imagen.php?id=` acepta únicamente el patrón del nombre y entrega bytes con Content-Type image/png y nosniff; nunca incluye ni ejecuta el archivo. SVG se permite solo para assets originales del repositorio, nunca como subida del usuario. Si la operación SQL falla se retira la imagen nueva; después de reemplazar/eliminar un producto se limpia su imagen anterior cuando corresponde. El límite de tamaño también se verifica después de recodificar.
+
+Se probaron subida auténtica, archivo PHP disfrazado, extensión .php, exceso de tamaño, acceso traversal y consulta de imagen como PNG. La selección mediante diálogo nativo y la revisión móvil completa no se ejecutaron en esta fase: la subida real fue multipart HTTP. En fase 5 se deberán respaldar conjuntamente BD e imágenes; este cierre no configura backups de Ubuntu.
+
+### Errores y límites de la demostración
+
+Los errores de validación muestran mensajes controlados y códigos 4xx. Una excepción interna produce 503 genérico; el log solo registra clase/código, sin consulta, parámetros ni contraseña. PHP inicia con display_errors=0. Se inició una tercera instancia con DB_PORT=1 para provocar una conexión fallida real: mostró 503 sin usuario SQL, rutas internas ni excepción visible. No se apagó MariaDB ni se alteró .env para esa prueba.
+
+Se mantienen nosniff, no-referrer, CSP y no-store. PHP añade no-cache/must-revalidate al gestionar sesiones; se corrigió el test que antes exigía que no-store fuera el único valor. No se debilitó la cabecera. Una prueba funcional no certifica ausencia absoluta de vulnerabilidades; falta auditoría ampliada de fase 6.
+
+### Comandos realmente ejecutados, continuación de sección 16
+
+En orden, siempre Windows/PowerShell salvo las interacciones visuales indicadas:
+
+1. `Get-ChildItem tools/php/ext/php_*gd*, tools/php/ext/php_*fileinfo*, tools/php/ext/php_*mbstring*`: comprobó DLL disponibles. `tools/php/php.exe -d extension_dir=tools/php/ext -d extension=mysqli -d extension=fileinfo -d extension=gd -d extension=mbstring -m`: comprobó módulos cargados, sin instalar nuevas dependencias.
+2. `Get-ChildItem app,public,scripts,tests -Recurse -Filter *.php` y `php -l` sobre cada archivo; `node --check public/assets/js/live.js`: sintaxis aprobada. No demuestra por sí sola operaciones reales.
+3. `docker compose ps`, usando el ejecutable Docker de Program Files: base existente saludable, loopback; no se recreó el volumen.
+4. `scripts/verificar-backend.ps1 2>&1 | Tee-Object REPORTES/evidencias/fase03-primer-intento.txt`: 104 comprobaciones iniciales, rollback y limpieza aprobados.
+5. Se iniciaron procesos con `Start-Process`, Hidden y PassThru, PHP `-S 127.0.0.1:8000` / `:8002`, `-t public scripts/router.php`, extensiones mysqli/fileinfo/gd/mbstring y display_errors=0. TIENDALAB_PROTOTIPO=1 en 8000 y =0 en 8002. `scripts/verificar-frontend.ps1` falló por la expectativa antigua de Cache-Control; `Move-Item` conservó la salida como fase03-regresion-contrato-anterior.txt. Tras corregir el test, se repitió el mismo comando con Tee-Object en fase03-regresion-frontend.txt: **55 HTTP, 8 PHP, 3 JS** aprobadas.
+6. Revisión visual con la habilidad de navegador en Edge: catálogo, login comprador/vendedor/admin, agregar al carrito sin confirmar compra del seed, historial, factura 4 y paneles. Capturas fase03-*.jpg. Se detectó que las imágenes del seed usan rutas completas /assets/img/...; `rg -n 'audifonos|INSERT INTO productos' database/init/02-seed.sql` lo confirmó. Se corrigió image_url sin cambiar el seed y se añadió su prueba. Se cerraron las tres sesiones de revisión.
+7. `Get-Content tmp/fase03-preview-pids.json | ConvertFrom-Json`, `Get-Process -Id <pid>` y `Stop-Process -Id <pid>`: detuvieron solo los PHP iniciados, tras comparar la ruta del ejecutable. No se detuvo Docker.
+8. `scripts/verificar-backend.ps1 2>&1 | Tee-Object REPORTES/evidencias/fase03-backend-final.txt`: **106 HTTP/BD** aprobadas con imagen corregida y servidor de fallo SQL. `tools/php/php.exe -d extension_dir=tools/php/ext -d extension=mysqli tests/database.test.php 2>&1 | Tee-Object REPORTES/evidencias/fase03-base-preservada.txt`: **24** comprobaciones originales aprobadas.
+9. La revisión del test de cookie encontró que every() podía aprobar sin que se emitiera ninguna cookie en una sesión ya existente. Se reforzó exigiendo una cookie NUEVA real y se añadió rechazo de ID no inicializado. `scripts/verificar-backend.ps1 2>&1 | Tee-Object REPORTES/evidencias/fase03-sesiones-y-backend.txt`: **107 HTTP/BD**, **8 PHP**, **3 JS**, **52 archivos PHP** sin errores, dos rollback y limpieza con hash idéntico. No cambió el código de aplicación para esta mejora del test.
+10. Commits reales por módulo mediante `git add <rutas del módulo>`, `git diff --cached --check`, `git commit -m <mensaje descriptivo>`: edf2df6 (mysqli/sesiones), 930319b (transacciones/gestión/imágenes), 942eb79 (rutas/vistas reales), 9fd70ce (pruebas/evidencias). El historial conserva los mensajes completos. El cierre documental y PR se registran en el reporte 03.
+
+El verificador guarda en el código la secuencia exacta reproducible: php -l, node --check, tests/security.test.php, node --test tests/frontend.test.cjs, backend-fixtures.php setup, procesos PHP locales, node tests/backend.test.cjs, backend-fixtures.php transaction y finally cleanup. `tests/backend-fixtures.php` contiene los INSERT/SELECT/DELETE, la comparación SHA-256 y el proceso de bloqueo SQL; solo borra registros del prefijo aleatorio de esa ejecución, dentro de transacción. Los IDs autoincrementales consumidos no se resetean. No hay TRUNCATE, down -v ni FOREIGN_KEY_CHECKS=0.
+
+### Repetir y practicar
+
+Primero iniciar MariaDB y la aplicación como indica README. El comando normal de comprobación es `scripts/verificar-backend.ps1`. Después puedes explicar cada PASS junto a las funciones señaladas. Si una interrupción deja manifest en tmp, revisar la ejecución antes de repetir. Recuperación **recomendada para una interrupción futura, no ejecutada manualmente en este cierre**:
+
+```powershell
+& .\tools\php\php.exe -d extension_dir=tools/php/ext -d extension=mysqli -d extension=mbstring tests/backend-fixtures.php cleanup
+```
+
+El modo cleanup sí fue ejecutado automáticamente por el verificador en las pruebas completadas. No confundir ese resultado con haber ejecutado el comando manual de recuperación. Si las filas previas no coinciden, la limpieza aborta y revierte en vez de sobrescribir cambios ajenos; investigar con el manifest conservado.
+
+Para defender: entrar como comprador y mostrar historial propio; explicar que alterar un ID ajeno devuelve 404. Entrar como vendedor y enseñar su listado; explicar la condición de dueño en PHP. Entrar como admin, mostrar métricas y distinguir eliminación física de baja lógica. Para practicar escrituras, usar cuentas y productos ficticios adicionales; no borrar el seed para simular pruebas. No se ha ejecutado impresión/exportación PDF ni esperado la expiración temporal de 8 horas.
+
+### Las dos vulnerabilidades y Ubuntu permanecen pendientes
+
+La ruta factura.php ya está implementada **con propiedad protegida**; la omisión intencional de esa condición solo podrá introducirse en fase 4. Su mitigación es precisamente mantener la condición comprador_id de la sesión, no solo parametrizar SQL. El servicio de diagnóstico 8081 no existe; su futura corrección consistirá en retirarlo o restringir interfaz/origen autorizado. No se abrió ese puerto ni se simuló una explotación.
+
+Apache, PHP en Ubuntu, sesiones bajo el usuario del servicio, permisos Unix, firewall y red de la VM se deberán comprobar en fase 5. Los comandos de la sección 8 siguen siendo recomendaciones no ejecutadas allí. Secure automático bajo HTTPS está implementado, pero no se desplegó HTTPS. Ninguna captura Windows ni contenedor Linux equivale a una instalación Ubuntu Server probada.
