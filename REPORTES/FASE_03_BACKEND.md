@@ -120,5 +120,16 @@ Implementación y comprobaciones completas en `feature/fase-03-backend`, desde d
 | 942eb79 | Rutas/vistas/formularios reales, estilos y launcher |
 | 9fd70ce | Pruebas, fixtures aislados, evidencias y regresión |
 | 4d28092 | Cookie nueva, strict mode y suite final de 107 comprobaciones |
+| 4edff06 | Documentación técnica, guía de seguridad y defensa |
 
-La documentación y la mejora final del test de sesiones se añaden en commits posteriores. La rama se publica y se integra mediante PR real hacia develop después de las pruebas; el enlace y merge se registran en el cierre de publicación. Sin force push ni cambios en main o visibilidad. **Detenerse al completar esta entrega; no iniciar fases 4 ni 5.**
+Los seis commits están publicados y conservados mediante **[PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7)**, de `feature/fase-03-backend` hacia `develop`, fusionado con merge commit **`dc361c05d7ee0b7931c1088a160fcee8741e8062`**. La API de GitHub confirmó `merged=true`. Las pruebas de la sección 6 precedieron al merge. El cierre documental posterior continúa en la misma rama, partiendo por fast-forward de ese merge; no cambia la aplicación.
+
+Repositorio público: https://github.com/Vasquezzz247/TiendaLab-SED. `main` conserva **`98b499d01169def30fe277f0771efbaff903f8c7`**, sigue predeterminada y no recibió esta integración. Sin force push, squash, rebase ni cambio de visibilidad. Los PDF conservan información académica públicamente accesible por la autorización anterior.
+
+La auditoría previa a publicar, [fase03-publicacion.json](evidencias/fase03-publicacion.json), revisó **189 blobs históricos**, comparó en memoria los dos secretos SQL locales y no encontró coincidencias ni archivos excluidos versionados. El ZIP conservó los dos nombres originales, una copia de cada PDF y SHA-256 idéntico. No cambió el árbol de trabajo al exportar. Esta comprobación no equivale a certificar ausencia absoluta de cualquier secreto desconocido.
+
+**Detenerse al completar esta entrega; no iniciar fases 4 ni 5.**
+
+La auditoría posterior al merge también aprobó el ZIP descargado de GitHub: nombres y bytes de los PDF idénticos, sin entradas duplicadas ni archivos excluidos; 189 blobs revisados. Evidencia: [fase03-zip-github.json](evidencias/fase03-zip-github.json). La [instantánea de GitHub](evidencias/fase03-github.json) registra las ramas y los seis SHA publicados en el momento del PR #7.
+
+Cierre documental: **[PR #8](https://github.com/Vasquezzz247/TiendaLab-SED/pull/8)**, desde la misma `feature/fase-03-backend` hacia `develop`, publica este registro después del merge funcional #7. Incluye `5ba3965` y el commit que incorpora este enlace. Su página es la referencia verificable para el estado y SHA de su propio merge; ese SHA se genera después de aprobar estos documentos. Al finalizar, develop local se sincroniza con origin/develop; main permanece en 98b499d. No se crea una rama de fase 4.

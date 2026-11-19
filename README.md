@@ -2,7 +2,7 @@
 
 Tienda académica de tecnología con **PHP puro, mysqli y MariaDB**, sin frameworks, ORM, CDN ni servicios en nube. El diseño de fase 1 ahora permite operaciones reales de laboratorio.
 
-**Estado: fase 3 implementada; fases 4 y 5 no iniciadas.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Las facturas comprueban propietario; no existe el servicio 8081. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
+**Estado: fase 3 implementada e integrada en develop mediante [PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7); fases 4 y 5 no iniciadas.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Las facturas comprueban propietario; no existe el servicio 8081. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
 
 Repositorio [TiendaLab-SED](https://github.com/Vasquezzz247/TiendaLab-SED), **público por autorización previa**. Los PDF originales contienen nombres y carnets académicos; la documentación incluye rutas locales. Se conservan íntegros y su información es públicamente accesible. `.env`, sesiones, imágenes subidas, herramientas y temporales no se publican.
 

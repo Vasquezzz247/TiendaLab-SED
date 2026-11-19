@@ -5,7 +5,7 @@ Estado al 18/11/2026. Repositorio **público**: https://github.com/Vasquezzz247/
 ## Ramas e integraciones reales
 
 - `main`: predeterminada y reservada para entrega estable; sigue en `98b499d01169def30fe277f0771efbaff903f8c7`.
-- `develop`: integración de fases 0, 1 y 2. El merge de fase 2 es `19adb714958a55547eb5e1d0950208bb7f8fc3e0`; el cierre documental se prepara desde ese commit en `feature/cierre-fase-02`.
+- `develop`: integración de fases 0–3. Fase 2: `19adb714958a55547eb5e1d0950208bb7f8fc3e0`; cierre de fase 2: `4b5bbd57a11fcfac874f7dd231416e60eeb5eaa8`; backend de fase 3: `dc361c05d7ee0b7931c1088a160fcee8741e8062`.
 - `feature/fase-00-preparacion` → `develop`: [PR #1](https://github.com/Vasquezzz247/TiendaLab-SED/pull/1), merge `207118d`.
 - `feature/fase-01-frontend` → `develop`: [PR #2](https://github.com/Vasquezzz247/TiendaLab-SED/pull/2), merge `71d64e8`.
 - `feature/gitflow-documentacion` → `develop`: [PR #3](https://github.com/Vasquezzz247/TiendaLab-SED/pull/3), merge `006c6c2`, y [PR #4](https://github.com/Vasquezzz247/TiendaLab-SED/pull/4), merge `99dd827`.
@@ -30,8 +30,10 @@ git remote -v
 git ls-remote --heads origin
 ```
 
-El [estado de GitFlow](../REPORTES/ESTADO_GITFLOW.md) y el [cierre de fase 2](../REPORTES/CIERRE_FASE_02_GITFLOW.md) registran referencias, pruebas y pendientes. Fase 3 requiere nueva autorización.
+El [estado de GitFlow](../REPORTES/ESTADO_GITFLOW.md) y el [cierre de fase 2](../REPORTES/CIERRE_FASE_02_GITFLOW.md) registran referencias, pruebas y pendientes históricos. La autorización posterior permitió completar fase 3; fases 4 y 5 siguen pendientes de autorización.
 
 ## Fase 3 — implementación posterior
 
-La autorización posterior permitió partir de develop limpia en 4b5bbd5 y crear feature/fase-03-backend. Se completaron módulos con commits edf2df6, 930319b, 942eb79 y 9fd70ce; las pruebas reales preceden al PR hacia develop. No se inicia fase 4/5 ni se toca main. Ver REPORTES/FASE_03_BACKEND.md para funcionalidades, pruebas y cierre real de publicación.
+La autorización posterior permitió partir de develop limpia en 4b5bbd5 y crear feature/fase-03-backend. Se publicaron edf2df6, 930319b, 942eb79, 9fd70ce, 4d28092 y 4edff06. Las pruebas reales precedieron al **[PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7)**, fusionado hacia develop con merge `dc361c05d7ee0b7931c1088a160fcee8741e8062`, conservando los seis commits. El cierre documental continúa en la misma feature desde ese merge. No se inicia fase 4/5 ni se toca main. Ver [reporte de fase 3](../REPORTES/FASE_03_BACKEND.md).
+
+Cierre documental: **[PR #8](https://github.com/Vasquezzz247/TiendaLab-SED/pull/8)**, desde la misma `feature/fase-03-backend` hacia `develop`, publica este registro después del merge funcional #7. Incluye `5ba3965` y el commit que incorpora este enlace. Su página es la referencia verificable para el estado y SHA de su propio merge; ese SHA se genera después de aprobar estos documentos. Al finalizar, develop local se sincroniza con origin/develop; main permanece en 98b499d. No se crea una rama de fase 4.
