@@ -12,7 +12,7 @@ Fuentes: D = definición oficial, P = propuesta; numeración física. Estado vig
 | R06 | P8 | Quitar, cantidades, carrito vacío y resumen | public/carrito.php; views/live/carrito.php | Modificar/quitar; precio enviado ignorado; subtotal correcto | Implementado/probado 3 |
 | R07 | P8 | IVA 13 % y total | Centavos PHP y DECIMAL generado MariaDB | 73.99 + 9.62 = 83.61 confirmado en factura SQL | Implementado/probado 3 |
 | R08 | D1; P7,8 | Confirmar, descontar stock, generar factura | app/shop.php purchase | Transacción, dos procesos concurrentes, stock y error SQL con rollback | Implementado/probado 3 |
-| R09 | D1; P8 | Factura detallada e imprimir | factura.php; buyer_invoice; vista real y CSS impresión | Factura persistida y propiedad verificadas; impresión/PDF pendiente | Datos comprobados 3 / impresión P6 |
+| R09 | D1; P8 | Factura detallada e imprimir | factura.php; invoice_detail; vista real y CSS impresión | Factura persistida verificada (propiedad solo en historial; IDOR A en consulta individual); impresión/PDF pendiente | Datos comprobados 3 / impresión P6 |
 | R10 | P9 | Historial de facturas del comprador | historial.php; consulta por comprador autenticado | Solo facturas propias; prueba cruzada entre compradores | Implementado/probado 3 |
 | R11 | D1; P2,10 | Vendedor: alta y edición de productos propios | vendedor.php; app/management.php | Alta/edición propias; GET y POST ajenos rechazados | Implementado/probado 3 |
 | R12 | P10 | Nombre, descripción, precio, stock e imagen | app/images.php; formulario de productos | Validación PHP; imagen auténtica recodificada; rechazo de falsa/extension/tamaño | Implementado/probado 3 |
@@ -24,7 +24,7 @@ Fuentes: D = definición oficial, P = propuesta; numeración física. Estado vig
 | R18 | D1,2; P1,4 | VM Ubuntu Server 24.04 y Apache en host | configuración futura | Arranque VM y Apache real | P / 5 |
 | R19 | P2,4 | MariaDB Docker, Compose, SQL, persistencia | compose.yaml; database/init; tests/database.test.php | 24 pruebas mysqli; marcador persiste tras reinicio/recreación | Implementado y probado Windows/Docker / 2 |
 | R20 | D2; P4 | BD loopback 127.0.0.1:3306; sin internet/nube | Compose restringe publicación a loopback | Binding comprobado; otro equipo/red Ubuntu pendientes | Local comprobado 2 / P5 |
-| R21 | D3; P3,9 | IDOR solo propiedad factura, manteniendo sesión | factura.php futura | Dos compradores ficticios, antes/después, evidencia real | P / 4 |
+| R21 | D3; P3,9 | IDOR solo propiedad factura, manteniendo sesión | `invoice_detail()` en app/shop.php (sin `AND comprador_id`); ruta con sesión y rol comprador | Reproducción real Ana→factura 2 de Luis (REPORTES/evidencias/fase04-idor-reproduccion.txt); 6 pruebas de acotamiento (anónimo, vendedor, admin, inexistente, SQL, parámetro forjado) | Implementado/probado 4 |
 | R22 | D3; P3,11 | HTTP 8081 diagnóstico ficticio separado sin enlaces | vhost y sitio futuro | Acceso desde laboratorio; sin secretos/control del host | P / 4,5 |
 | R23 | D3; P3 | Vulnerabilidades reproducibles y documentadas, mitigación | docs de seguridad futuras | Evidencias verificadas, exactamente dos elegidas | P / 4,6 |
 | R24 | Prompt §4; D3 | Controles del resto: hash, SQL parametrizado, escape, CSRF, límites | auth.php/database.php/images.php; POST CSRF y escape | Pruebas de CSRF, sesiones, propiedad, consultas y errores; auditoría completa futura | Controles probados 3 / ampliar 6 |

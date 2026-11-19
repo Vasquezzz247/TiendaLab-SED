@@ -2,7 +2,7 @@
 
 Tienda académica de tecnología con **PHP puro, mysqli y MariaDB**, sin frameworks, ORM, CDN ni servicios en nube. El diseño de fase 1 ahora permite operaciones reales de laboratorio.
 
-**Estado: fase 3 implementada e integrada en develop mediante [PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7); fases 4 y 5 no iniciadas.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Las facturas comprueban propietario; no existe el servicio 8081. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
+**Estado: fase 3 implementada e integrada en develop mediante [PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7); fases 4 y 5 no iniciadas.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Desde la fase 4 `factura.php?id=` tiene el IDOR aprobado (vulnerabilidad A); el servicio 8081 aún no existe. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
 
 Repositorio [TiendaLab-SED](https://github.com/Vasquezzz247/TiendaLab-SED), **público por autorización previa**. Los PDF originales contienen nombres y carnets académicos; la documentación incluye rutas locales. Se conservan íntegros y su información es públicamente accesible. `.env`, sesiones, imágenes subidas, herramientas y temporales no se publican.
 
@@ -53,7 +53,7 @@ Los nuevos registros públicos siempre son compradores. La contraseña nueva adm
 | `/login.php`, `/logout.php` | Autenticación y salida por POST protegido |
 | `/carrito.php` | Comprador: modificar/quitar y confirmar compra |
 | `/historial.php` | Comprador: solo sus facturas |
-| `/factura.php?id=...` | Comprador: autenticación **y propiedad**; impresión del documento |
+| `/factura.php?id=...` | Comprador autenticado; impresión del documento. **Vulnerabilidad A (IDOR aprobada): no comprueba el propietario** |
 | `/vendedor.php` | Alta, listado y edición solo de productos propios |
 | `/admin-productos.php` | Administrador: métricas, alta/edición/baja de productos |
 | `/admin-usuarios.php` | Administrador: altas/edición/roles/activación/baja de usuarios |
@@ -112,7 +112,7 @@ public/                 Única raíz web; rutas reales y assets locales
 app/web.php             Rutas, roles, POST/CSRF, redirecciones y errores controlados
 app/database.php        Configuración mysqli y validación de entradas
 app/auth.php            Sesiones, autenticación, registro y límites
-app/shop.php            Carrito, compras transaccionales y propiedad de facturas
+app/shop.php            Carrito, compras transaccionales y consulta de facturas (IDOR, vulnerabilidad A)
 app/management.php      Gestión de productos y usuarios con integridad referencial
 app/images.php          Validación, recodificación y rutas de imágenes
 app/views/live/         Vistas reales con el diseño y componentes compartidos

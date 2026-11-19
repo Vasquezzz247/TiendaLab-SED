@@ -106,7 +106,15 @@ class Browser {
     check(data.details.filter(d=>Number(d.factura_id)===invoiceId).length===2,'detalle completo guardado');
     r=await buyer.request('/carrito.php',{action:'checkout',csrf:checkoutToken});check(r.status===403,'repeticion del POST de compra no duplica factura');
     r=await buyer.request(invoicePath);check(r.status===200&&r.body.includes('$83.61'),'consulta factura propia');
-    r=await other.request(invoicePath);check(r.status===404,'factura ajena rechazada: IDOR aun no implementado');
+    // Vulnerabilidad A (IDOR): un comprador autenticado distinto ve la factura ajena cambiando el id.
+    r=await other.request(invoicePath);check(r.status===200&&r.body.includes('$83.61')&&r.body.includes(fixture.prefix+'buyer')&&r.body.includes(fixture.users.buyer.email),'IDOR A: otro comprador autenticado ve la factura ajena (nombre, correo y total)');
+    // La debilidad queda acotada a esa consulta: el resto de controles sigue intacto.
+    r=await new Browser().request(invoicePath);check(r.status===303&&r.headers.get('location')==='/login.php','IDOR acotado: sin sesion no se ve ninguna factura');
+    r=await seller.request(invoicePath);check(r.status===403,'IDOR acotado: un vendedor autenticado sigue sin acceso a facturas');
+    r=await admin.request(invoicePath);check(r.status===403,'IDOR acotado: el administrador sigue sin acceso a facturas');
+    r=await other.request('/factura.php?id=999999999');check(r.status===404,'IDOR acotado: factura inexistente devuelve 404');
+    r=await other.request('/factura.php?id='+invoiceId+encodeURIComponent(' OR 1=1'));check(r.status===422&&!r.body.includes('$83.61'),'IDOR acotado: no se convierte en inyeccion SQL');
+    r=await other.request('/factura.php?id='+invoiceId+'&comprador_id='+fixture.users.other.id);check(r.status===200&&r.body.includes(fixture.users.buyer.email),'IDOR acotado: el parametro comprador_id del navegador se ignora');
     r=await buyer.request('/historial.php');check(r.body.includes(invoicePath),'historial incluye compra propia');
     r=await other.request('/historial.php');check(!r.body.includes(invoicePath),'historial no filtra facturas de otro comprador');
     for(const client of [buyer,other]){r=await client.form('/',{action:'add',id:fixture.products.concurrent,cantidad:'1'});check(r.status===303,'carrito concurrente preparado');await client.request('/carrito.php');}
