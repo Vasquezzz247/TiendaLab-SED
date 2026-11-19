@@ -1,10 +1,10 @@
 # TiendaLab
 
-Repositorio privado: https://github.com/Vasquezzz247/TiendaLab-SED. El frontend integrado está en `develop`; `main` se reserva para entrega estable. Ver [estado actualizado de GitFlow](REPORTES/ESTADO_GITFLOW.md). Las menciones a remoto pendiente más abajo corresponden al cierre histórico de fase 1.
+Repositorio público (cambio autorizado posteriormente): https://github.com/Vasquezzz247/TiendaLab-SED. El frontend integrado está en `develop`; `main` se reserva para entrega estable. Ver [estado actualizado de GitFlow](REPORTES/ESTADO_GITFLOW.md). Las menciones a remoto pendiente más abajo corresponden al cierre histórico de fase 1.
 
 Proyecto universitario de **Seguridad en Entornos de Desarrollo**. Tienda de tecnología con comprador, vendedor y administrador, según la definición oficial y la propuesta de los PDF de esta carpeta.
 
-**Estado: fases 0 y 1 completadas; frontend de demostración.** No existe todavía MariaDB, autenticación, compra real, CRUD persistente, despliegue Ubuntu ni vulnerabilidades. Los prototipos de roles son vistas aisladas; no son paneles finales sin autenticación. No avanzar a fase 2 sin autorización.
+**Estado actual: fase 1 corregida y fase 2 implementada y probada en Windows/Docker Desktop.** MariaDB está disponible; todavía no hay autenticación, compra real, CRUD web persistente, despliegue Ubuntu ni vulnerabilidades. Los prototipos de roles son vistas aisladas; no son paneles finales sin autenticación. No avanzar a fase 3 sin autorización.
 
 ## Ver la interfaz en esta computadora
 
@@ -22,7 +22,7 @@ Alternativa equivalente, sin ejecutar un archivo `.ps1` ni cambiar políticas de
 ```powershell
 Set-Location 'C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex'
 $env:TIENDALAB_PROTOTIPO = '1'
-& '.\tools\php\php.exe' -S 127.0.0.1:8000 -t public
+& '.\tools\php\php.exe' -S 127.0.0.1:8000 -t public scripts/router.php
 ```
 
 No abras los `.php` con doble clic ni uses la raíz del proyecto como DocumentRoot. El servidor integrado es solo para revisar el frontend local; Apache sigue siendo el servidor de entrega.
@@ -103,6 +103,21 @@ tools/php/               Intérprete local ignorado por Git
 
 ## Pendiente para la entrega final
 
-Fase 2: SQL, MariaDB/Compose y volumen. Fase 3: sesiones, autenticación, roles, mysqli, CRUD, transacciones, stock y facturas reales. Fase 4: únicamente IDOR de propiedad en factura autenticada y diagnóstico ficticio 8081. Fase 5: instalación Ubuntu/Apache, red autorizada, scripts de servicio y alternativa offline. Fase 6: pruebas funcionales y auditoría. Fase 7: README final, GitHub/PR, evidencias y simulación de instalación cronometrada.
+Fase 2 completada localmente: SQL, MariaDB/Compose y volumen; ver documentación de base. Fase 3: sesiones, autenticación, roles, mysqli, CRUD, transacciones, stock y facturas reales. Fase 4: únicamente IDOR de propiedad en factura autenticada y diagnóstico ficticio 8081. Fase 5: instalación Ubuntu/Apache, red autorizada, scripts de servicio y alternativa offline. Fase 6: pruebas funcionales y auditoría. Fase 7: README final, GitHub/PR, evidencias y simulación de instalación cronometrada.
 
 Entrega prevista: **27/11/2026**, Laboratorio 4, máximo 30 minutos de instalación. No se ha medido una instalación real ni se afirma cumplir ese tiempo. Pruebas del ejercicio: 30/11 y 01/12/2026, únicamente en los objetivos y horarios autorizados. Red de la VM y posibilidad de llevarla preconfigurada siguen pendientes de instrucciones del docente.
+
+## Base de datos (fase 2)
+
+Ver [modelo, cuentas ficticias, comandos y traslado offline](docs/BASE_DE_DATOS.md), [reporte fase 2](REPORTES/FASE_02_BASE_DATOS_DOCKER.md) y [correcciones de auditoría](REPORTES/CORRECCIONES_FASE_01.md). No conectar todavía el frontend a la base.
+
+En PowerShell, desde esta carpeta:
+
+```powershell
+# Solo si .env no existe:
+& .\tools\php\php.exe scripts/preparar-entorno.php
+& 'C:\Program Files\Docker\Docker\resources\bin\docker.exe' compose up -d --wait
+.\scripts\verificar-base.ps1
+```
+
+La base usa 127.0.0.1:3306 y el volumen tiendalab_db_data. Detener sin borrar datos: `docker compose stop db`; iniciar: `docker compose start db`. El seed solo se aplica al volumen nuevo. No ejecutar down -v. Las menciones anteriores a BD pendiente son históricas de fase 1; prevalece este estado y el reporte 02.
