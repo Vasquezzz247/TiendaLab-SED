@@ -1,67 +1,71 @@
 # Estado de GitHub y GitFlow
 
-Fecha: 18/11/2026. Trabajo limitado a publicación, control de versiones y documentación; no se inició fase 2 ni se modificó el funcionamiento de la aplicación.
+Actualizado el 18/11/2026 para el cierre de fase 2. Este documento sustituye el estado anterior de preparación; los reportes antiguos conservan su contexto histórico.
 
-## Repositorio
+## Repositorio y alcance
 
 - URL: https://github.com/Vasquezzz247/TiendaLab-SED
-- Privado, cuenta Vasquezzz247. Creado sin README automático para no introducir una raíz de historial distinta.
-- origin: https://github.com/Vasquezzz247/TiendaLab-SED.git
-- Rama predeterminada: main. Rama de integración: develop.
-- Se reutilizó el repositorio local existente. Sin force push, rebase, squash, eliminación de ramas ni pérdida de commits.
+- **Público**, cuenta Vasquezzz247; verificado mediante API (`private=false`). La publicación pública fue autorizada anteriormente. No se cambió la visibilidad en este cierre.
+- `origin`: https://github.com/Vasquezzz247/TiendaLab-SED.git
+- Predeterminada/entrega: `main`. Integración: `develop`.
+- Se reutilizó el mismo repositorio. Sin force push, rebase, squash, borrado de ramas ni pérdida de commits.
+- No se inició fase 3, no se implementaron vulnerabilidades ni se modificó la aplicación durante el cierre.
 
-## Commits publicados
+## Commits publicados e integraciones
 
 | Commit | Contenido |
 | --- | --- |
-| 98b499d | Documentos originales y repositorio |
-| 81e2814 | Análisis y preparación de fase 0 |
-| 5deaa9c | Frontend y pruebas |
-| fcba528 | Seguridad, defensa y evidencias |
-| bd88660 | Exclusiones de secretos y dependencias |
-| 207118d | Merge real de PR #1 |
-| 71d64e8 | Merge real de PR #2 |
+| 98b499d | Documentos originales y base de main |
+| 81e2814 | Preparación de fase 0 |
+| 5deaa9c, fcba528, bd88660 | Frontend, seguridad/evidencias y exclusiones |
+| 207118d, 71d64e8 | Merges de PR #1 y #2 |
+| c99732d, 006c6c2 | Documentación y merge PR #3 |
+| 525f5de, 1d02941, 99dd827 | Cierre anterior y merge PR #4 |
+| ebf814f | Corrección de rutas y observaciones de auditoría |
+| da4e8b1 | MariaDB persistente, SQL, permisos y pruebas mysqli |
+| 19adb714958a55547eb5e1d0950208bb7f8fc3e0 | Merge real PR #5, conserva ambos commits de fase 2 |
 
-El commit que contiene este reporte y su merge documental también se publican; sus SHA se consultan en el historial, evitando una referencia circular al propio commit.
+Los dos commits de fase 2 no estaban publicados al iniciar el cierre. Se publicó la rama existente y se integró el PR; no se reconstruyó el historial.
 
-## Pull Requests reales
-
-1. [PR #1: preparación → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/1): fusionado, merge 207118d.
-2. [PR #2: frontend → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/2): fusionado, merge 71d64e8.
-3. [PR #3: documentación → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/3): fusionado, merge 006c6c2; commit documental c99732d.
-4. [PR #4: cierre verificado → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/4): PR documental real que contiene los resultados posteriores a publicación, incluido commit 525f5de y este enlace. Su estado final y SHA de merge son consultables en el enlace. No introduce funcionalidad.
-
-La rama frontend ya descendía de preparación. Por ello se fusionó primero PR #1 y después PR #2. No se reconstruyó ni inventó el historial. Las integraciones utilizan merge commits para conservar los SHA originales.
+| PR real | Integración | Estado / merge |
+| --- | --- | --- |
+| [#1](https://github.com/Vasquezzz247/TiendaLab-SED/pull/1) | preparación → develop | Fusionado / 207118d |
+| [#2](https://github.com/Vasquezzz247/TiendaLab-SED/pull/2) | frontend → develop | Fusionado / 71d64e8 |
+| [#3](https://github.com/Vasquezzz247/TiendaLab-SED/pull/3) | documentación → develop | Fusionado / 006c6c2 |
+| [#4](https://github.com/Vasquezzz247/TiendaLab-SED/pull/4) | cierre anterior → develop | Fusionado / 99dd827 |
+| [#5](https://github.com/Vasquezzz247/TiendaLab-SED/pull/5) | fase 2 → develop | Fusionado / 19adb71 |
+| [#6](https://github.com/Vasquezzz247/TiendaLab-SED/pull/6) | cierre documental → develop | PR real de este informe; SHA de su propio merge en el enlace |
 
 ## Ramas locales y remotas
 
-Todas se conservan localmente y se publican bajo origin:
+Instantánea comprobada después de PR #5; las seis primeras tienen equivalente `origin/<rama>` con el mismo SHA:
 
-- main: 98b499d, base original; predeterminada y reservada para entrega.
-- develop: fases 0 y 1 integradas, más el reporte documental al cierre.
-- feature/fase-00-preparacion: 81e2814.
-- feature/fase-01-frontend: bd88660.
-- feature/gitflow-documentacion: reporte y actualización de instrucciones.
-- feature/fase-02-base-datos: se crea desde develop tras integrar el reporte, sin commits de implementación ni SQL/Compose.
+| Rama | SHA / finalidad |
+| --- | --- |
+| main | 98b499d; sin cambios |
+| develop | 19adb71; fases 0–2 integradas |
+| feature/fase-00-preparacion | 81e2814 |
+| feature/fase-01-frontend | bd88660 |
+| feature/gitflow-documentacion | 1d02941 |
+| feature/fase-02-base-datos | da4e8b1 |
+| feature/cierre-fase-02 | Rama documental creada desde 19adb71; publicación mediante PR de cierre |
 
-No se abre develop → main todavía: no existe una versión estable completa de la tienda. Ese PR corresponde a la preparación de entrega después de las fases y pruebas necesarias. No se crearon ramas release/hotfix vacías para aparentar trabajo.
+El commit inicial del cierre es `cf1f807627a16dc31b74f2abd6285a35fd9f5193`, publicado en `feature/cierre-fase-02` con seguimiento de origin. El [PR documental #6](https://github.com/Vasquezzz247/TiendaLab-SED/pull/6) incorpora ese commit y el enlace al propio PR. Al entregar, `develop` debe estar sincronizada con el merge remoto de #6 y contener código de fase 2 más este cierre; su SHA exacto se consulta en el PR para evitar una referencia circular al mismo documento. La verificación final comprueba esa condición antes de dar el cierre por terminado. `main` conserva el SHA completo `98b499d01169def30fe277f0771efbaff903f8c7`. No corresponde aún abrir `develop` → `main`.
 
-## Revisión de publicación y seguridad
+## Seguridad de publicación y PDF
 
-Se revisaron archivos versionados y `.gitignore`. PHP portátil, ZIP, tmp, logs y .env ya estaban ignorados. Se añadieron .env.*, excepcion .env.example, claves .pem/.key, node_modules, vendor, configuración local del editor, backups y data. No se encontraron archivos versionados con los patrones de credenciales inspeccionados ni coincidencias de tokens GitHub/claves privadas en el escaneo textual. Esto es una revisión acotada, no un certificado de ausencia absoluta de secretos.
+Se revisaron `.gitignore`, el árbol publicado de GitHub y los 102 blobs históricos disponibles tras PR #5. No se encontraron `.env`, herramientas PHP, dependencias locales, temporales, claves privadas ni imágenes Docker exportadas. Se compararon los dos secretos actuales de `.env` contra los blobs en memoria, sin imprimirlos, sin coincidencias; también se buscaron patrones de tokens GitHub/claves privadas. Es una revisión acotada, no garantía de detectar cualquier secreto posible. `.env.example` sí se publica y solo contiene ejemplos, no secretos locales.
 
-Los PDF académicos originales contienen los nombres/carnets del equipo y la documentación incluye rutas locales del equipo. Se conservan como fuentes del proyecto autorizado dentro del repositorio **privado**; no deben hacerse públicos sin revisar esos datos. Las capturas de la tienda contienen datos ficticios. No se subieron credenciales de Git/GitHub ni PHP portátil.
+**Los PDF originales contienen nombres/carnets del equipo y son públicos.** La documentación también contiene rutas de Windows. Se conservan por instrucción del usuario; esta advertencia no cambia la visibilidad ni elimina datos del historial. Las cuentas de la tienda son ficticias.
 
-GitHub CLI no estaba instalado. Se usaron Git Credential Manager y la API oficial de GitHub con la credencial existente exclusivamente en memoria; nunca se imprimió ni se guardó el token. El auxiliar de publicación vive en tmp, ignorado, y no contiene credenciales literales.
+`scripts/auditar-exportacion.py` verificó el ZIP creado con `git archive`: nombres exactos, una copia por PDF, contenido idéntico al archivo local y al blob Git, sin cambios en el estado Git por exportar. El nombre con acento tiene indicador UTF-8; el nombre ASCII no lo necesita. Evidencia: `evidencias/cierre02-exportacion.json`.
 
-## Verificación y pendientes
+GitHub CLI no estaba disponible. Se usaron Git Credential Manager y la API oficial con credencial exclusivamente en memoria. El auxiliar de conexión permanece en `tmp`, ignorado. No se guardaron tokens en los reportes.
 
-Verificación: estado limpio antes de publicar; historial de cuatro commits originales; push de ramas; respuestas reales de creación y fusión de PR; consulta API de privacidad, rama predeterminada, ramas y PR; fetch y comparación con referencias remotas al cierre. Los comandos quedan en la guía de seguridad.
+Antes de publicar el cierre `cf1f807` se repitió el escaneo: 116 blobs históricos, cero archivos excluidos y cero coincidencias con los dos secretos locales. La evidencia `evidencias/cierre02-prepublicacion.json` conserva ese punto de control. La revisión del ZIP GitHub corresponde al merge de código #5; la exportación local se repite sobre el cierre.
 
-Pendientes: autorización para implementar fase 2; futuras release y PR hacia main; pruebas Ubuntu y cronometraje. No se configuraron revisores obligatorios ni reglas de protección de ramas: GitFlow se organizó con ramas y PR reales, sin afirmar políticas adicionales no verificadas.
+## Pruebas y pendientes
 
-## Cierre de verificación
+Después del merge #5 aprobaron 53 comprobaciones HTTP, 8 PHP, 3 JS, sintaxis de 22 archivos PHP y 24 comprobaciones mysqli antes y después de reinicio/recreación. MariaDB quedó saludable en `127.0.0.1:3306`; el dato marcador persistió y fue restaurado. Los intentos iniciales con acceso restringido fallaron por EACCES/pipe Docker; sus salidas se conservan junto a las repeticiones exitosas con acceso autorizado.
 
-Se comprobó por API `private=true` y `default_branch=main`. La rama de fase 2 se publicó inicialmente en 006c6c2, idéntica a develop después de PR #3. La actualización final de este reporte se entrega mediante otro PR documental; después se sincronizan develop y la rama vacía de fase 2 por fast-forward. Main sigue en 98b499d. No hay cambios de aplicación ni commits de desarrollo de fase 2.
-
-Hubo un fallo temporal de conexión al intentar crear el PR de cierre. Se consultaron todos los PR antes de reintentar: solo existían #1-#3. El reintento creó #4, sin duplicados ni historial ficticio.
+Evidencia y detalle: [cierre de fase 2](CIERRE_FASE_02_GITFLOW.md). Pendientes: revisión del usuario, fase 3, despliegue real Ubuntu/Apache, red desde otro equipo autorizado, instalación offline y cronometraje, pruebas visuales de selección de imagen/impresión, release y PR hacia main. No se configuraron políticas obligatorias de protección de ramas.

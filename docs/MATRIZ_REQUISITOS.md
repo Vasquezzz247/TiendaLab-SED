@@ -1,6 +1,6 @@
 # Matriz de cumplimiento
 
-Fuentes: D = definición oficial, P = propuesta; numeración física. Estado al cierre se amplía con `REPORTES/FASE_01_FRONTEND.md`. **V** = vista de prototipo implementada; no equivale a backend funcional. **P** = pendiente en fase indicada. **D** = documentado.
+Fuentes: D = definición oficial, P = propuesta; numeración física. Estado actualizado al cierre de fase 2: `REPORTES/CIERRE_FASE_02_GITFLOW.md`. **V** = vista de prototipo implementada; no equivale a backend funcional. **P** = pendiente en fase indicada. **D** = documentado.
 
 | ID | Fuente | Requisito | Implementación / destino | Prueba y evidencia esperada | Estado / fase |
 | --- | --- | --- | --- | --- | --- |
@@ -22,26 +22,26 @@ Fuentes: D = definición oficial, P = propuesta; numeración física. Estado al 
 | R16 | P6-11 | Estilo y navegación del anexo | CSS y componentes locales | Revisión visual escritorio/móvil, enlaces y controles | V / 1 |
 | R17 | D1-3; P1,2,4 | Stack PHP puro/HTML/CSS/JS/mysqli, sin prohibidos | estructura sin paquetes web | Inspección de código/dependencias | Parcial / 1-3 |
 | R18 | D1,2; P1,4 | VM Ubuntu Server 24.04 y Apache en host | configuración futura | Arranque VM y Apache real | P / 5 |
-| R19 | P2,4 | MariaDB Docker, Compose, SQL, persistencia | base futura | Reinicio conserva datos; consultas mysqli | P / 2,3 |
-| R20 | D2; P4 | BD loopback 127.0.0.1:3306; sin internet/nube | Compose y red futura | Bind real y prueba desde otro equipo autorizado | P / 2,5 |
+| R19 | P2,4 | MariaDB Docker, Compose, SQL, persistencia | compose.yaml; database/init; tests/database.test.php | 24 pruebas mysqli; marcador persiste tras reinicio/recreación | Implementado y probado Windows/Docker / 2 |
+| R20 | D2; P4 | BD loopback 127.0.0.1:3306; sin internet/nube | Compose restringe publicación a loopback | Binding comprobado; otro equipo/red Ubuntu pendientes | Local comprobado 2 / P5 |
 | R21 | D3; P3,9 | IDOR solo propiedad factura, manteniendo sesión | factura.php futura | Dos compradores ficticios, antes/después, evidencia real | P / 4 |
 | R22 | D3; P3,11 | HTTP 8081 diagnóstico ficticio separado sin enlaces | vhost y sitio futuro | Acceso desde laboratorio; sin secretos/control del host | P / 4,5 |
 | R23 | D3; P3 | Vulnerabilidades reproducibles y documentadas, mitigación | docs de seguridad futuras | Evidencias verificadas, exactamente dos elegidas | P / 4,6 |
 | R24 | Prompt §4; D3 | Controles del resto: hash, SQL parametrizado, escape, CSRF, límites | escape en plantillas; controles restantes futuros | Sin SQLi/XSS/RCE accidental; matriz de seguridad | Parcial / 1,3,6 |
-| R25 | D3,4; P4 | GitFlow, commits y PR GitHub | ramas locales, docs/GITFLOW.md | git log/branch; PR reales cuando exista remoto | Local 0,1 / remoto P7 |
+| R25 | D3,4; P4 | GitFlow, commits y PR GitHub | Remoto público; main/develop/features; docs/GITFLOW.md | PR #1–#5 fusionados; fase 2 merge 19adb71, commits conservados | Integrado 0–2 / entrega main P7 |
 | R26 | D4; P4 | README: descripción, roles, arquitectura, carpetas | README.md y docs/ALCANCE.md | Lectura y enlaces comprobados | D / 0,1; ampliar 7 |
 | R27 | D4,5; P4 | Instalación reproducible y <=30 minutos | scripts Ubuntu futuros | VM limpia, reloj y registro real | P / 5,7 |
-| R28 | D4; P4 | Cuentas y credenciales de prueba por rol | seed futuro | Acceso real con cada cuenta; no datos personales | P / 2,3,7 |
+| R28 | D4; P4 | Cuentas y credenciales de prueba por rol | SQL con 5 cuentas ficticias y hashes bcrypt | Hashes verificados en BD; login web no implementado | BD comprobada 2 / login P3 |
 | R29 | D5 | Playbook real: reconocimiento, hallazgos, pasos, impacto, mitigaciones | documento futuro | Solo objetivos/horarios autorizados; no fabricar resultados | P / etapa de ataque |
 | R30 | D5,6; P4 | Aprobación docente y explicación por estudiantes | aprobación declarada por usuario; guía de lectura | Validación administrativa externa | D / confirmación externa |
 | R31 | D4-6; P4 | Fechas, red laboratorio, reglas de no daño | docs/ALCANCE.md | Comprobar entorno y calendario con docente | D / ejecución P5-7 |
-| R32 | Prompt §5 | Dependencias e imágenes disponibles sin internet | procedimiento offline futuro | Instalar sin conectividad externa | P / 5,7 |
-| R33 | Prompt §6,7,9 | Fases 0/1, reportes de 10 puntos, detener antes de 2 | REPORTES/ | Reportes distinguen implementado y ejecutado | D / 0,1 |
+| R32 | Prompt §5 | Dependencias e imágenes disponibles sin internet | Tar Docker local exportado; procedimiento en BASE_DE_DATOS.md | Exportación comprobada; instalación offline no ejecutada | Parcial 2 / P5,7 |
+| R33 | Prompt §6,7,9 y auditoría posterior | Reportes y revisión entre fases; detener antes de 3 | REPORTES/ | Reportes distinguen implementado y ejecutado | D / 0–2 |
 | R34 | Prompt §9 | Datos demo separados, sin altas/compras simuladas exitosas | demo/; formularios sin envío; prototipo local | POST rechazado, acciones informativas, sin base/sesión | V / 1 |
-| R35 | Instrucción adicional del usuario | Guía técnica sencilla de seguridad y defensa, actualizada por fase | docs/GUIA_SEGURIDAD_Y_DEFENSA.md | Comandos ejecutados separados de Ubuntu recomendado, archivos, pruebas, controles y mitigaciones | D / 1; mantener 2-7 |
+| R35 | Instrucción adicional del usuario | Guía técnica sencilla de seguridad y defensa, actualizada por fase | docs/GUIA_SEGURIDAD_Y_DEFENSA.md | Comandos ejecutados separados de Ubuntu recomendado, archivos, pruebas, controles y mitigaciones | D / 1–2; mantener 3–7 |
 
 Las pruebas de fases futuras son criterios de aceptación, **no resultados ejecutados**. Las evidencias reales de fase 1 se enumeran en su reporte y archivos adjuntos.
 
 ## Actualización fase 2
 
-Prevalece sobre los estados históricos de la tabla: R19 implementado y probado localmente (Compose/SQL/volumen, reinicio y recreación); R20 publicación loopback comprobada por Docker, red Ubuntu/segundo equipo pendiente; R28 cinco cuentas con hash verificadas en BD, login pendiente de fase 3; R32 imagen exportada, instalación offline Ubuntu pendiente; R25 GitHub público por autorización y PR 1-4 históricos, esta fase sin PR/integración; R35 guía actualizada. R01/R04/R34 usan router explícito en preview; suite Windows aprobada, Linux/Apache pendientes. R08, R21 y R22 no implementados. Evidencia en REPORTES/FASE_02_BASE_DATOS_DOCKER.md.
+PR #5 integrado en develop mediante 19adb71, conservando ebf814f/da4e8b1. Tras integrar se repitieron 53 pruebas HTTP, 8 PHP, 3 JS y 24 mysqli antes/después de persistencia. R01/R04/R34 usan router explícito en preview; el frontend continúa con fixtures, sin conectar sus formularios a MariaDB. Linux/Apache y red externa siguen pendientes. R08, R21 y R22 no implementados. Evidencia en REPORTES/CIERRE_FASE_02_GITFLOW.md. Repositorio público: los PDF académicos con nombres/carnets se conservan por autorización; exportarlos no cambia esa exposición.

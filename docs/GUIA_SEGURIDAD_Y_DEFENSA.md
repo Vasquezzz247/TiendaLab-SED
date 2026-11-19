@@ -1,12 +1,12 @@
 # Guía de seguridad y defensa de TiendaLab
 
-**Estado vigente posterior a auditoría: fase 2 completada localmente; fase 3 no iniciada.** La sección 14 actualiza los estados históricos de fases 0/1. MariaDB, hashes ficticios, esquema y pruebas CLI ya existen; los formularios siguen siendo prototipos. GitHub es público por confirmación expresa del usuario; nunca subir .env.
+**Estado vigente: fase 2 publicada e integrada en develop mediante PR #5, merge 19adb71; fase 3 no iniciada.** Las secciones 14 y 15 documentan base de datos y cierre. MariaDB, hashes ficticios, esquema y pruebas CLI ya existen; los formularios siguen siendo prototipos. GitHub es público por confirmación expresa del usuario; nunca subir .env. Los PDF académicos contienen nombres/carnets accesibles públicamente.
 
-Actualización: 18 de noviembre de 2026. Fases autorizadas y trabajadas: **0 y 1**. Esta guía se actualiza en cada fase; no presenta planes como implementaciones ni resultados futuros como pruebas realizadas.
+Actualización: 18 de noviembre de 2026. Fases autorizadas y trabajadas: **0, 1 y 2**, incluido cierre GitFlow. Esta guía se actualiza en cada fase; no presenta planes como implementaciones ni resultados futuros como pruebas realizadas.
 
 ## 1. Qué puedes afirmar hoy
 
-“Ya tengo un frontend local en PHP puro, con datos ficticios separados. Revisé todas las páginas de los PDF y reproduje sus pantallas. La vista de comprador no inicia una sesión: es un prototipo aislado. Todavía no hay base de datos, autenticación real, compra, despliegue en Ubuntu ni vulnerabilidades implementadas.”
+“Tengo un frontend local en PHP puro y una base MariaDB en Docker con estructura, datos ficticios y volumen persistente. La conexión mysqli se probó desde scripts de consola. Los formularios todavía no usan esa base: la vista de comprador es un prototipo, no una sesión. Falta autenticación real, compra, despliegue en Ubuntu y las dos vulnerabilidades previstas.”
 
 | Componente | Estado real | Lo que falta |
 | --- | --- | --- |
@@ -14,8 +14,8 @@ Actualización: 18 de noviembre de 2026. Fases autorizadas y trabajadas: **0 y 1
 | Prototipos locales y rechazo de POST | Implementados y comprobados | Sustituir por rutas autenticadas en fase 3 |
 | Formularios, roles visuales y carrito | Demostración; sin cambios en servidor | Validación y autorización reales |
 | Apache | No instalado/configurado por este trabajo | Fase 5 |
-| Sesiones, autenticación, contraseñas y roles | No implementados | Fase 3 |
-| MariaDB, mysqli, Docker y Compose | No implementados | Fases 2 y 3 |
+| Sesiones, autenticación y autorización por roles | No implementadas; sí existen cuentas ficticias con hash en BD | Fase 3 |
+| MariaDB, mysqli, Docker y Compose | Implementados y probados en Windows/Docker Desktop; mysqli por CLI | Integración web fase 3 y Ubuntu fase 5 |
 | VM, firewall y red Ubuntu | No modificados ni probados | Fase 5 |
 | IDOR y servicio TCP/8081 | No implementados; no se abrió 8081 | Fase 4 y prueba de red en fase 5 |
 | Auditoría completa e instalación cronometrada | No ejecutadas | Fases 6 y 7 |
@@ -30,7 +30,7 @@ La VM separa el laboratorio del sistema anfitrión, pero por sí sola no garanti
 | --- | --- | --- | --- |
 | TCP/80 | Apache, tienda | Equipos autorizados del laboratorio | No configurado |
 | TCP/8081 | Apache, diagnóstico ficticio | Red autorizada; sin internet | No abierto por este trabajo |
-| TCP/3306 | MariaDB en Docker | Solo 127.0.0.1 de la VM | No configurado |
+| TCP/3306 | MariaDB en Docker | Solo 127.0.0.1 de la VM | Configurado y probado en Windows; VM pendiente |
 | TCP/8000 | Vista previa PHP Windows | Solo 127.0.0.1 | Usado temporalmente para revisar fase 1 |
 | TCP/8002 | Vista previa con prototipo desactivado | Solo 127.0.0.1 | Usado temporalmente para prueba negativa |
 
@@ -229,7 +229,7 @@ Pruebas futuras: comprador solicitando una acción administrativa, vendedor edit
 - Compose publicará MariaDB en `127.0.0.1:3306` del host de la VM y usará un volumen persistente. Publicar simplemente `3306:3306` puede escuchar en interfaces externas; se evitará. También se comprobará que la red de Docker no cree una ruta externa inesperada. Las versiones y modos de Docker importan: la documentación advierte sobre diferencias de aislamiento, por lo que se verificará desde otro equipo autorizado. [Publicación de puertos de Docker](https://docs.docker.com/engine/network/port-publishing/).
 - El volumen conserva datos después de recrear el contenedor; no es por sí solo una copia de seguridad. No ejecutar `down -v` sobre datos que se deban conservar.
 
-Archivos futuros: Compose, SQL y configuración de conexión; no existen todavía. Pruebas futuras: levantar, consultar con mysqli, reiniciar y comprobar persistencia, acceso a 3306 desde la VM y rechazo desde otro equipo. No se ha hecho ninguna de ellas.
+Actualización fase 2: `compose.yaml`, `database/init/*.sql`, `.env` local ignorado y prueba CLI `tests/database.test.php` ya existen. Se comprobó levantar MariaDB, consultar con mysqli, reiniciar y recrear conservando un dato modificado, en Windows/Docker Desktop. Faltan configuración web, acceso desde Ubuntu y prueba desde otro equipo; no atribuirles los resultados locales. Ver secciones 14 y 15.
 
 Explicación oral: “Docker hace repetible la base. mysqli es el puente desde PHP. El puerto de la base queda en el interior de la VM, no en el mostrador de la red.”
 
@@ -331,11 +331,13 @@ Los dos servidores de prueba se detuvieron enviando Ctrl+C a sus procesos. El c�
 
 La documentación y evidencias se guardan en un segundo commit local de cierre, sin push. Su identificador exacto puede consultarse con `git log --oneline -4`; no se incluye dentro del archivo para evitar una referencia circular al propio commit.
 
-## 13. Publicación privada y GitFlow (ejecutado posteriormente)
+## 13. Publicación inicialmente privada y GitFlow (registro histórico)
+
+Esta sección describe la creación inicial. **El estado actual es público**, por autorización posterior; no interpretar las referencias históricas a privacidad como protección vigente. Ver sección 15 y ESTADO_GITFLOW.md.
 
 Por autorización explícita se revisaron `git status --short --branch`, `git log --all --oneline --graph`, `git remote -v`, `git ls-files`, `.gitignore` y la disponibilidad de gh. gh no estaba instalado; `git config --get credential.helper` indicó manager. Se obtuvo la credencial mediante `git credential fill` exclusivamente en memoria y se consultó GET /user y GET /repos/Vasquezzz247/TiendaLab-SED. La segunda consulta devolvió 404 antes de crear el repositorio.
 
-Se añadieron exclusiones a .gitignore y se ejecutó `git add .gitignore`, commit bd88660 y búsqueda textual de patrones de tokens/claves privadas, sin coincidencias. No se subieron tmp ni herramientas. Los PDF y las rutas locales sí contienen información del equipo: permanecen en repositorio privado como fuentes autorizadas, no se publicaron en abierto.
+Se añadieron exclusiones a .gitignore y se ejecutó `git add .gitignore`, commit bd88660 y búsqueda textual de patrones de tokens/claves privadas, sin coincidencias. No se subieron tmp ni herramientas. En ese momento los PDF y las rutas locales permanecían en el repositorio privado; posteriormente el usuario autorizó hacerlo público, incluyendo esa información académica.
 
 Orden posterior real: API POST /user/repos con private=true y auto_init=false; `git remote add origin https://github.com/Vasquezzz247/TiendaLab-SED.git`; `git push -u origin main develop feature/fase-00-preparacion feature/fase-01-frontend`; PATCH del repositorio con default_branch=main. POST /pulls creó PR #1 y #2 con base develop; PUT /pulls/numero/merge usó merge_method=merge y SHA esperado del head. Se conservan los commits originales.
 
@@ -392,3 +394,97 @@ Resultados: 5 usuarios, 9 productos, 4 facturas, 7 líneas, 4 FK, cinco hashes v
 - Las dos vulnerabilidades siguen reservadas a fase 4: no existe ruta IDOR ni servicio 8081. Preparar datos de distintos dueños no es introducir una omisión de autorización.
 
 Para practicar, iniciar Docker Compose, ejecutar el verificador y leer cada PASS junto al SQL correspondiente. Explicación: “La base ya tiene estructura y datos consistentes; los formularios aún no la utilizan. La siguiente fase tendrá que aplicar las reglas de negocio y permisos en PHP”. Detener al terminar con `docker compose stop db` conserva el volumen. Los comandos Ubuntu de la sección 8 continúan como recomendaciones no ejecutadas en Ubuntu.
+
+## 15. Cierre de fase 2 — publicación, verificación y defensa
+
+### Qué se hizo y qué protege
+
+El 18/11/2026 se publicaron los commits existentes `ebf814f` y `da4e8b1`, se creó el [PR #5](https://github.com/Vasquezzz247/TiendaLab-SED/pull/5) y se integró mediante merge `19adb714958a55547eb5e1d0950208bb7f8fc3e0`. Conservar los SHA permite comprobar el historial; usar PR hace revisable la integración. No equivale a configurar protección obligatoria de ramas, que no se configuró. `main` permanece en `98b499d01169def30fe277f0771efbaff903f8c7`.
+
+El repositorio es **público**, verificado por API. Este cierre no cambió visibilidad. Los PDF conservan nombres/carnets académicos por autorización del usuario: no confundir conservación íntegra con anonimización. `.gitignore` impide añadir normalmente archivos locales excluidos, pero no borra archivos ya comprometidos; por eso se examinó también el historial.
+
+### Bitácora real, en orden
+
+Todo lo siguiente se ejecutó en PowerShell/Windows desde la raíz del proyecto. Las consultas de red y las pruebas bloqueadas por aislamiento se repitieron mediante autorización de la herramienta. No son comandos ejecutados en Ubuntu. Las lecturas de archivos con Get-Content y búsquedas rg sirvieron para contrastar instrucciones, scripts, informes y estados antiguos; los cambios de texto se realizaron con apply_patch y Set-Content UTF-8.
+
+1. `git status --short --branch`, `git log --oneline --all --graph`, `git remote -v` y lectura de `.gitignore`/documentos: comprobar rama, historial y alcance. `git fetch origin` actualizó las referencias. `git log --oneline origin/feature/fase-02-base-datos..feature/fase-02-base-datos` mostró los dos commits aún no publicados. La API GET del repositorio confirmó público/main y la consulta de PR de la rama no devolvió un PR existente.
+2. Se creó `scripts/auditar-exportacion.py`. Ejecuta, en orden, `git status --porcelain -z`, `git rev-parse HEAD`, `git ls-tree -r --name-only -z HEAD`, `git rev-list --objects --all`, y por objeto `git cat-file -t <oid>` / `git cat-file blob <oid>`. Comprueba rutas excluidas y busca coincidencias con secretos locales y patrones de tokens/claves; no imprime esos datos. Luego ejecuta `git archive --format=zip --output <ruta-tmp>/tiendalab-auditoria.zip HEAD`, `git show HEAD:<nombre-pdf>` para comparar bytes y otra consulta de status para detectar cambios causados por exportar. La lectura ZIP usa la biblioteca estándar, sin extraer archivos sobre el proyecto.
+3. La primera ejecución fue con el Python disponible en `C:\Users\aleja\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe`, pasando `scripts/auditar-exportacion.py` y redirigiendo por `Tee-Object REPORTES/evidencias/cierre02-exportacion-inicial.json`. Aprobó sobre `da4e8b1`, pero el texto del nombre acentuado en la evidencia sufrió conversión de consola. Se añadió `--output` para escribir JSON UTF-8 directamente. `Remove-Item -LiteralPath 'REPORTES/evidencias/cierre02-exportacion-inicial.json'` retiró únicamente esa captura temporal incorrecta, no un PDF.
+4. `git push -u origin feature/fase-02-base-datos`: publicó la rama existente, avanzando el remoto de `99dd827` a `da4e8b1`. `-u` establece seguimiento de origin; no reemplaza historial.
+5. `. .\tmp\github-flow.ps1 noop` cargó el auxiliar local ignorado. Internamente obtiene la credencial mediante `git credential fill`, con interacción desactivada, y la conserva únicamente en memoria para Invoke-RestMethod. API POST `/repos/Vasquezzz247/TiendaLab-SED/pulls`, body con `head=feature/fase-02-base-datos`, `base=develop`, título y descripción: creó PR #5. GET `/pulls/5` comprobó head/base; PUT `/pulls/5/merge`, body `merge_method=merge` y `sha=da4e8b1246950b8ce85a4c6185987743bfd70327`: respondió `merged=true`, SHA `19adb714958a55547eb5e1d0950208bb7f8fc3e0`. No se hizo PATCH de visibilidad ni de main.
+6. `git fetch origin`; `git switch develop`; `git merge --ff-only origin/develop`; `git switch -c feature/cierre-fase-02`; `git log -4 --oneline`: obtener el merge y crear la rama documental desde la integración real. `--ff-only` detiene la sincronización si requiriera un merge local inesperado.
+7. Se repitió el auditor con `--output REPORTES/evidencias/cierre02-exportacion.json` sobre `19adb71`. `Get-NetTCPConnection -State Listen -LocalPort 8000,8002 -ErrorAction SilentlyContinue` no mostró oyentes antes de iniciar los servidores de prueba.
+8. Se ejecutó el bloque de frontend reproducido abajo y `.\scripts\verificar-base.ps1 2>&1 | Tee-Object REPORTES/evidencias/cierre02-base.txt`. El aislamiento negó la conexión HTTP (`EACCES`) y el pipe de Docker. `Move-Item -LiteralPath 'REPORTES/evidencias/cierre02-frontend.txt' -Destination 'REPORTES/evidencias/cierre02-frontend-intento-restringido.txt'` y su equivalente de `cierre02-base.txt` conservaron ambas salidas. Se repitieron exactamente los verificadores con acceso local autorizado. No se cambió firewall ni código para eludir el fallo.
+9. API GET del repositorio, `/branches?per_page=100`, `/pulls?state=all&per_page=100` y `/git/trees/19adb714958a55547eb5e1d0950208bb7f8fc3e0?recursive=1`: guardó únicamente URL, privacidad, rama predeterminada, ramas/SHA, estados de PR y rutas públicas en `REPORTES/evidencias/cierre02-github.json`, sin cabeceras ni credenciales. `git branch -vv`, `git check-ignore .env tools/php/php.exe tools/php.zip tmp/tiendalab-mariadb.tar tmp/tiendalab-auditoria.zip` y `git log --all --oneline -16` contrastaron seguimiento, exclusiones e historial.
+10. `Invoke-WebRequest -Uri 'https://codeload.github.com/Vasquezzz247/TiendaLab-SED/zip/19adb714958a55547eb5e1d0950208bb7f8fc3e0' -OutFile 'tmp/tiendalab-github-fase02.zip' -TimeoutSec 60`: descargó la exportación pública real de GitHub sin enviar credenciales. Se añadió `--github-zip` al auditor y se ejecutó el comando de exportación reproducido abajo. Comprobó ambos ZIP y los PDF originales. `git diff --check` revisó espacios; las advertencias CRLF/LF de Markdown no modifican los PDF, marcados binary en `.gitattributes`.
+
+### Bloque frontend realmente ejecutado
+
+```powershell
+$ErrorActionPreference='Stop'
+$previous=$env:TIENDALAB_PROTOTIPO
+$one=$null
+$two=$null
+try {
+ $env:TIENDALAB_PROTOTIPO='1'
+ $one=Start-Process -FilePath (Resolve-Path tools/php/php.exe) -ArgumentList '-S','127.0.0.1:8000','-t','public','scripts/router.php' -WindowStyle Hidden -PassThru
+ $env:TIENDALAB_PROTOTIPO='0'
+ $two=Start-Process -FilePath (Resolve-Path tools/php/php.exe) -ArgumentList '-S','127.0.0.1:8002','-t','public','scripts/router.php' -WindowStyle Hidden -PassThru
+ & .\scripts\verificar-frontend.ps1 2>&1 | Tee-Object REPORTES/evidencias/cierre02-frontend.txt
+} finally {
+ if($one){Stop-Process -Id $one.Id -ErrorAction SilentlyContinue}
+ if($two){Stop-Process -Id $two.Id -ErrorAction SilentlyContinue}
+ $env:TIENDALAB_PROTOTIPO=$previous
+}
+```
+
+La variable habilita únicamente los prototipos de la primera instancia. `-S` escucha en loopback; `-t public` limita la raíz web y `scripts/router.php` define las rutas. `-PassThru` conserva cada PID; `finally` detiene solamente esos procesos y restaura la variable. El verificador ejecuta PHP `-l`, `tests/security.test.php`, `node --check public/assets/js/app.js`, `node --test tests/frontend.test.cjs` y `node tests/http.test.cjs 8000 8002`, en ese orden. Los argumentos completos están en el script versionado.
+
+### Base y exportación: comandos reales
+
+```powershell
+& .\scripts\verificar-base.ps1 2>&1 | Tee-Object REPORTES/evidencias/cierre02-base.txt
+& 'C:\Users\aleja\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' scripts/auditar-exportacion.py --github-zip tmp/tiendalab-github-fase02.zip --output REPORTES/evidencias/cierre02-exportacion.json
+```
+
+El primer comando usa `compose config --quiet`, `compose up -d --wait --wait-timeout 180`, el test PHP con extensión mysqli, inspección de binding/volumen, modo `mark`, `compose restart db`, espera saludable, `verify-marker`, `compose up -d --force-recreate --wait --wait-timeout 180 db`, segunda verificación del marcador, `restore`, suite final y `compose ps`. El script publicado conserva los argumentos y comprobaciones completos. El marcador modifica un nombre ficticio y luego lo restaura; no vuelve a sembrar la base ni elimina el volumen.
+
+El segundo comando compara las exportaciones y el historial sin alterar el índice. Python es una herramienta de auditoría local, no una nueva dependencia de la aplicación ni del servidor de entrega. Se debe ejecutar en el mismo HEAD del ZIP GitHub descargado para que la comparación corresponda a esa revisión.
+
+### Evidencia y explicación de los controles
+
+| Control | Qué se comprobó realmente | Cómo explicarlo ante el ingeniero |
+| --- | --- | --- |
+| Escape y cierre de prototipos | 8 PHP y parte de 53 HTTP; rutas/cabeceras/prototipo desactivado | Una maqueta local no debe quedar abierta como si fuera un panel autenticado |
+| Cálculos JS | 3 pruebas; IVA/cantidades/centavos | Evito errores de representación; la futura compra necesitará recalcular en servidor |
+| Estructura y consistencia SQL | 24 assertions; FK, valores inválidos, cuentas y totales | La base rechaza relaciones inexistentes y datos fuera de sus restricciones |
+| Hashes bcrypt | Cinco verificadores de cuentas ficticias comprobados | Se compara un verificador; todavía no hay login web |
+| Privilegios SQL | La cuenta app no puede CREATE TABLE | El programa dispone de operaciones de datos, no de administración del esquema |
+| Loopback | Docker publica solo 127.0.0.1:3306 | La base no se publica intencionalmente en la LAN; falta comprobar la VM real |
+| Volumen | Dato cambiado persiste tras reinicio y recreación | Los datos viven fuera de la capa descartable del contenedor; un volumen no sustituye un backup |
+| Exclusiones | 102 blobs revisados al merge #5; cero rutas prohibidas y cero coincidencias con los dos secretos locales | Ignorar archivos nuevos y revisar historia son controles distintos |
+| PDF / ZIP | Dos nombres exactos, una copia de cada uno, bytes y SHA-256 iguales | Conservo la fuente académica; corregí la captura de texto, no los documentos originales |
+| Historial | PR #5 fusionado, commits originales presentes, main intacta | El PR permite revisar qué se integró; no hay historial inventado |
+
+Las salidas exitosas y los intentos restringidos permanecen en `REPORTES/evidencias/cierre02-*`. No se afirma haber probado un firewall ni una conexión desde otro equipo. Apache, PHP en Ubuntu, sesiones, autorización real, CSRF y red de la VM siguen pendientes: los comandos de la sección 8 son **recomendaciones para Ubuntu, no ejecuciones de este cierre**.
+
+### Archivos modificados y límite de fase
+
+`README.md`, `docs/GITFLOW.md`, `docs/MATRIZ_REQUISITOS.md`, `REPORTES/ESTADO_GITFLOW.md` y `AGENTS.md` reflejan la integración y el repositorio público. Esta guía registra procedimientos y límites. `REPORTES/CIERRE_FASE_02_GITFLOW.md` concentra commits, PR y resultados. `scripts/auditar-exportacion.py` y las evidencias hacen comprobable la exportación. No se modificaron los PDF, el código de aplicación, el SQL ni Compose en este cierre.
+
+Las dos vulnerabilidades de la sección 9 siguen siendo **planes para fase 4**: omisión deliberada de comprobación de propiedad de factura autenticada y exposición del diagnóstico ficticio por 8081. Sus correcciones previstas son comprobar propietario/permiso en el servidor y cerrar o restringir el servicio, respectivamente. Actualmente no hay una ruta vulnerable implementada que demostrar. No se ejecutaron ataques ni se abrió 8081. La fase 3 queda detenida hasta revisión.
+
+### Publicación del cierre documental y comprobaciones finales
+
+Después de las pruebas se ejecutó una comprobación Python de enlaces Markdown locales en README/docs/REPORTES (12 documentos), sintaxis del auditor mediante `compile` y metadatos/rutas de `cierre02-github.json`: aprobada. `git diff --check`, `git diff --stat` y `git status --short` permitieron revisar el alcance: ningún cambio en aplicación, SQL, Compose ni PDF.
+
+Se ejecutaron `git add` con las rutas de cierre enumeradas en el apartado anterior, las seis evidencias `cierre02-*` iniciales y el auditor; `git diff --cached --check`; `git commit -m 'docs: cerrar fase 2 con auditoria GitFlow y evidencias verificadas'`. Resultado: `cf1f807627a16dc31b74f2abd6285a35fd9f5193`. `git status --short --branch` confirmó árbol limpio. Después:
+
+```powershell
+& 'C:\Users\aleja\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' scripts/auditar-exportacion.py --output tmp/cierre02-auditoria-prepublicacion.json
+git push -u origin feature/cierre-fase-02
+```
+
+La auditoría revisó 116 blobs, cero coincidencias con los dos secretos y ambos PDF íntegros. El push publicó el commit documental. API POST `/repos/Vasquezzz247/TiendaLab-SED/pulls` con `head=feature/cierre-fase-02`, `base=develop`, título y descripción creó el [PR #6](https://github.com/Vasquezzz247/TiendaLab-SED/pull/6). `Copy-Item -LiteralPath 'tmp/cierre02-auditoria-prepublicacion.json' -Destination 'REPORTES/evidencias/cierre02-prepublicacion.json'` conserva el resultado previo a publicación. Se añadieron los enlaces reales del PR a GitFlow, estado y reporte.
+
+La secuencia de entrega del propio documento repite commit/push normal y merge remoto con `merge_method=merge`, comprobando el SHA de head de #6; después fetch, switch develop y merge --ff-only. Se comprueban por API el PR fusionado, privacidad pública y main intacta, más igualdad local/remota y ascendencia de ebf814f/da4e8b1. El SHA del merge de este mismo texto se consulta en #6, porque no se puede escribir dentro del contenido que determina ese SHA. Si esas comprobaciones no terminan, no debe presentarse el cierre como completado.
