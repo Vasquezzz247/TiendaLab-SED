@@ -29,6 +29,7 @@ El commit que contiene este reporte y su merge documental también se publican; 
 1. [PR #1: preparación → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/1): fusionado, merge 207118d.
 2. [PR #2: frontend → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/2): fusionado, merge 71d64e8.
 3. [PR #3: documentación → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/3): fusionado, merge 006c6c2; commit documental c99732d.
+4. [PR #4: cierre verificado → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/4): PR documental real que contiene los resultados posteriores a publicación, incluido commit 525f5de y este enlace. Su estado final y SHA de merge son consultables en el enlace. No introduce funcionalidad.
 
 La rama frontend ya descendía de preparación. Por ello se fusionó primero PR #1 y después PR #2. No se reconstruyó ni inventó el historial. Las integraciones utilizan merge commits para conservar los SHA originales.
 
@@ -62,3 +63,5 @@ Pendientes: autorización para implementar fase 2; futuras release y PR hacia ma
 ## Cierre de verificación
 
 Se comprobó por API `private=true` y `default_branch=main`. La rama de fase 2 se publicó inicialmente en 006c6c2, idéntica a develop después de PR #3. La actualización final de este reporte se entrega mediante otro PR documental; después se sincronizan develop y la rama vacía de fase 2 por fast-forward. Main sigue en 98b499d. No hay cambios de aplicación ni commits de desarrollo de fase 2.
+
+Hubo un fallo temporal de conexión al intentar crear el PR de cierre. Se consultaron todos los PR antes de reintentar: solo existían #1-#3. El reintento creó #4, sin duplicados ni historial ficticio.
