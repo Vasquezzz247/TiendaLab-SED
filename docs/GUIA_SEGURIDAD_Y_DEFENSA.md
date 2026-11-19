@@ -702,3 +702,35 @@ Las 6 pruebas de acotamiento: sin sesión → 303 a `/login.php`; vendedor → 4
 **Cómo explicarlo sencillamente.** «La página comprueba que eres un comprador, pero no que la factura sea tuya. Es como un hotel que revisa que tengas llave de *alguna* habitación pero te deja abrir *cualquiera* si cambias el número de la puerta.»
 
 **Límites honestos.** Se probó en Windows con el servidor integrado de PHP, no en Apache/Ubuntu. La reproducción manual se hizo con un script HTTP, no con capturas del navegador.
+
+## 21. Fase 4 — Vulnerabilidad B: servicio de diagnóstico expuesto en TCP/8081 — ejecutado el 19/11/2026
+
+**Qué es.** «Puerto abierto innecesario»: un servicio interno que nunca debió estar accesible desde la red. Aquí es una página de diagnóstico ficticia en Apache, puerto 8081, sin enlace desde la tienda. Un atacante la encuentra escaneando la VM (`nmap` mostraría el 8081 abierto además del 80) y, al abrirla, ve información interna que no debería ser pública.
+
+**Qué se hizo.**
+
+| Archivo | Para qué sirve |
+| --- | --- |
+| `diagnostico/index.html` | Página estática que replica el anexo de la propuesta (servidor, base de datos, rutas internas). **Todos los datos son inventados**, incluida la clave `Diag#Ficticia-2026`; no lee nada del sistema real, no usa PHP |
+| `deploy/apache/tiendalab-diagnostico.conf` | VirtualHost de Apache: `Listen 8081` en todas las interfaces y `Require all granted` sin restricción por IP (la debilidad aprobada). Incluye las instrucciones de instalación y la mitigación |
+| `tests/diagnostico.test.cjs`, `tests/apache-harness.conf`, `scripts/verificar-diagnostico.ps1` | 24 comprobaciones HTTP contra Apache real. El arnés levanta la imagen oficial `httpd:2.4` en un contenedor efímero publicado **solo en 127.0.0.1:8081**; no es la arquitectura de entrega (Apache va instalado en Ubuntu) |
+
+**Límites a propósito (no se convierte en algo peor).** Sin PHP, CGI ni SSI (`Options None`), sin `.htaccess` (`AllowOverride None`), sin listado de directorios, solo GET/HEAD/OPTIONS (POST/PUT/DELETE → 403), sin formularios ni scripts ni enlaces, sin operaciones administrativas ni ejecución de comandos, `X-Content-Type-Options: nosniff` y `Content-Type` UTF-8 correctos (la mala configuración de Content-Type no es una de las vulnerabilidades elegidas), `Server` sin versión. La tienda no menciona el 8081. La base real sigue en 127.0.0.1:3306.
+
+**Comandos realmente ejecutados y resultados** (`REPORTES/evidencias/fase04-diagnostico-8081.txt`).
+
+| Comando | Resultado observado |
+| --- | --- |
+| `.\scripts\verificar-diagnostico.ps1` | **24 comprobaciones aprobadas**, `httpd -t: Syntax OK`, Apache/2.4.71 (imagen `httpd:2.4`), contenedor eliminado al terminar |
+
+La prueba encontró y corrigió dos fallos reales de mi configuración inicial: (1) Apache devolvía `text/html` sin `charset` → se añadió `AddDefaultCharset UTF-8`; (2) un POST devolvía 200 porque `Require all granted` y `LimitExcept` se mezclaban → se puso cada permiso dentro de su propio `<Limit>`/`<LimitExcept>` y ahora POST/PUT/DELETE dan 403.
+
+**Cómo reproducirlo en el laboratorio (fase 5, NO ejecutado aún).** 1) Desde otro equipo de la red autorizada: `nmap -p 80,8081,3306 <IP de la VM>` → 80 y 8081 abiertos, 3306 no. 2) Abrir `http://<IP de la VM>:8081/` → aparece el panel con hostname, usuario/clave y rutas ficticias. Impacto: divulgación de información interna (aquí inventada).
+
+**Cómo se corrige.** `sudo a2dissite tiendalab-diagnostico` y `sudo ufw deny 8081`, o conservarlo restringido con `Require ip 127.0.0.1` y sin `Listen` público. Además: no publicar paneles internos, firewall por defecto en denegar.
+
+**Comandos recomendados para Ubuntu, NO ejecutados allí:** los del encabezado de `deploy/apache/tiendalab-diagnostico.conf` (copiar `diagnostico/` a `/var/www/tiendalab-diagnostico`, `a2enmod headers`, `a2ensite`, `apache2ctl configtest`, recarga).
+
+**Cómo explicarlo sencillamente.** «Dejé una página de administración interna escuchando en una puerta (8081) que nadie debería poder abrir desde fuera. No tiene enlace en la tienda, pero quien escanee la máquina encuentra la puerta abierta y entra. La solución es cerrar la puerta o permitir solo entrar desde la propia máquina.»
+
+**Límites honestos.** Probado con Apache 2.4.71 en contenedor sobre Windows, **no** en Ubuntu con el Apache del sistema y **no** desde otra máquina; el firewall (`ufw`) tampoco se configuró. No hay captura del navegador. La exposición real a la red del laboratorio se comprobará en la fase 5.

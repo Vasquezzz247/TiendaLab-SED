@@ -1,0 +1,33 @@
+Vulnerabilidad B (servicio de diagnostico ficticio en TCP/8081) - prueba real del 19/11/2026
+Comando: .\scripts\verificar-diagnostico.ps1  (Windows + Docker Desktop)
+Servidor probado: contenedor efimero de la imagen oficial httpd:2.4, publicado solo en 127.0.0.1:8081 (no expuesto a la red); configuracion deploy/apache/tiendalab-diagnostico.conf
+Server version: Apache/2.4.71 (Unix) | Server built:   Nov 11 2026 22:59:24
+No se probo desde otra maquina ni en Ubuntu (fase 5).
+
+httpd -t: Syntax OK
+PASS: 1 el panel responde 200 como text/html UTF-8 en el puerto 8081
+PASS: 2 el panel muestra la informacion interna ficticia del anexo (servidor, base de datos, rutas)
+PASS: 3 el panel declara que los datos son ficticios
+PASS: 4 el panel no contiene el nombre de equipo, usuario ni IP reales de esta maquina (6 valores comparados)
+PASS: 5 el panel no contiene las claves SQL reales ni el usuario SQL de la aplicacion
+PASS: 6 el panel no contiene rutas reales de Windows, llaves privadas ni tokens
+PASS: 7 sin formularios, scripts, enlaces ni campos: no ofrece operaciones
+PASS: 8 el metodo POST se rechaza (403)
+PASS: 9 el metodo PUT se rechaza (403)
+PASS: 10 el metodo DELETE se rechaza (403)
+PASS: 11 HEAD permitido y sin cuerpo
+PASS: 12 no se ejecuta ni expone /index.php (404)
+PASS: 13 no se ejecuta ni expone /cgi-bin/test (404)
+PASS: 14 no se ejecuta ni expone /.htaccess (404)
+PASS: 15 no se ejecuta ni expone /phpinfo.php (404)
+PASS: 16 recorrido de directorios rechazado /..%2f..%2f..%2fetc%2fpasswd (404)
+PASS: 17 recorrido de directorios rechazado /%2e%2e/%2e%2e/etc/passwd (400)
+PASS: 18 recorrido de directorios rechazado /..%5c..%5cwindows%5cwin.ini (404)
+PASS: 19 sin listado de directorios
+PASS: 20 cabeceras nosniff y no-store presentes (Content-Type correcto, no es una vulnerabilidad extra)
+PASS: 21 la cabecera Server no revela version y no hay X-Powered-By (Apache)
+PASS: 22 configuracion: escucha en 8081 en todas las interfaces y sin restriccion por IP (la debilidad aprobada)
+PASS: 23 configuracion: sin CGI/SSI/listado, sin .htaccess y solo metodos de lectura
+PASS: 24 la tienda (app, public, demo) no menciona ni enlaza el puerto 8081 ni el diagnostico
+TOTAL: 24 comprobaciones del servicio de diagnostico aprobadas.
+PASS: Apache 2.4 en contenedor aislado (127.0.0.1:8081) con la configuracion de deploy/apache.

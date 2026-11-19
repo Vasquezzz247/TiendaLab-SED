@@ -29,13 +29,13 @@ No nube, CDN, APIs externas, frameworks, ORM, CMS, BaaS ni proyectos vulnerables
 - Comprador: catálogo, cantidades enteras positivas limitadas por stock, agregar y quitar, carrito, subtotal, IVA 13 %, total, confirmación, descuento de stock, factura detallada e historial propio.
 - Vendedor: alta con nombre, descripción, precio, existencias e imagen; listado y edición de sus productos.
 - Administrador: resumen, CRUD completo de productos y usuarios y cambios de rol. El CRUD de usuarios incluye edición de nombre y correo aunque la captura destaque el cambio de rol.
-- Diagnóstico: página separada, solo datos ficticios, sin enlaces desde la tienda; no se implementa ni se abre 8081 en esta entrega.
+- Diagnóstico: página separada, solo datos ficticios, sin enlaces desde la tienda; preparado en fase 4 (`diagnostico/` y `deploy/apache/tiendalab-diagnostico.conf`); se abre en Apache/Ubuntu solo en la fase de despliegue.
 
 ## Seguridad planificada
 
 Todas las vistas restringidas requerirán sesión y autorización en servidor. Contraseñas con hash de PHP, consultas mysqli parametrizadas, escape de salida, protección de cambios contra CSRF, validación de imágenes, límites de intentos y sesiones seguras. La única omisión futura será verificar la propiedad en `factura.php?id=` **después** de autenticar al usuario. La redacción ambigua de propuesta p. 2 no permite eliminar la autenticación, obligatoria en definición p. 1.
 
-Exactamente dos vulnerabilidades deliberadas en fase 4: IDOR de facturas ficticias y diagnóstico HTTP 8081 visible únicamente en red autorizada. No se implementan todavía. El diagnóstico del anexo muestra una clave ficticia: jamás se sustituirá por una clave de servicio real ni se conectará a administración del sistema. No se garantiza ausencia absoluta de fallos; se verificarán los controles en fase 6.
+Exactamente dos vulnerabilidades deliberadas en fase 4: IDOR de facturas ficticias y diagnóstico HTTP 8081 visible únicamente en red autorizada. Implementadas en fase 4 (A: IDOR; B: configuración y página del 8081, aún sin desplegar en Ubuntu). El diagnóstico del anexo muestra una clave ficticia: jamás se sustituirá por una clave de servicio real ni se conectará a administración del sistema. No se garantiza ausencia absoluta de fallos; se verificarán los controles en fase 6.
 
 ## Alcance de fase 1 y separación del prototipo
 
