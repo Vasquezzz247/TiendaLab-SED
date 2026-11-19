@@ -52,8 +52,11 @@ class Browser {
     }
     r=await guest.request('/prototipo/');check(r.status===404,'maquetas deshabilitadas por defecto en servidor real');
     r=await guest.request('/?q[]=x');check(r.status===422&&!/Stack trace|Fatal error|mysqli_sql_exception|DB_PASSWORD/.test(r.body),'entrada de tipo incorrecto produce error controlado');
-    r=await guest.request('/login.php');
-    check(r.headers.getSetCookie().every(c=>!c.startsWith('TiendaLabSID=')||(/HttpOnly/i.test(c)&&/SameSite=Lax/i.test(c))),'atributos de cookie de sesion');
+    const cookieCheck=new Browser();r=await cookieCheck.request('/login.php');
+    const sessionCookies=r.headers.getSetCookie().filter(c=>c.startsWith('TiendaLabSID='));
+    check(sessionCookies.length===1&&/HttpOnly/i.test(sessionCookies[0])&&/SameSite=Lax/i.test(sessionCookies[0]),'atributos de una cookie nueva de sesion');
+    const fixation=new Browser();fixation.cookie='TiendaLabSID='+ 'x'.repeat(32);
+    await fixation.request('/login.php');check(fixation.cookie!=='TiendaLabSID'+'='+ 'x'.repeat(32),'modo estricto rechaza ID de sesion no inicializado');
     const preLogin=guest.cookie;
     r=await guest.request('/login.php',{correo:fixture.users.buyer.email,password,csrf:'invalido'});check(r.status===403,'login protegido contra CSRF');
     r=await guest.form('/login.php',{correo:fixture.users.buyer.email,password:'Incorrecta-2026!'});check(r.status===401,'login incorrecto rechazado');
