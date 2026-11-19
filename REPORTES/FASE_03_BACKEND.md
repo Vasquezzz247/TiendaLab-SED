@@ -131,3 +131,5 @@ La auditoría previa a publicar, [fase03-publicacion.json](evidencias/fase03-pub
 **Detenerse al completar esta entrega; no iniciar fases 4 ni 5.**
 
 La auditoría posterior al merge también aprobó el ZIP descargado de GitHub: nombres y bytes de los PDF idénticos, sin entradas duplicadas ni archivos excluidos; 189 blobs revisados. Evidencia: [fase03-zip-github.json](evidencias/fase03-zip-github.json). La [instantánea de GitHub](evidencias/fase03-github.json) registra las ramas y los seis SHA publicados en el momento del PR #7.
+
+Cierre documental: **[PR #8](https://github.com/Vasquezzz247/TiendaLab-SED/pull/8)**, desde la misma `feature/fase-03-backend` hacia `develop`, publica este registro después del merge funcional #7. Incluye `5ba3965` y el commit que incorpora este enlace. Su página es la referencia verificable para el estado y SHA de su propio merge; ese SHA se genera después de aprobar estos documentos. Al finalizar, develop local se sincroniza con origin/develop; main permanece en 98b499d. No se crea una rama de fase 4.
