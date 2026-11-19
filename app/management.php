@@ -22,7 +22,7 @@ function save_product(array $actor, array $input, ?array $file): int
             $old = row('SELECT * FROM productos WHERE id=? FOR UPDATE', [$id]);
             if (!$old || ($actor['rol'] === 'vendedor' && (int) $old['vendedor_id'] !== (int) $actor['id'])) { throw new AppError('Producto no encontrado.', 404); }
         }
-        $owner = row("SELECT id FROM usuarios WHERE id=? AND rol='vendedor' AND activo=1", [$seller]);
+        $owner = row("SELECT id FROM usuarios WHERE id=? AND rol='vendedor' AND activo=1 LOCK IN SHARE MODE", [$seller]);
         if (!$owner) { throw new AppError('Selecciona un vendedor activo.'); }
         $newImage = save_image($file);
         if (!$id && !$newImage) { throw new AppError('Selecciona una imagen para el nuevo producto.'); }
@@ -68,6 +68,13 @@ function save_user(array $actor, array $input): int
         $old = $id ? row('SELECT * FROM usuarios WHERE id=? FOR UPDATE', [$id]) : null;
         if ($id && !$old) { throw new AppError('Usuario no encontrado.', 404); }
         if ($old && $old['rol'] === 'administrador' && $old['activo'] && count($admins) <= 1 && ($role !== 'administrador' || !$active)) { throw new AppError('Debe permanecer un administrador activo.'); }
+        // Un vendedor con productos activos no cambia de rol: quedarían a nombre de alguien que ya no puede gestionarlos.
+        // La fila del usuario está bloqueada (FOR UPDATE) y save_product la lee con LOCK IN SHARE MODE, así que un alta
+        // concurrente de producto no se cuela entre esta comprobación y el UPDATE.
+        if ($old && $old['rol'] === 'vendedor' && $role !== 'vendedor') {
+            $owned = (int) row('SELECT COUNT(*) AS n FROM productos WHERE vendedor_id=? AND activo=1', [$id])['n'];
+            if ($owned > 0) { throw new AppError("Este vendedor tiene $owned producto(s) activo(s). Retíralos o reasígnalos a otro vendedor antes de cambiar su rol."); }
+        }
         $hash = $password !== '' ? password_hash($password, PASSWORD_DEFAULT) : $old['password_hash'];
         if ($id) {
             sql('UPDATE usuarios SET nombre=?,correo=?,password_hash=?,rol=?,activo=? WHERE id=?', [$name,$email,$hash,$role,$active,$id]);

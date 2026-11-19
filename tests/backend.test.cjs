@@ -162,6 +162,14 @@ class Browser {
     r=await admin.request('/admin-usuarios.php',{...userFields,csrf:'incorrecto'});check(r.status===403,'CSRF de usuarios rechazado');
     r=await admin.form('/admin-usuarios.php',{...userFields,id:fixture.users.seller2.id,nombre:fixture.prefix+'seller2',correo:fixture.users.seller2.email,password:'Nueva-Clave-2026!',rol:'vendedor'});check(r.status===303,'cambio de contraseña administrativo');
     r=await seller2.request('/vendedor.php');check(r.status===303,'cambio de contraseña invalida sesion previa');
+    // Observacion B: un vendedor con productos activos no puede cambiar de rol (evita productos huerfanos).
+    r=await admin.form('/admin-productos.php',{...fields,nombre:fixture.prefix+'producto-b',vendedor_id:fixture.users.other.id},image);check(r.status===303,'administrador publica un producto a nombre de un vendedor');
+    const productB=Number(r.headers.get('location').split('=')[1]);
+    const demote={...otherFields,rol:'comprador',activo:'1'};
+    r=await admin.form('/admin-usuarios.php',demote);check(r.status===422,'vendedor con productos activos no cambia de rol');
+    data=state();check(data.users.find(u=>Number(u.id)===fixture.users.other.id).rol==='vendedor'&&Number(data.products.find(p=>Number(p.id)===productB).vendedor_id)===fixture.users.other.id,'rol y propiedad del producto conservados tras el rechazo');
+    r=await admin.form('/admin-productos.php',{...fields,id:productB,nombre:fixture.prefix+'producto-b',vendedor_id:fixture.users.other.id,activo:'0'});check(r.status===303,'administrador retira el producto del vendedor');
+    r=await admin.form('/admin-usuarios.php',demote);check(r.status===303&&state().users.find(u=>Number(u.id)===fixture.users.other.id).rol==='comprador','sin productos activos el rol si puede cambiar');
     const rate=new Browser();let statuses=[];
     for(let n=0;n<6;n++){r=await rate.form('/login.php',{correo:fixture.prefix+'throttle@tiendalab.test',password:'Incorrecta-2026!'});statuses.push(r.status);}
     check(statuses.slice(0,5).every(s=>s===401)&&statuses[5]===429,'limite de cinco intentos por correo aun sin cuenta');
