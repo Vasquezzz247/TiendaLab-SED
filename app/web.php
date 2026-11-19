@@ -65,13 +65,18 @@ function dispatch(string $page): void
                 }
                 $email = email_input($_POST);
                 $password = password_input($_POST);
-                throttle('login-ip:' . ($_SERVER['REMOTE_ADDR'] ?? ''), 60);
-                throttle('login-email:' . $email, 5);
+                $ipKey = 'login-ip:' . ($_SERVER['REMOTE_ADDR'] ?? '');
+                $emailKey = 'login-email:' . $email;
+                // Se cuenta antes de verificar (atómico ante peticiones paralelas); un acceso correcto lo devuelve.
+                throttle($ipKey, 60);
+                throttle($emailKey, 5);
                 $account = row('SELECT * FROM usuarios WHERE correo=?', [$email]);
                 // Hash fijo de relleno evita omitir el coste bcrypt para correos inexistentes.
                 $dummy = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.';
                 $verified = password_verify($password, $account['password_hash'] ?? $dummy);
                 if (!$account || !$verified || !$account['activo']) { throw new AppError('Correo o contraseña incorrectos, o cuenta inactiva.', 401); }
+                throttle_release($ipKey);
+                throttle_release($emailKey, true);
                 sign_in($account); redirect(role_home($account['rol']));
             }
             live_page('auth', $page === 'login' ? 'Iniciar sesión' : 'Registro', null, ['register'=>$page === 'register']); return;

@@ -166,6 +166,17 @@ class Browser {
     for(let n=0;n<6;n++){r=await rate.form('/login.php',{correo:fixture.prefix+'throttle@tiendalab.test',password:'Incorrecta-2026!'});statuses.push(r.status);}
     check(statuses.slice(0,5).every(s=>s===401)&&statuses[5]===429,'limite de cinco intentos por correo aun sin cuenta');
     const newCookie=new Browser();r=await newCookie.form('/login.php',{correo:fixture.prefix+'throttle@tiendalab.test',password:'Incorrecta-2026!'});check(r.status===429,'limite persiste al cambiar cookie');
+    // Los accesos correctos no consumen el limite; solo cuentan los fallos.
+    const ownEmail=fixture.users.seller.email;
+    statuses=[];
+    for(let n=0;n<8;n++){const ok=new Browser();r=await ok.form('/login.php',{correo:ownEmail,password});statuses.push(r.status);}
+    check(statuses.every(s=>s===303),'ocho accesos correctos seguidos no activan el limite');
+    statuses=[];
+    for(let n=0;n<4;n++){const bad=new Browser();r=await bad.form('/login.php',{correo:ownEmail,password:'Incorrecta-2026!'});statuses.push(r.status);}
+    const good=new Browser();r=await good.form('/login.php',{correo:ownEmail,password});statuses.push(r.status);
+    for(let n=0;n<4;n++){const bad=new Browser();r=await bad.form('/login.php',{correo:ownEmail,password:'Incorrecta-2026!'});statuses.push(r.status);}
+    const last=new Browser();r=await last.form('/login.php',{correo:ownEmail,password});statuses.push(r.status);
+    check(statuses.join(',')==='401,401,401,401,303,401,401,401,401,303','un acceso correcto reinicia el contador de fallos del correo');
     for(const route of ['/factura.php?id[]=1','/imagen.php?id[]=x']){r=await admin.request(route);check([403,404,422].includes(r.status)&&!r.body.includes('Stack trace'),'error controlado para parametros anidados');}
     const unavailable=new Browser(`http://127.0.0.1:${process.argv[4] || 8012}`);
     r=await unavailable.request('/');check(r.status===503&&r.body.includes('No se pudo completar')&&!/mysqli|tiendalab_app|DB_PASSWORD|Stack trace|C:\\Users/.test(r.body),'conexion SQL no disponible devuelve 503 sin informacion interna');

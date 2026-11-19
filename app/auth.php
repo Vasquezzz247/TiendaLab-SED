@@ -77,6 +77,21 @@ function throttle(string $key, int $limit, int $seconds = 900): void
         rewind($file); ftruncate($file, 0); fwrite($file, json_encode($bucket)); fflush($file);
     } finally { flock($file, LOCK_UN); fclose($file); }
 }
+// Libera un intento ya contado (login correcto) o vacía el contador completo.
+// throttle() cuenta ANTES de verificar la contraseña para que peticiones paralelas no superen el límite;
+// por eso un acceso correcto debe devolver su intento, y solo los fallos permanecen contados.
+function throttle_release(string $key, bool $all = false): void
+{
+    $file = fopen(storage_dir('limits') . '/' . hash('sha256', $key) . '.json', 'c+');
+    if (!$file || !flock($file, LOCK_EX)) { throw new RuntimeException('Límite no disponible'); }
+    try {
+        $bucket = json_decode(stream_get_contents($file), true);
+        if (is_array($bucket) && ($bucket['until'] ?? 0) > time()) {
+            $bucket['count'] = $all ? 0 : max(0, (int) ($bucket['count'] ?? 0) - 1);
+            rewind($file); ftruncate($file, 0); fwrite($file, json_encode($bucket)); fflush($file);
+        }
+    } finally { flock($file, LOCK_UN); fclose($file); }
+}
 function register_user(array $input): void
 {
     $name = text_input($input, 'nombre', 100);
