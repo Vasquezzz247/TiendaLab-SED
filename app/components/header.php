@@ -1,3 +1,4 @@
+<?php if (!empty($isLive)) { require __DIR__ . '/live-header.php'; return; } ?>
 <!doctype html>
 <html lang="es">
 <head>

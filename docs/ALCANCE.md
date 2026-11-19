@@ -2,7 +2,7 @@
 
 Fecha de análisis: 18 de noviembre de 2026. Fuentes completas: `DefinicióndelProyecto(1).pdf` (6 páginas) y `Propuesta_TiendaLab.pdf` (11 páginas físicas: 5 de propuesta y 6 de anexo). Los números de página de este análisis son físicos. Se leyó el texto y se inspeccionaron las 17 páginas renderizadas, incluidas tablas y diagrama.
 
-## Prioridad y autorización
+## Prioridad y autorización original (registro histórico)
 
 La definición del docente es obligatoria; la propuesta concreta el alcance. El usuario declara aprobada la propuesta. No se dispone de un documento adicional que certifique esa aprobación. El prompt adjunto autoriza expresamente **fases 0 y 1** en esta ejecución; esta autorización conjunta permite ejecutar ambas y obliga a detenerse antes de fase 2. Cada fase conserva su reporte independiente.
 
@@ -92,3 +92,7 @@ En fases posteriores se añadirán base SQL/Compose, configuración Ubuntu/Apach
 ## Autorización posterior
 
 Tras auditoría externa se autorizó corregir fase 1 y desarrollar fase 2; detener antes de fase 3. Solo MariaDB se agrega en Docker y tests CLI prueban mysqli sin conectar formularios. El repositorio es ahora público por autorización expresa; no contiene .env ni secretos administrativos. El resumen de 459.50 del anexo sí coincide al sumar las tres facturas de Ana y 145.77 de Luis; corrige la apreciación preliminar sobre los totales.
+
+## Autorización vigente de fase 3
+
+Tras aprobar fases 0–2 y sus PR #5/#6, el usuario autorizó exclusivamente backend PHP/mysqli, integración web, pruebas reales, documentación y PR hacia develop. Se conserva diseño y esquema; fases 4/5 requieren nueva autorización. La consulta factura.php?id= exige sesión de comprador y propiedad. No se abrió 8081 ni se configuró Ubuntu/Apache. El estado funcional vigente y las evidencias están en REPORTES/FASE_03_BACKEND.md.

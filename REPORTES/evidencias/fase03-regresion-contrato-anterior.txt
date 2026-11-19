@@ -1,0 +1,75 @@
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\auth.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\bootstrap.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\database.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\images.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\management.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\shop.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\web.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\admin-summary.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\footer.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\header.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\live-header.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\live-product-card.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\live-summary.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\product-card.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\product-form.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\product-table.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\admin-productos.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\admin-usuarios.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\carrito.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\catalogo.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\factura.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\historial.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\login.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\prototipo.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\register.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\vendedor.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\auth.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\carrito.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\catalogo.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\error.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\factura.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\historial.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\productos.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\usuarios.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\demo\datos.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\admin-productos.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\admin-usuarios.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\carrito.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\factura.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\historial.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\imagen.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\index.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\login.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\logout.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\register.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\vendedor.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\prototipo\index.php
+PASS: 8 comprobaciones PHP de escape, guardia local y formato monetario.
+✔ anexo: 39.99 + 34.00, IVA 13%, total 83.61 (2.3998ms)
+✔ carrito vacío y redondeo al centavo (0.2317ms)
+✔ cantidades enteras entre uno y existencias, sin negativos ni fracciones (0.3152ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 126.3886
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'no-store, no-cache, must-revalidate'
+- 'no-store'
+           ^
+
+    at C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\tests\http.test.cjs:19:16
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'no-store, no-cache, must-revalidate',
+  expected: 'no-store',
+  operator: 'strictEqual',
+  diff: 'simple'
+}

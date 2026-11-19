@@ -1,125 +1,122 @@
 # TiendaLab
 
-Repositorio **público** por autorización del usuario: https://github.com/Vasquezzz247/TiendaLab-SED. Las fases 0, 1 y 2 están integradas en `develop`; `main` se reserva para entrega estable. Fase 2 integrada mediante [PR #5](https://github.com/Vasquezzz247/TiendaLab-SED/pull/5), merge `19adb71`. Ver [cierre de fase 2](REPORTES/CIERRE_FASE_02_GITFLOW.md) y [estado de GitFlow](REPORTES/ESTADO_GITFLOW.md).
+Tienda académica de tecnología con **PHP puro, mysqli y MariaDB**, sin frameworks, ORM, CDN ni servicios en nube. El diseño de fase 1 ahora permite operaciones reales de laboratorio.
 
-**Información académica pública:** los PDF originales contienen nombres y carnets del equipo; también existen rutas locales en la documentación. Cualquier persona con acceso a GitHub puede consultarlos y copiarlos. Se conservaron por instrucción del usuario, sin cambiar su contenido ni la visibilidad durante este cierre.
+**Estado: fase 3 implementada; fases 4 y 5 no iniciadas.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Las facturas comprueban propietario; no existe el servicio 8081. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
 
-Proyecto universitario de **Seguridad en Entornos de Desarrollo**. Tienda de tecnología con comprador, vendedor y administrador, según la definición oficial y la propuesta de los PDF de esta carpeta.
+Repositorio [TiendaLab-SED](https://github.com/Vasquezzz247/TiendaLab-SED), **público por autorización previa**. Los PDF originales contienen nombres y carnets académicos; la documentación incluye rutas locales. Se conservan íntegros y su información es públicamente accesible. `.env`, sesiones, imágenes subidas, herramientas y temporales no se publican.
 
-**Estado actual: fase 1 corregida y fase 2 implementada y probada en Windows/Docker Desktop.** MariaDB está disponible; todavía no hay autenticación, compra real, CRUD web persistente, despliegue Ubuntu ni vulnerabilidades. Los prototipos de roles son vistas aisladas; no son paneles finales sin autenticación. No avanzar a fase 3 sin autorización.
+## Ejecutar en esta computadora
 
-## Ver la interfaz en esta computadora
+Requisitos disponibles y utilizados: Docker Desktop con Compose, PHP 8.3 portátil y extensiones **mysqli, mbstring, fileinfo y gd**. Node solo se necesita para las pruebas, no para servir la aplicación. No cambies ni regeneres el `.env` existente ni el volumen de MariaDB.
 
-PHP portátil ya está disponible en `tools/php/php.exe` en esta copia local. No se instala como servicio ni cambia el PATH. Abre PowerShell y ejecuta:
+Desde PowerShell:
 
 ```powershell
 Set-Location 'C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex'
+& 'C:\Program Files\Docker\Docker\resources\bin\docker.exe' compose up -d --wait --wait-timeout 180
 .\scripts\iniciar-frontend.ps1
 ```
 
-Abre [TiendaLab local](http://127.0.0.1:8000/) en Edge u otro navegador. “Revisar pantallas” abre el índice de prototipos. Deja la terminal abierta mientras revisas; **Ctrl+C** detiene el servidor. Si 8000 ya está ocupado, usa `-Port 8010` y abre esa dirección.
+Abre [TiendaLab local](http://127.0.0.1:8000/). El nombre del script se conserva por compatibilidad: ahora inicia la aplicación real con las extensiones requeridas. Escucha solo en loopback. `Ctrl+C` detiene PHP. Si el puerto está ocupado usa `-Port 8015`. Detener la base sin borrar datos: `docker compose stop db`. **No usar `down -v`, `volume rm` ni volver a ejecutar el seed.**
 
-Alternativa equivalente, sin ejecutar un archivo `.ps1` ni cambiar políticas de PowerShell:
+En una copia nueva sin `.env`, ejecutar **una sola vez** antes de Compose:
 
 ```powershell
-Set-Location 'C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex'
-$env:TIENDALAB_PROTOTIPO = '1'
-& '.\tools\php\php.exe' -S 127.0.0.1:8000 -t public scripts/router.php
+& .\tools\php\php.exe scripts/preparar-entorno.php
 ```
 
-No abras los `.php` con doble clic ni uses la raíz del proyecto como DocumentRoot. El servidor integrado es solo para revisar el frontend local; Apache sigue siendo el servidor de entrega.
+Genera dos secretos aleatorios locales y se niega a sobrescribir el archivo. PHP usa exclusivamente `DB_PASSWORD` para `tiendalab_app`, nunca la clave root. Las variables de inicialización no cambian contraseñas de un volumen existente. Consultar [base de datos](docs/BASE_DE_DATOS.md).
 
-Si copias el repositorio a otro equipo, el intérprete portátil no estará incluido porque es una herramienta local ignorada por Git. Puedes usar PHP 8.3 instalado y accesible como `php`, o descargar la versión x64 NTS desde la [fuente oficial de PHP](https://www.php.net/downloads.php?os=windows&version=8.3), extraerla en `tools/php/` y comprobar `php.exe -v`. Las dependencias de ejecución de Windows se detallan en esa página. El sitio no usa dependencias externas una vez iniciado.
+PHP portátil no está versionado. En otra instalación se necesita PHP 8.3 con mysqli, mbstring, fileinfo y gd; el directorio `storage/` fuera de `public/` debe ser escribible por PHP. Se crea localmente para sesiones, límites e imágenes. La instalación en Ubuntu/Apache se realizará en fase 5: no está ejecutada ni certificada todavía.
 
-## Pantallas y funcionamiento actual
+## Cuentas ficticias del seed
 
-| Ruta local | Qué puedes revisar |
+Contraseña pública de demostración para las cinco cuentas: `TiendaLab-Demo-2026!`. **No es una contraseña administrativa SQL.** Úsalas únicamente en el laboratorio; no introduzcas contraseñas personales.
+
+| Correo | Rol |
 | --- | --- |
-| `/` | Catálogo, 9 productos, buscador y acceso público |
-| `/login.php` | Correo y contraseña; aviso de autenticación pendiente |
-| `/register.php` | Nombre, correo, contraseña y confirmación; comprador fijo |
-| `/prototipo/` | Índice de revisión, no selector de sesión |
-| `/prototipo/?vista=comprador` | Cantidades, agregar al carrito de muestra |
-| `/prototipo/?vista=carrito` | Cambiar/quitar, subtotal, IVA 13 %, total |
-| `/prototipo/?vista=factura` | Documento ficticio, detalle e imprimir/PDF |
-| `/prototipo/?vista=historial` | Tres facturas ficticias de Ana |
-| `/prototipo/?vista=vendedor` | Alta y edición visual, formulario de imagen |
-| `/prototipo/?vista=admin-productos` | Resumen, tabla, nuevo/editar/eliminar con avisos |
-| `/prototipo/?vista=admin-usuarios` | Alta/edición visual, selección de rol y avisos |
+| admin@tiendalab.test | Administrador |
+| vendedor@tiendalab.test | Vendedor |
+| ana@tiendalab.test | Comprador |
+| luis@tiendalab.test | Comprador |
+| carla@tiendalab.test | Comprador |
 
-El carrito se guarda temporalmente en la pestaña con sessionStorage; no crea sesión de usuario ni reserva stock. “Cargar ejemplo del anexo” coloca audífonos y cámara: $73.99 + $9.62 = **$83.61**. Confirmar explica que no se realizó la compra; no genera la factura. Los formularios validan datos ficticios y no envían información al servidor. Los cambios de roles y edición son borradores, sin permisos ni persistencia.
+Los nuevos registros públicos siempre son compradores. La contraseña nueva admite 12–72 bytes. El login admite cinco intentos por correo y 60 por dirección de conexión en una ventana de 15 minutos; cuenta también los accesos correctos. El límite se comparte entre cookies y procesos locales. Una cuenta inactiva no puede entrar. Las sesiones caducan por 30 minutos de inactividad o a las 8 horas; logout las destruye.
 
-Los prototipos requieren `TIENDALAB_PROTOTIPO=1` y una conexión loopback. Para probar su cierre:
+## Uso y rutas reales
+
+| Ruta | Acceso y operación |
+| --- | --- |
+| `/` | Catálogo de MariaDB y búsqueda pública; comprador puede agregar cantidades |
+| `/register.php` | Registro comprador con correo único y hash |
+| `/login.php`, `/logout.php` | Autenticación y salida por POST protegido |
+| `/carrito.php` | Comprador: modificar/quitar y confirmar compra |
+| `/historial.php` | Comprador: solo sus facturas |
+| `/factura.php?id=...` | Comprador: autenticación **y propiedad**; impresión del documento |
+| `/vendedor.php` | Alta, listado y edición solo de productos propios |
+| `/admin-productos.php` | Administrador: métricas, alta/edición/baja de productos |
+| `/admin-usuarios.php` | Administrador: altas/edición/roles/activación/baja de usuarios |
+| `/imagen.php?id=...` | Sirve únicamente PNG procesados, sin ejecutar archivos |
+
+Carrito en sesión PHP: solo ID/cantidad, hasta 20 productos y 999 unidades por producto. No reserva existencias. Al confirmar, una transacción bloquea las filas, relee precios y stock, descuenta, inserta factura y detalles y confirma todo o revierte todo. IVA 13 %, importes en centavos/DECIMAL. No hay procesamiento de pagos.
+
+El vendedor no puede elegir otro propietario. Las imágenes nuevas son JPG/PNG/WEBP auténticas, hasta 2 MB, 4096 px por lado y 16 millones de píxeles; se recodifican a PNG y guardan fuera de la raíz web. En edición puede conservarse la imagen anterior.
+
+Eliminar un usuario sin referencias lo borra; si tiene productos o facturas se desactiva. La baja de un producto conserva el nombre/precio histórico de sus detalles y deja `producto_id` NULL. El administrador no puede eliminarse ni quitarse su propio acceso. Las claves foráneas permanecen activas. No se añadió ninguna tabla ni migración.
+
+## Pruebas reproducibles
+
+Con MariaDB iniciada:
 
 ```powershell
+.\scripts\verificar-backend.ps1
+```
+
+El script inicia sus propios servidores en 8010/8011 y uno de error controlado en 8012; exige puertos libres y los detiene al terminar. Crea datos ficticios con prefijo exclusivo, prueba por HTTP y SQL, verifica compra concurrente con dos procesos PHP, provoca rollback real y limpia solo sus fixtures. Compara SHA-256 de todas las filas previas antes/después, incluido el seed; no reinicia el volumen. Los autoincrementos pueden dejar huecos después de las pruebas: no se reinician para aparentar un historial sin pruebas.
+
+Si una ejecución interrumpida deja `tmp/fase03-fixtures.json`, revisar primero su estado; no lanzar otra preparación encima. La limpieza recuperable está documentada en la guía. No ejecutar el verificador de fase 2 contra una base con compras propias esperando los conteos originales del seed.
+
+Para revisar las maquetas históricas sin confundirlas con permisos reales, iniciar en dos terminales:
+
+```powershell
+.\scripts\iniciar-frontend.ps1 -Prototipo -Port 8000
 .\scripts\iniciar-frontend.ps1 -SinPrototipo -Port 8002
 ```
 
-Con ese servidor, `/prototipo/` debe responder **404**. Las páginas públicas continúan disponibles. No hay cuentas ni contraseñas válidas de prueba en fase 1.
+Y en otra: `.\scripts\verificar-frontend.ps1`. Las maquetas solo se habilitan por opción explícita y loopback; sus POST siguen rechazados. La aplicación real funciona sin JavaScript salvo mejoras visuales e impresión.
 
-## Comprobar el resultado
-
-Necesitas PHP y Node para las pruebas; Node no se usa al servir la tienda. Inicia las dos instancias anteriores (8000 con prototipos y 8002 sin ellos) en terminales separadas y, en una tercera terminal en la raíz, ejecuta:
-
-```powershell
-.\scripts\verificar-frontend.ps1
-```
-
-Comprueba sintaxis de las 22 plantillas/archivos PHP de aplicación, escape y guardia local en PHP, cantidades y centavos en JavaScript, 11 pantallas, enlaces, recursos locales, cabeceras y rutas negativas por HTTP. Las pruebas reales y sus límites están en el [reporte de fase 1](REPORTES/FASE_01_FRONTEND.md); las capturas y salida de pruebas están en `REPORTES/evidencias/`.
-
-La selección de archivos desde la automatización del navegador no pudo completarse por el permiso de acceso a archivos de la extensión. Se puede revisar manualmente seleccionando una imagen ficticia JPG/PNG/WEBP de hasta 2 MB; la previsualización no sube el archivo. La impresión está implementada con CSS y `window.print`; aún no se exportó un PDF ni se verificó una impresora.
-
-## Arquitectura final y estructura
+## Arquitectura y carpetas
 
 ```text
-Navegador autorizado → red del laboratorio → VM Ubuntu Server 24.04
-  Apache :80 → PHP puro / mysqli → MariaDB Docker (127.0.0.1:3306)
-  Apache :8081 → diagnóstico ficticio independiente (fase 4)
+Desarrollo comprobado: navegador → PHP Windows → mysqli → MariaDB Docker (127.0.0.1:3306)
+Entrega prevista fase 5: navegador autorizado → VM Ubuntu Server 24.04 → Apache/PHP host
+                                                              → MariaDB Docker loopback
+Fase 4 pendiente: diagnóstico ficticio independiente en 8081
 ```
-
-Apache y PHP estarán instalados en Ubuntu; solo la base se ejecutará en Docker. No se desplegará en nube. El sitio usa HTML5, CSS3 y JavaScript nativo, sin framework, librerías web, ORM, CDN ni llamadas externas.
 
 ```text
-app/bootstrap.php         Cabeceras, escape y renderizado común
-app/components/          Cabecera, pie, tarjetas, tablas y formularios
-app/views/               Contenido de cada pantalla
-demo/datos.php           Fixtures ficticios, separados del futuro backend
-public/                  Única raíz web
-public/prototipo/        Punto de entrada de maquetas locales
-public/assets/           CSS, JS y SVG de iniciales como en el anexo
-scripts/                 Inicio y verificación de frontend Windows
-tests/                   Pruebas PHP, JS y HTTP sin librerías adicionales
-docs/                    Alcance, matriz, GitFlow y seguridad/defensa
-REPORTES/                Reportes por fase y evidencia real
-tmp/                     Extracciones PDF y temporales ignorados
-tools/php/               Intérprete local ignorado por Git
+public/                 Única raíz web; rutas reales y assets locales
+app/web.php             Rutas, roles, POST/CSRF, redirecciones y errores controlados
+app/database.php        Configuración mysqli y validación de entradas
+app/auth.php            Sesiones, autenticación, registro y límites
+app/shop.php            Carrito, compras transaccionales y propiedad de facturas
+app/management.php      Gestión de productos y usuarios con integridad referencial
+app/images.php          Validación, recodificación y rutas de imágenes
+app/views/live/         Vistas reales con el diseño y componentes compartidos
+app/views/, demo/       Maquetas históricas aisladas, sin participar en operaciones reales
+storage/                Sesiones, límites e imágenes privadas del host; ignorado por Git
+compose.yaml            Solo MariaDB: digest, salud, puerto local y volumen persistente
+database/init/          Esquema, seed ficticio y privilegios del usuario SQL
+scripts/, tests/        Inicio, comprobaciones y datos aislados de pruebas
+REPORTES/, docs/        Evidencias, alcance, requisitos y defensa
 ```
 
-## Documentación y defensa
+## Documentación y próximos pasos
 
-- [Alcance y análisis de las capturas](docs/ALCANCE.md).
-- [Matriz de requisitos](docs/MATRIZ_REQUISITOS.md).
-- [Guía de seguridad y defensa](docs/GUIA_SEGURIDAD_Y_DEFENSA.md): controles actuales, comandos ejecutados, Apache/PHP/sesiones/roles/BD/Docker/red previstos y cómo explicarlos.
-- [GitFlow](docs/GITFLOW.md): ramas locales/remotas e integraciones mediante PR reales.
-- [Reporte fase 0](REPORTES/FASE_00_PREPARACION.md) y [reporte fase 1](REPORTES/FASE_01_FRONTEND.md).
+- [Guía de seguridad y defensa](docs/GUIA_SEGURIDAD_Y_DEFENSA.md): controles, comandos reales, pruebas y límites; fase 3 en secciones 16–17.
+- [Matriz](docs/MATRIZ_REQUISITOS.md), [alcance](docs/ALCANCE.md), [base](docs/BASE_DE_DATOS.md).
+- [GitFlow](docs/GITFLOW.md) y [estado del remoto](REPORTES/ESTADO_GITFLOW.md).
+- [Reporte fase 3](REPORTES/FASE_03_BACKEND.md), [cierre fase 2](REPORTES/CIERRE_FASE_02_GITFLOW.md), reportes históricos de fases 0/1.
 
-## Pendiente para la entrega final
-
-Fase 2 publicada e integrada: SQL, MariaDB/Compose y volumen, con pruebas repetidas tras el merge. **Esperar revisión antes de fase 3:** sesiones, autenticación, roles, CRUD, transacciones, stock y facturas reales. Fase 4: únicamente IDOR de propiedad en factura autenticada y diagnóstico ficticio 8081. Fase 5: instalación Ubuntu/Apache, red autorizada, scripts de servicio y alternativa offline. Fase 6: pruebas funcionales y auditoría. Fase 7: README final, release/PR hacia main, evidencias y simulación de instalación cronometrada.
-
-Entrega prevista: **27/11/2026**, Laboratorio 4, máximo 30 minutos de instalación. No se ha medido una instalación real ni se afirma cumplir ese tiempo. Pruebas del ejercicio: 30/11 y 01/12/2026, únicamente en los objetivos y horarios autorizados. Red de la VM y posibilidad de llevarla preconfigurada siguen pendientes de instrucciones del docente.
-
-## Base de datos (fase 2)
-
-Ver [modelo, cuentas ficticias, comandos y traslado offline](docs/BASE_DE_DATOS.md), [reporte fase 2](REPORTES/FASE_02_BASE_DATOS_DOCKER.md) y [correcciones de auditoría](REPORTES/CORRECCIONES_FASE_01.md). No conectar todavía el frontend a la base.
-
-En PowerShell, desde esta carpeta:
-
-```powershell
-# Solo si .env no existe:
-& .\tools\php\php.exe scripts/preparar-entorno.php
-& 'C:\Program Files\Docker\Docker\resources\bin\docker.exe' compose up -d --wait
-.\scripts\verificar-base.ps1
-```
-
-La base usa 127.0.0.1:3306 y el volumen tiendalab_db_data. Detener sin borrar datos: `docker compose stop db`; iniciar: `docker compose start db`. El seed solo se aplica al volumen nuevo. No ejecutar down -v. Las menciones anteriores a BD pendiente son históricas de fase 1; prevalece este estado y el reporte 02.
+Detenerse para auditoría antes de fase 4. Pendientes: las dos vulnerabilidades aprobadas, Ubuntu/Apache/red/firewall, prueba desde otro equipo, instalación offline y cronometraje, impresión/PDF efectiva y revisión móvil completa. Nada de ello se presenta como ejecutado. `main` sigue reservada para entrega; esta fase se integra únicamente a `develop` mediante PR real.

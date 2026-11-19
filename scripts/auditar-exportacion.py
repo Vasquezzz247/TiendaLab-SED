@@ -23,7 +23,7 @@ head = git('rev-parse', 'HEAD').decode().strip()
 names = git('ls-tree', '-r', '--name-only', '-z', 'HEAD').decode().split('\0')
 def forbidden(name):
     return (name == '.env' or (name.startswith('.env.') and name != '.env.example')
-            or name.startswith(('tools/php/', 'tmp/', 'node_modules/', 'vendor/', 'backups/', 'data/'))
+            or name.startswith(('tools/php/', 'tmp/', 'storage/', 'node_modules/', 'vendor/', 'backups/', 'data/'))
             or name == 'tools/php.zip' or name.endswith(('.tar', '.tar.gz', '.pem', '.key', '.log')))
 
 assert not any(forbidden(n) for n in names), 'Archivo excluido versionado'

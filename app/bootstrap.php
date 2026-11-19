@@ -1,14 +1,15 @@
 <?php
 declare(strict_types=1);
 
-// Fase 1: renderizado de datos ficticios. No hay sesiones ni acceso a una base.
+// Utilidades compartidas; las maquetas conservan su modo de solo lectura.
 header('Content-Type: text/html; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: no-referrer');
-header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'");
+$formAction = defined('TIENDALAB_LIVE') ? "'self'" : "'none'";
+header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action $formAction");
 header('Cache-Control: no-store');
 
-if (!in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
+if (!defined('TIENDALAB_LIVE') && !in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
     http_response_code(405);
     header('Allow: GET, HEAD');
     exit('Prototipo de lectura: no se reciben formularios ni se guardan datos.');
