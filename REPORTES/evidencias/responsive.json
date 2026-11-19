@@ -1,0 +1,62 @@
+[
+  {
+    "path": "/login.php",
+    "scroll": 375,
+    "width": 375,
+    "pass": true
+  },
+  {
+    "path": "/register.php",
+    "scroll": 375,
+    "width": 375,
+    "pass": true
+  },
+  {
+    "path": "/prototipo/?vista=inicio",
+    "scroll": 375,
+    "width": 375,
+    "pass": true
+  },
+  {
+    "path": "/prototipo/?vista=comprador",
+    "scroll": 375,
+    "width": 375,
+    "pass": true
+  },
+  {
+    "path": "/prototipo/?vista=carrito",
+    "scroll": 375,
+    "width": 375,
+    "pass": true
+  },
+  {
+    "path": "/prototipo/?vista=factura",
+    "scroll": 375,
+    "width": 375,
+    "pass": true
+  },
+  {
+    "path": "/prototipo/?vista=historial",
+    "scroll": 390,
+    "width": 390,
+    "pass": true
+  },
+  {
+    "path": "/prototipo/?vista=vendedor",
+    "scroll": 375,
+    "width": 375,
+    "pass": true
+  },
+  {
+    "path": "/prototipo/?vista=admin-productos",
+    "scroll": 375,
+    "width": 375,
+    "pass": true
+  },
+  {
+    "path": "/prototipo/?vista=admin-usuarios",
+    "scroll": 375,
+    "width": 375,
+    "pass": true
+  }
+]

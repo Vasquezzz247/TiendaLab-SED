@@ -38,5 +38,6 @@ Fuentes: D = definición oficial, P = propuesta; numeración física. Estado al 
 | R32 | Prompt §5 | Dependencias e imágenes disponibles sin internet | procedimiento offline futuro | Instalar sin conectividad externa | P / 5,7 |
 | R33 | Prompt §6,7,9 | Fases 0/1, reportes de 10 puntos, detener antes de 2 | REPORTES/ | Reportes distinguen implementado y ejecutado | D / 0,1 |
 | R34 | Prompt §9 | Datos demo separados, sin altas/compras simuladas exitosas | demo/; formularios sin envío; prototipo local | POST rechazado, acciones informativas, sin base/sesión | V / 1 |
+| R35 | Instrucción adicional del usuario | Guía técnica sencilla de seguridad y defensa, actualizada por fase | docs/GUIA_SEGURIDAD_Y_DEFENSA.md | Comandos ejecutados separados de Ubuntu recomendado, archivos, pruebas, controles y mitigaciones | D / 1; mantener 2-7 |
 
 Las pruebas de fases futuras son criterios de aceptación, **no resultados ejecutados**. Las evidencias reales de fase 1 se enumeran en su reporte y archivos adjuntos.
