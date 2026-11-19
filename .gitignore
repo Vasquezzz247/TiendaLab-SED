@@ -1,0 +1,7 @@
+/tmp/
+/tools/php/
+/tools/php.zip
+/.env
+*.log
+.DS_Store
+Thumbs.db
