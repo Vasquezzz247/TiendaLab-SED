@@ -42,7 +42,7 @@ Contraseña pública de demostración para las cinco cuentas: `TiendaLab-Demo-20
 | luis@tiendalab.test | Comprador |
 | carla@tiendalab.test | Comprador |
 
-Los nuevos registros públicos siempre son compradores. La contraseña nueva admite 12–72 bytes. El login admite cinco intentos por correo y 60 por dirección de conexión en una ventana de 15 minutos; cuenta también los accesos correctos. El límite se comparte entre cookies y procesos locales. Una cuenta inactiva no puede entrar. Las sesiones caducan por 30 minutos de inactividad o a las 8 horas; logout las destruye.
+Los nuevos registros públicos siempre son compradores. La contraseña nueva admite 12–72 bytes. El login admite cinco intentos por correo y 60 por dirección de conexión en una ventana de 15 minutos; solo cuentan los intentos fallidos (un acceso correcto devuelve su intento y reinicia el contador del correo). El límite se comparte entre cookies y procesos locales. Una cuenta inactiva no puede entrar. Las sesiones caducan por 30 minutos de inactividad o a las 8 horas; logout las destruye.
 
 ## Uso y rutas reales
 
