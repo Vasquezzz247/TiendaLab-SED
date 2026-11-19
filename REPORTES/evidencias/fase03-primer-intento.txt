@@ -1,0 +1,174 @@
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\auth.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\bootstrap.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\database.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\images.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\management.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\shop.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\web.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\admin-summary.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\footer.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\header.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\live-header.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\live-product-card.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\live-summary.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\product-card.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\product-form.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\product-table.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\admin-productos.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\admin-usuarios.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\carrito.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\catalogo.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\factura.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\historial.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\login.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\prototipo.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\register.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\vendedor.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\auth.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\carrito.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\catalogo.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\error.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\factura.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\historial.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\productos.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\live\usuarios.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\admin-productos.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\admin-usuarios.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\carrito.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\factura.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\historial.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\imagen.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\index.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\login.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\logout.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\register.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\vendedor.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\prototipo\index.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\scripts\generar-seed.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\scripts\preparar-entorno.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\scripts\router.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\tests\backend-fixtures.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\tests\database.test.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\tests\security.test.php
+PASS: 8 comprobaciones PHP de escape, guardia local y formato monetario.
+✔ anexo: 39.99 + 34.00, IVA 13%, total 83.61 (2.5511ms)
+✔ carrito vacío y redondeo al centavo (0.2555ms)
+✔ cantidades enteras entre uno y existencias, sin negativos ni fracciones (0.3212ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 147.5501
+PASS: fixtures aislados creados mediante tiendalab_app; snapshot previo guardado sin publicar filas.
+PASS: 1 catalogo consulta productos reales
+PASS: 2 cabeceras y formularios restringidos a mismo origen
+PASS: 3 busqueda real literal
+PASS: 4 consulta preparada: texto SQL no altera busqueda
+PASS: 5 entrada escapada al renderizar
+PASS: 6 sin sesion no accede /carrito.php
+PASS: 7 sin sesion no accede /factura.php
+PASS: 8 sin sesion no accede /historial.php
+PASS: 9 sin sesion no accede /vendedor.php
+PASS: 10 sin sesion no accede /admin-productos.php
+PASS: 11 sin sesion no accede /admin-usuarios.php
+PASS: 12 ruta privada o inexistente bloqueada /.env
+PASS: 13 ruta privada o inexistente bloqueada /app/database.php
+PASS: 14 ruta privada o inexistente bloqueada /storage/sessions/
+PASS: 15 ruta privada o inexistente bloqueada /tools/php/php.exe
+PASS: 16 ruta privada o inexistente bloqueada /database/init/02-seed.sql
+PASS: 17 ruta privada o inexistente bloqueada /no-existe.php
+PASS: 18 maquetas deshabilitadas por defecto en servidor real
+PASS: 19 entrada de tipo incorrecto produce error controlado
+PASS: 20 atributos de cookie de sesion
+PASS: 21 login protegido contra CSRF
+PASS: 22 login incorrecto rechazado
+PASS: 23 login comprador y regeneracion de ID
+PASS: 24 sesion previa a login no autentica
+PASS: 25 comprador sin permiso /vendedor.php
+PASS: 26 comprador sin permiso /admin-productos.php
+PASS: 27 comprador sin permiso /admin-usuarios.php
+PASS: 28 cuenta inactiva no inicia sesion
+PASS: 29 registro real
+PASS: 30 registro fuerza comprador activo y hash verificable
+PASS: 31 correo duplicado rechazado
+PASS: 32 confirmacion de contraseña validada
+PASS: 33 cuenta registrada puede iniciar sesion
+PASS: 34 logout por POST
+PASS: 35 cookie de sesion destruida no permite reingreso
+PASS: 36 login y destino rol seller
+PASS: 37 login y destino rol seller2
+PASS: 38 login y destino rol admin
+PASS: 39 login y destino rol other
+PASS: 40 vendedor no administra usuarios
+PASS: 41 administrador no simula comprador
+PASS: 42 metricas administrativas reales
+PASS: 43 listado real de usuarios
+PASS: 44 cantidades fraccionarias rechazadas
+PASS: 45 cantidades negativas rechazadas
+PASS: 46 stock insuficiente al agregar
+PASS: 47 agregar ignora precio y stock enviados
+PASS: 48 modificacion del carrito
+PASS: 49 segundo producto
+PASS: 50 eliminacion del carrito
+PASS: 51 subtotal IVA y total del anexo calculados por PHP
+PASS: 52 compra real genera factura
+PASS: 53 precio y comprador salen del servidor
+PASS: 54 stock descontado una vez
+PASS: 55 detalle completo guardado
+PASS: 56 repeticion del POST de compra no duplica factura
+PASS: 57 consulta factura propia
+PASS: 58 factura ajena rechazada: IDOR aun no implementado
+PASS: 59 historial incluye compra propia
+PASS: 60 historial no filtra facturas de otro comprador
+PASS: 61 carrito concurrente preparado
+PASS: 62 carrito concurrente preparado
+PASS: 63 dos procesos PHP: una compra gana y otra recibe stock insuficiente
+PASS: 64 concurrencia sin stock negativo ni doble factura
+PASS: 65 archivo ejecutable disfrazado rechazado
+PASS: 66 extension no permitida rechazada
+PASS: 67 archivo mayor de 2 MB rechazado
+PASS: 68 precio cero rechazado en servidor
+PASS: 69 vendedor crea producto con imagen autentica
+PASS: 70 vendedor no puede falsificar dueño al crear
+PASS: 71 salida persistida escapada
+PASS: 72 imagen recodificada y servida como PNG sin contenido añadido
+PASS: 73 traversal en imagen rechazado
+PASS: 74 vendedor no abre editor ajeno
+PASS: 75 vendedor no modifica producto ajeno por POST
+PASS: 76 CSRF de producto rechazado
+PASS: 77 vendedor edita producto propio conservando imagen
+PASS: 78 administrador crea producto
+PASS: 79 administrador edita y retira producto
+PASS: 80 producto retirado no aparece en catalogo
+PASS: 81 administrador elimina producto
+PASS: 82 eliminar producto facturado conserva historia
+PASS: 83 FK SET NULL conserva nombre y precio del detalle
+PASS: 84 factura sigue consultable tras eliminar producto
+PASS: 85 administrador crea usuario
+PASS: 86 administrador cambia rol y conserva hash
+PASS: 87 rol fuera de lista rechazado
+PASS: 88 usuario sin referencias eliminado fisicamente
+PASS: 89 desactivar usuario
+PASS: 90 desactivacion revoca sesion existente
+PASS: 91 reactivar usuario
+PASS: 92 cambio de rol real
+PASS: 93 rol se consulta en BD por solicitud
+PASS: 94 nuevo rol permite su panel
+PASS: 95 usuario con facturas se desactiva sin romper FK
+PASS: 96 baja logica revoca acceso del comprador
+PASS: 97 administrador no elimina su propio acceso
+PASS: 98 CSRF de usuarios rechazado
+PASS: 99 cambio de contraseña administrativo
+PASS: 100 cambio de contraseña invalida sesion previa
+PASS: 101 limite de cinco intentos por correo aun sin cuenta
+PASS: 102 limite persiste al cambiar cookie
+PASS: 103 error controlado para parametros anidados
+PASS: 104 error controlado para parametros anidados
+TOTAL: 104 comprobaciones HTTP/BD aprobadas.
+PASS: rollback tras modificar primer producto y detectar stock insuficiente en segundo.
+PASS: error SQL 1205 real despues del primer UPDATE; stock y facturas revertidos.
+PASS: sintaxis de 52 archivos PHP; dos procesos HTTP y MariaDB real.
+PASS: limpieza de fixtures y SHA-256 de todas las filas previas identico (incluye seed).
