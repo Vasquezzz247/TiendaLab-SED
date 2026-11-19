@@ -311,6 +311,8 @@ La matriz de requisitos y los reportes por fase deben actualizarse al mismo tiem
 
 ## 12. Cierre verificado de fase 1
 
+Actualización posterior: el usuario autorizó publicación privada y organización GitFlow, sin iniciar fase 2. El estado vigente del remoto está en `REPORTES/ESTADO_GITFLOW.md`; las menciones anteriores a ausencia de remoto son históricas.
+
 Se comprobaron los dos scripts PowerShell con `System.Management.Automation.Language.Parser.ParseFile`: ambos sin errores de sintaxis. Un script de Python recorrió enlaces Markdown locales de README, docs y reportes: ninguno apuntaba a un archivo inexistente. Estas comprobaciones no configuran seguridad del sistema.
 
 El intento inicial de `git add app demo public scripts tests` y commit falló al crear `.git/index.lock` por permisos del entorno. No se borró ningún lock ni se cambiaron ACL. Se repitió con autorización de la herramienta y se ejecutó esta secuencia:

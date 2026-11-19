@@ -1,5 +1,7 @@
 # TiendaLab
 
+Repositorio privado: https://github.com/Vasquezzz247/TiendaLab-SED. El frontend integrado está en `develop`; `main` se reserva para entrega estable. Ver [estado actualizado de GitFlow](REPORTES/ESTADO_GITFLOW.md). Las menciones a remoto pendiente más abajo corresponden al cierre histórico de fase 1.
+
 Proyecto universitario de **Seguridad en Entornos de Desarrollo**. Tienda de tecnología con comprador, vendedor y administrador, según la definición oficial y la propuesta de los PDF de esta carpeta.
 
 **Estado: fases 0 y 1 completadas; frontend de demostración.** No existe todavía MariaDB, autenticación, compra real, CRUD persistente, despliegue Ubuntu ni vulnerabilidades. Los prototipos de roles son vistas aisladas; no son paneles finales sin autenticación. No avanzar a fase 2 sin autorización.

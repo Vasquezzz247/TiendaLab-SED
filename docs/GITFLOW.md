@@ -1,4 +1,6 @@
-# GitFlow local y continuación en GitHub
+# GitFlow local y GitHub
+
+Actualización: el usuario autorizó publicar en https://github.com/Vasquezzz247/TiendaLab-SED (privado). PR #1 y #2 integraron preparación y frontend en develop mediante merge commits, conservando el historial. La documentación de publicación se integra por PR separado. Consultar `REPORTES/ESTADO_GITFLOW.md` para el estado actual; los párrafos siguientes describen la preparación anterior a la publicación.
 
 `main` se reserva para entrega estable; `develop` para integración. La preparación vive en `feature/fase-00-preparacion` y el frontend en `feature/fase-01-frontend`. No se integran cambios a las ramas permanentes mediante merges que aparenten un PR remoto. La rama de frontend parte del commit de preparación para permitir revisar el conjunto; al crear GitHub se abrirá primero el PR de preparación a develop y luego el de frontend.
 
