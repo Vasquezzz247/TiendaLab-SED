@@ -62,7 +62,9 @@ Invoke-Vbox storageattach $Nombre --storagectl SATA --port 0 --device 0 --type h
 # Se instala openssh-server (el autoinstall no lo trae), se autoriza la clave y el usuario recibe sudo SIN contrasena:
 # asi toda la configuracion posterior se hace por SSH con clave, sin teclear contrasenas en la consola de la VM.
 # Es una VM de laboratorio sin otro uso; en un servidor real no se haria. Sin ": " en el comando (va dentro de YAML).
-$post = "DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server; systemctl enable ssh; mkdir -p /home/$usuario/.ssh; echo '$publica' >> /home/$usuario/.ssh/authorized_keys; chmod 700 /home/$usuario/.ssh; chmod 600 /home/$usuario/.ssh/authorized_keys; chown -R ${usuario}:${usuario} /home/$usuario/.ssh; echo '$usuario ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/90-tiendalab; chmod 440 /etc/sudoers.d/90-tiendalab"
+# OJO: la plantilla de VirtualBox ejecuta "log_command <este texto>"; el primer comando debe ser un programa real
+# (por eso "env VAR=valor ..." y no "VAR=valor ..."), si no devuelve 127 y el instalador se detiene con error.
+$post = "env DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server; systemctl enable ssh; mkdir -p /home/$usuario/.ssh; echo '$publica' >> /home/$usuario/.ssh/authorized_keys; chmod 700 /home/$usuario/.ssh; chmod 600 /home/$usuario/.ssh/authorized_keys; chown -R ${usuario}:${usuario} /home/$usuario/.ssh; echo '$usuario ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/90-tiendalab; chmod 440 /etc/sudoers.d/90-tiendalab"
 Invoke-Vbox unattended install $Nombre --iso=$Iso --user=$usuario --password=$password --full-user-name='TiendaLab' `
     --hostname=tiendalab-srv.lab --time-zone=America/El_Salvador --locale=es_SV `
     --post-install-command=$post --start-vm=headless
