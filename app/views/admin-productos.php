@@ -1,0 +1,2 @@
+<?php require __DIR__ . '/../components/admin-summary.php'; ?>
+<section class="panel"><div class="panel-heading"><h2>Productos</h2><button class="small" type="button" data-new-product>+ Nuevo producto</button></div><?php require __DIR__ . '/../components/product-table.php'; ?></section><section class="panel form-panel admin-product-editor" id="product-editor" hidden><?php require __DIR__ . '/../components/product-form.php'; ?></section>
