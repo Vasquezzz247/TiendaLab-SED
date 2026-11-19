@@ -28,7 +28,7 @@ El commit que contiene este reporte y su merge documental también se publican; 
 
 1. [PR #1: preparación → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/1): fusionado, merge 207118d.
 2. [PR #2: frontend → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/2): fusionado, merge 71d64e8.
-3. El reporte y actualización de instrucciones se integran desde `feature/gitflow-documentacion` mediante un PR documental adicional, enlazado en la sección de cierre.
+3. [PR #3: documentación → develop](https://github.com/Vasquezzz247/TiendaLab-SED/pull/3): fusionado, merge 006c6c2; commit documental c99732d.
 
 La rama frontend ya descendía de preparación. Por ello se fusionó primero PR #1 y después PR #2. No se reconstruyó ni inventó el historial. Las integraciones utilizan merge commits para conservar los SHA originales.
 
@@ -58,3 +58,7 @@ GitHub CLI no estaba instalado. Se usaron Git Credential Manager y la API oficia
 Verificación: estado limpio antes de publicar; historial de cuatro commits originales; push de ramas; respuestas reales de creación y fusión de PR; consulta API de privacidad, rama predeterminada, ramas y PR; fetch y comparación con referencias remotas al cierre. Los comandos quedan en la guía de seguridad.
 
 Pendientes: autorización para implementar fase 2; futuras release y PR hacia main; pruebas Ubuntu y cronometraje. No se configuraron revisores obligatorios ni reglas de protección de ramas: GitFlow se organizó con ramas y PR reales, sin afirmar políticas adicionales no verificadas.
+
+## Cierre de verificación
+
+Se comprobó por API `private=true` y `default_branch=main`. La rama de fase 2 se publicó inicialmente en 006c6c2, idéntica a develop después de PR #3. La actualización final de este reporte se entrega mediante otro PR documental; después se sincronizan develop y la rama vacía de fase 2 por fast-forward. Main sigue en 98b499d. No hay cambios de aplicación ni commits de desarrollo de fase 2.
