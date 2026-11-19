@@ -635,3 +635,39 @@ Para la defensa: “Git conserva los commits originales; el PR registra qué ram
 Resultado observado del punto 9: aprobado; ZIP de GitHub sin duplicados ni archivos excluidos, ambos PDF con nombres y bytes idénticos. `Copy-Item -LiteralPath tmp/fase03-auditoria-merge.json -Destination REPORTES/evidencias/fase03-zip-github.json` conservó el resultado. Ningún comando de esta sección se ejecutó en Ubuntu.
 
 Continuación ejecutada: `git add` seleccionó únicamente los seis documentos y tres evidencias de publicación; `git diff --cached --check`, `git commit -m "docs: registrar merge real de fase 3 y auditar ZIP de GitHub"` produjo `5ba3965`; `git push origin feature/fase-03-backend` lo publicó. `Api POST "$r/pulls"` con la misma feature y base develop creó el [PR #8](https://github.com/Vasquezzz247/TiendaLab-SED/pull/8), exclusivamente documental. Se conserva su enlace para verificar su propio merge, generado después de este documento. El código de la aplicación no cambió después de las 107 pruebas.
+
+## 19. Exportaciones limpias (observación C de la auditoría de fase 3) — ejecutado el 19/11/2026
+
+**Problema.** El ZIP de traspaso pesaba 191 MB y llevaba el `.env` con las claves SQL, 81 archivos de sesiones y límites, `tools/php` (PHP descargado), `tmp/` (con un tar de MariaDB de 105 MB y registros) y la carpeta `.git`. Ninguno de esos archivos está en GitHub (el `.gitignore` los excluye), pero comprimir la carpeta de trabajo los arrastra.
+
+**Qué se hizo.** Dos scripts nuevos y una línea de `.gitignore`:
+
+| Archivo | Para qué sirve |
+| --- | --- |
+| `scripts/exportar.ps1` | Genera el ZIP del código con `git archive` (solo archivos versionados del commit indicado), se niega a exportar con cambios sin confirmar, lo audita y borra el ZIP si hay hallazgos. Con `-Offline` genera aparte la imagen de MariaDB con SHA-256 y un LEEME |
+| `scripts/auditar-zip.py` | Audita cualquier ZIP: `.env`, `sess_*`, `tmp/`, `storage/`, `tools/`, `.git/`, `.tar`, `.pem/.key/.log`, duplicados, los valores locales de `DB_PASSWORD`/`DB_ROOT_PASSWORD` y patrones de token/llave privada. Nunca imprime valores, solo el nombre de la entrada. Código de salida 1 si hay hallazgos |
+| `.gitignore` | Añade `/dist/` (salida de las exportaciones) |
+
+**Por qué es seguro.** `git archive` solo puede incluir lo que Git versiona, así que un archivo ignorado (`.env`, sesiones) no puede entrar por descuido. La auditoría es una segunda barrera: si alguien versionara por error un secreto, lo detectaría comparando contra los valores reales del `.env` local. Las dependencias offline van en un paquete separado y público (solo la imagen de MariaDB), sin código ni datos.
+
+**Comandos realmente ejecutados (Windows) y resultados.**
+
+| Comando | Resultado observado |
+| --- | --- |
+| `python -I scripts/auditar-zip.py TiendaLab_Documentos_Codex.zip` | **Exit 1: ZIP NO LIMPIO, 652 hallazgos en 726 entradas**: `.env` y contiene un secreto local, 374 de `.git`, 83 de `tools`, 81 de `storage`, 45 de `tmp`, 64 de tipos excluidos (sesiones/tar/log) y un tar demasiado grande para revisar. Marcó además 2 patrones de llave privada, falsos positivos en `libssh2.dll` y `php_fileinfo.dll` (binarios de PHP dentro de `tools/`) |
+| `.\scripts\exportar.ps1` con cambios sin confirmar | Rechazado (esperado): pide confirmar o descartar cambios; no creó ningún ZIP |
+| `.\scripts\exportar.ps1` sobre el commit `05e0621` | **ZIP LIMPIO**: 144 archivos revisados, 2 secretos locales comparados, 0 hallazgos; 2,7 MB (frente a 191 MB). Raíz única `TiendaLab-SED/`, sin duplicados, `.env.example` incluido, ningún `.env`, `sess_`, `tmp/`, `tools/`, `storage/`, `.git/` ni `.tar` |
+| Revisión de los PDF dentro del ZIP | `DefinicióndelProyecto(1).pdf` conserva su nombre con acento (bandera UTF-8 activa) y su tamaño original de 194 124 bytes; `Propuesta_TiendaLab.pdf` de 1 790 165 bytes |
+| `.\scripts\exportar.ps1 -Offline` | Paquete `dist/TiendaLab-05e0621-offline/` en 8 s: `tiendalab-mariadb.tar` (104,9 MB), `SHA256SUMS.txt` (el hash recalculado coincide) y `LEEME-OFFLINE.txt`. El `manifest.json` del tar contiene la etiqueta `tiendalab-mariadb:11.4.13` y la imagen es amd64 |
+
+**Cómo comprobarlo tú.** Ejecuta `.\scripts\exportar.ps1` con el árbol limpio y abre el ZIP: debe pesar pocos MB y no contener `.env` ni sesiones. Para probar el auditor contra un ZIP sucio, ejecuta `python -I scripts/auditar-zip.py` con un ZIP que tú armes con `.env`.
+
+**Comandos recomendados para Ubuntu, NO ejecutados allí:**
+
+```sh
+git archive --format=zip --prefix=TiendaLab-SED/ -o TiendaLab.zip HEAD   # equivalente del ZIP limpio
+python3 -I scripts/auditar-zip.py TiendaLab.zip
+sha256sum -c SHA256SUMS.txt && docker load -i tiendalab-mariadb.tar        # en la VM sin internet
+```
+
+**Límites honestos.** `docker load` del tar en una máquina limpia **no se probó** (en este equipo la imagen ya existía; solo se comprobó el contenido del tar). Los paquetes de Ubuntu (Apache, PHP, Docker) y una instalación realmente desconectada siguen pendientes para la fase de despliegue. El auditor no detecta secretos desconocidos que no coincidan con el `.env` local ni con los patrones de tokens/llaves; no sustituye la revisión humana. La auditoría de historial de Git de `scripts/auditar-exportacion.py` (fases anteriores) sigue disponible y es complementaria.

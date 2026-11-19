@@ -77,7 +77,7 @@ Usuario SQL `tiendalab_app`: únicamente SELECT/INSERT/UPDATE/DELETE sobre tiend
 
 ## Traslado sin internet
 
-Preparación realizada en Windows: tag local `tiendalab-mariadb:11.4.13` y exportación de la imagen a `tmp/tiendalab-mariadb.tar`. Copiar ese archivo, el proyecto y preparar un .env nuevo en la VM (no subir secretos ni tar a Git).
+Preparación realizada en Windows: tag local `tiendalab-mariadb:11.4.13` y exportación de la imagen a `tmp/tiendalab-mariadb.tar`. Desde la corrección de exportaciones el paquete se genera con `scripts/exportar.ps1 -Offline` en `dist/` (con SHA-256 y LEEME; guía, sección 19). Copiar ese archivo, el proyecto y preparar un .env nuevo en la VM (no subir secretos ni tar a Git).
 
 En Ubuntu sin internet, comandos **recomendados, no ejecutados allí**:
 
