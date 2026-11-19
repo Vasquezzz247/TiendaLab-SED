@@ -473,3 +473,18 @@ Las salidas exitosas y los intentos restringidos permanecen en `REPORTES/evidenc
 `README.md`, `docs/GITFLOW.md`, `docs/MATRIZ_REQUISITOS.md`, `REPORTES/ESTADO_GITFLOW.md` y `AGENTS.md` reflejan la integración y el repositorio público. Esta guía registra procedimientos y límites. `REPORTES/CIERRE_FASE_02_GITFLOW.md` concentra commits, PR y resultados. `scripts/auditar-exportacion.py` y las evidencias hacen comprobable la exportación. No se modificaron los PDF, el código de aplicación, el SQL ni Compose en este cierre.
 
 Las dos vulnerabilidades de la sección 9 siguen siendo **planes para fase 4**: omisión deliberada de comprobación de propiedad de factura autenticada y exposición del diagnóstico ficticio por 8081. Sus correcciones previstas son comprobar propietario/permiso en el servidor y cerrar o restringir el servicio, respectivamente. Actualmente no hay una ruta vulnerable implementada que demostrar. No se ejecutaron ataques ni se abrió 8081. La fase 3 queda detenida hasta revisión.
+
+### Publicación del cierre documental y comprobaciones finales
+
+Después de las pruebas se ejecutó una comprobación Python de enlaces Markdown locales en README/docs/REPORTES (12 documentos), sintaxis del auditor mediante `compile` y metadatos/rutas de `cierre02-github.json`: aprobada. `git diff --check`, `git diff --stat` y `git status --short` permitieron revisar el alcance: ningún cambio en aplicación, SQL, Compose ni PDF.
+
+Se ejecutaron `git add` con las rutas de cierre enumeradas en el apartado anterior, las seis evidencias `cierre02-*` iniciales y el auditor; `git diff --cached --check`; `git commit -m 'docs: cerrar fase 2 con auditoria GitFlow y evidencias verificadas'`. Resultado: `cf1f807627a16dc31b74f2abd6285a35fd9f5193`. `git status --short --branch` confirmó árbol limpio. Después:
+
+```powershell
+& 'C:\Users\aleja\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' scripts/auditar-exportacion.py --output tmp/cierre02-auditoria-prepublicacion.json
+git push -u origin feature/cierre-fase-02
+```
+
+La auditoría revisó 116 blobs, cero coincidencias con los dos secretos y ambos PDF íntegros. El push publicó el commit documental. API POST `/repos/Vasquezzz247/TiendaLab-SED/pulls` con `head=feature/cierre-fase-02`, `base=develop`, título y descripción creó el [PR #6](https://github.com/Vasquezzz247/TiendaLab-SED/pull/6). `Copy-Item -LiteralPath 'tmp/cierre02-auditoria-prepublicacion.json' -Destination 'REPORTES/evidencias/cierre02-prepublicacion.json'` conserva el resultado previo a publicación. Se añadieron los enlaces reales del PR a GitFlow, estado y reporte.
+
+La secuencia de entrega del propio documento repite commit/push normal y merge remoto con `merge_method=merge`, comprobando el SHA de head de #6; después fetch, switch develop y merge --ff-only. Se comprueban por API el PR fusionado, privacidad pública y main intacta, más igualdad local/remota y ascendencia de ebf814f/da4e8b1. El SHA del merge de este mismo texto se consulta en #6, porque no se puede escribir dentro del contenido que determina ese SHA. Si esas comprobaciones no terminan, no debe presentarse el cierre como completado.

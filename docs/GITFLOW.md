@@ -10,6 +10,7 @@ Estado al 18/11/2026. Repositorio **público**: https://github.com/Vasquezzz247/
 - `feature/fase-01-frontend` → `develop`: [PR #2](https://github.com/Vasquezzz247/TiendaLab-SED/pull/2), merge `71d64e8`.
 - `feature/gitflow-documentacion` → `develop`: [PR #3](https://github.com/Vasquezzz247/TiendaLab-SED/pull/3), merge `006c6c2`, y [PR #4](https://github.com/Vasquezzz247/TiendaLab-SED/pull/4), merge `99dd827`.
 - `feature/fase-02-base-datos` → `develop`: [PR #5](https://github.com/Vasquezzz247/TiendaLab-SED/pull/5), fusionado. Conserva `ebf814f` y `da4e8b1`, publicados sin reescribirlos.
+- `feature/cierre-fase-02` → `develop`: [PR #6](https://github.com/Vasquezzz247/TiendaLab-SED/pull/6), cierre documental posterior a las pruebas de integración. Su enlace registra el estado y SHA del merge de estos mismos documentos.
 
 Frontend ya descendía de preparación: se respetó esa relación al integrar primero #1. La fase 2 partía del cierre anterior en `develop`. No se crearon commits para simular trabajo ni se eliminaron ramas antiguas.
 

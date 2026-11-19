@@ -34,6 +34,7 @@ Los dos commits de fase 2 no estaban publicados al iniciar el cierre. Se public�
 | [#3](https://github.com/Vasquezzz247/TiendaLab-SED/pull/3) | documentación → develop | Fusionado / 006c6c2 |
 | [#4](https://github.com/Vasquezzz247/TiendaLab-SED/pull/4) | cierre anterior → develop | Fusionado / 99dd827 |
 | [#5](https://github.com/Vasquezzz247/TiendaLab-SED/pull/5) | fase 2 → develop | Fusionado / 19adb71 |
+| [#6](https://github.com/Vasquezzz247/TiendaLab-SED/pull/6) | cierre documental → develop | PR real de este informe; SHA de su propio merge en el enlace |
 
 ## Ramas locales y remotas
 
@@ -49,7 +50,7 @@ Instantánea comprobada después de PR #5; las seis primeras tienen equivalente 
 | feature/fase-02-base-datos | da4e8b1 |
 | feature/cierre-fase-02 | Rama documental creada desde 19adb71; publicación mediante PR de cierre |
 
-El commit de estos documentos y su propio merge se consultan en el PR documental y en el historial para evitar una referencia circular a su SHA. `main` conserva el SHA completo `98b499d01169def30fe277f0771efbaff903f8c7`. No corresponde aún abrir `develop` → `main`.
+El commit inicial del cierre es `cf1f807627a16dc31b74f2abd6285a35fd9f5193`, publicado en `feature/cierre-fase-02` con seguimiento de origin. El [PR documental #6](https://github.com/Vasquezzz247/TiendaLab-SED/pull/6) incorpora ese commit y el enlace al propio PR. Al entregar, `develop` debe estar sincronizada con el merge remoto de #6 y contener código de fase 2 más este cierre; su SHA exacto se consulta en el PR para evitar una referencia circular al mismo documento. La verificación final comprueba esa condición antes de dar el cierre por terminado. `main` conserva el SHA completo `98b499d01169def30fe277f0771efbaff903f8c7`. No corresponde aún abrir `develop` → `main`.
 
 ## Seguridad de publicación y PDF
 
@@ -60,6 +61,8 @@ Se revisaron `.gitignore`, el árbol publicado de GitHub y los 102 blobs histór
 `scripts/auditar-exportacion.py` verificó el ZIP creado con `git archive`: nombres exactos, una copia por PDF, contenido idéntico al archivo local y al blob Git, sin cambios en el estado Git por exportar. El nombre con acento tiene indicador UTF-8; el nombre ASCII no lo necesita. Evidencia: `evidencias/cierre02-exportacion.json`.
 
 GitHub CLI no estaba disponible. Se usaron Git Credential Manager y la API oficial con credencial exclusivamente en memoria. El auxiliar de conexión permanece en `tmp`, ignorado. No se guardaron tokens en los reportes.
+
+Antes de publicar el cierre `cf1f807` se repitió el escaneo: 116 blobs históricos, cero archivos excluidos y cero coincidencias con los dos secretos locales. La evidencia `evidencias/cierre02-prepublicacion.json` conserva ese punto de control. La revisión del ZIP GitHub corresponde al merge de código #5; la exportación local se repite sobre el cierre.
 
 ## Pruebas y pendientes
 

@@ -26,6 +26,8 @@ Tras `git fetch origin`, los dos commits pedidos todavía aparecían en `origin/
 - El merge mantiene los commits originales. Después se sincronizó develop con fast-forward.
 - Se creó `feature/cierre-fase-02` desde develop para entregar este reporte y la evidencia posterior mediante un PR documental separado.
 
+PR documental real: [#6, cierre de fase 2](https://github.com/Vasquezzz247/TiendaLab-SED/pull/6), head `feature/cierre-fase-02`, base `develop`. Commit inicial publicado: `cf1f807627a16dc31b74f2abd6285a35fd9f5193`. La actualización añade el enlace a ese PR y esta constancia. El estado y SHA del merge del propio informe se consultan directamente en #6; no se inventa un SHA autorreferente. El cierre se entrega después de comprobar #6 fusionado y develop local/remoto sincronizados.
+
 ## 4. Ramas y estado de entrega
 
 Ramas locales/remotas conservadas: `main` (`98b499d`), `develop` (merge de fase 2 `19adb71`), `feature/fase-00-preparacion` (`81e2814`), `feature/fase-01-frontend` (`bd88660`), `feature/gitflow-documentacion` (`1d02941`) y `feature/fase-02-base-datos` (`da4e8b1`). La rama de cierre parte de `19adb71`.
@@ -54,6 +56,8 @@ Todas las evidencias están en `REPORTES/evidencias/`. Los intentos iniciales de
 ## 6. Exclusiones y secretos
 
 `.gitignore` se mantiene: excluye `.env`, variantes locales salvo `.env.example`, PHP portátil, temporales, logs, claves, dependencias, backups y data. `git check-ignore` confirmó las rutas locales de `.env`, PHP, ZIP y tar de Docker. El árbol GitHub del merge no está truncado y coincide con las exclusiones verificadas.
+
+Antes de publicar el primer commit documental se repitió el escaneo de historial: 116 blobs revisados, cero rutas excluidas y cero coincidencias con secretos locales; ver `evidencias/cierre02-prepublicacion.json`. También se verificaron enlaces locales de 12 documentos, sintaxis del auxiliar Python y metadatos/rutas del árbol GitHub. No hubo enlaces locales rotos.
 
 El auxiliar `scripts/auditar-exportacion.py` recorre el árbol HEAD y todos los objetos alcanzables por las referencias locales/remotas disponibles. En el merge de fase 2 revisó 102 blobs y comparó los dos secretos actuales de `.env` solamente en memoria: ninguna coincidencia. También buscó patrones de tokens GitHub y cabeceras de claves privadas. No se publicaron los secretos, el token de acceso, los binarios PHP ni el tar Docker. `.env.example` contiene únicamente marcadores de reemplazo; las contraseñas ficticias de demo no son claves administrativas SQL. La revisión no garantiza detectar secretos desconocidos o con otros formatos.
 
