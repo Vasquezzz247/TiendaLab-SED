@@ -88,3 +88,7 @@ En fases posteriores se añadirán base SQL/Compose, configuración Ubuntu/Apach
 - Entrega: 27/11/2026, Laboratorio 4, máximo 30 minutos. Pruebas autorizadas: 30/11 y 01/12/2026. No se ha cronometrado una instalación real.
 - Quedan por confirmar con el docente modo de conexión de la VM y si puede llevarse preconfigurada (propuesta p. 4). No bloquea el frontend.
 - GitHub remoto, PR, credenciales ficticias por rol, scripts Ubuntu, alternativa offline, pruebas reales de red, auditoría de seguridad y playbook se completarán en sus fases. El playbook depende de hallazgos reales en objetivos autorizados: no se fabrican evidencias.
+
+## Autorización posterior
+
+Tras auditoría externa se autorizó corregir fase 1 y desarrollar fase 2; detener antes de fase 3. Solo MariaDB se agrega en Docker y tests CLI prueban mysqli sin conectar formularios. El repositorio es ahora público por autorización expresa; no contiene .env ni secretos administrativos. El resumen de 459.50 del anexo sí coincide al sumar las tres facturas de Ana y 145.77 de Luis; corrige la apreciación preliminar sobre los totales.

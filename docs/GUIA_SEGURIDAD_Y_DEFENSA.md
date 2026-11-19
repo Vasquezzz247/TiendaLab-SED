@@ -1,5 +1,7 @@
 # Guía de seguridad y defensa de TiendaLab
 
+**Estado vigente posterior a auditoría: fase 2 completada localmente; fase 3 no iniciada.** La sección 14 actualiza los estados históricos de fases 0/1. MariaDB, hashes ficticios, esquema y pruebas CLI ya existen; los formularios siguen siendo prototipos. GitHub es público por confirmación expresa del usuario; nunca subir .env.
+
 Actualización: 18 de noviembre de 2026. Fases autorizadas y trabajadas: **0 y 1**. Esta guía se actualiza en cada fase; no presenta planes como implementaciones ni resultados futuros como pruebas realizadas.
 
 ## 1. Qué puedes afirmar hoy
@@ -340,3 +342,53 @@ Orden posterior real: API POST /user/repos con private=true y auto_init=false; `
 Se ejecutaron `git fetch origin`, `git switch develop`, `git merge --ff-only origin/develop`, `git switch -c feature/gitflow-documentacion`, commit documental y `git push -u origin feature/gitflow-documentacion`; el PR #3 se creó y fusionó del mismo modo. Luego fetch, switch develop, merge --ff-only, `git switch -c feature/fase-02-base-datos` y `git push -u origin feature/fase-02-base-datos`. API GET del repositorio, /branches y /pulls?state=all, más `git branch -vv` y `git ls-remote --heads origin`, verifican referencias y PR reales. El cierre documental se integra por PR adicional y las ramas develop/fase-02 se actualizan por fast-forward; no es implementación de fase 2.
 
 No hubo force push, reescritura de historial, cambios de permisos del sistema ni credenciales en archivos. No se configuraron protecciones obligatorias de ramas ni se afirma que existan. Main permanece como base reservada hasta preparar una entrega estable.
+
+## 14. Corrección de auditoría y fase 2 — ejecutado el 18/11/2026
+
+### Qué cambió, para qué y cómo explicarlo
+
+| Archivo | Control / finalidad | Explicación oral |
+| --- | --- | --- |
+| scripts/router.php | Lista explícita de páginas; assets dentro de ruta real; 404 para lo demás, incluido byte nulo | El servidor de desarrollo ya no responde con catálogo cuando una dirección no existe |
+| scripts/iniciar-frontend.ps1 | Arranca PHP con ese router | Las pruebas tienen un entorno definido y reproducible |
+| compose.yaml | Solo MariaDB; imagen por digest; host loopback; volumen; healthcheck; init de solo lectura | El contenedor guarda la base, el volumen conserva datos y el puerto solo recibe conexiones del propio host |
+| scripts/preparar-entorno.php | Dos secretos con random_bytes; archivo exclusivo, no sobrescribir; 0600 en Unix | Las claves de administración no son las contraseñas públicas de ejemplo |
+| database/init/01-schema.sql | InnoDB, PK/FK, correo único, CHECK, ENUM, DECIMAL, columnas monetarias generadas | La base rechaza referencias inexistentes, valores inválidos y cálculos de IVA manipulados |
+| database/init/02-seed.sql | Datos ficticios y bcrypt con sal distinta | La base guarda verificadores, no contraseñas de usuarios en claro |
+| database/init/03-permisos.sql | Revoca permisos de esquema por defecto y concede solo CRUD a la aplicación | PHP podrá trabajar con datos, no crear ni borrar tablas |
+| tests/database.test.php | CLI mysqli, consultas, rechazos y verificaciones; fuera de public | Verifico compatibilidad de conexión sin construir el login ni cambiar los formularios |
+| scripts/verificar-base.ps1 | Comprueba salud, binding y persistencia con dato modificado | No confundo volver a cargar el seed con conservar datos |
+
+### Comandos reales en orden
+
+Se ejecutaron en PowerShell desde la raíz del proyecto. En esta tabla `docker` equivale al ejecutable `C:\Program Files\Docker\Docker\resources\bin\docker.exe`; `php` al portátil `tools/php/php.exe`. Ninguno de estos comandos instala Apache ni configura Ubuntu.
+
+1. `git status --short --branch`, lectura de AGENTS, alcance/matriz y texto íntegro de los PDF. Una extracción nueva con pypdf comprobó 6/11 páginas y coincidencia con el texto releído. No cambiaron los originales.
+2. `docker version`, `docker compose version`, `docker ps --format '{{.Names}} {{.Ports}}'`, `docker image ls --format '{{.Repository}}:{{.Tag}}'`: Docker Engine 28.3.0, Compose 2.38.1; sin contenedores en ejecución al comenzar. Se reutilizó la rama existente feature/fase-02-base-datos.
+3. `php scripts/generar-seed.php`: creó SQL ficticio con password_hash bcrypt; la contraseña de demo está documentada separadamente en BASE_DE_DATOS.md. `php scripts/preparar-entorno.php`: creó .env con secretos aleatorios, sin mostrarlos.
+4. `docker compose config --quiet`: configuración válida, sin imprimir expansión de secretos. `docker compose up -d --wait --wait-timeout 180`: descargó inicialmente mariadb:11.4, creó red/volumen/contenedor, ejecutó init y llegó a Healthy.
+5. Se iniciaron dos procesos PHP ocultos con `Start-Process ... -S 127.0.0.1:8000 -t public scripts/router.php` y equivalente puerto 8002, con TIENDALAB_PROTOTIPO=1 y =0. `scripts/verificar-frontend.ps1 2>&1 | Tee-Object REPORTES/evidencias/fase02-frontend.txt` pasó. `Stop-Process` detuvo solo los dos PID creados. No hay prueba PHP Linux/Apache.
+6. `scripts/verificar-base.ps1 2>&1 | Tee-Object REPORTES/evidencias/fase02-base.txt`: config --quiet; up --wait; `php -d extension_dir=.../tools/php/ext -d extension=mysqli tests/database.test.php`; inspect de PortBindings y nombre de volumen; test mark; compose restart db; up --wait; verify-marker; up --force-recreate --wait db; verify-marker; restore; suite final; compose ps. Todas las etapas completadas. El script publicado contiene los argumentos exactos y aborta ante errores.
+7. `docker image inspect mariadb:11.4 --format '{{index .RepoDigests 0}}'`: obtuvo el digest guardado en compose.yaml; `docker compose exec -T db mariadb --version`: 11.4.13. `docker compose port db 3306`: 127.0.0.1:3306. `php -l` comprobó los PHP nuevos de scripts/tests.
+8. Se fijó la imagen por digest y se ejecutó de nuevo config --quiet y up --wait. `docker tag mariadb:11.4 tiendalab-mariadb:11.4.13`; `docker save -o tmp/tiendalab-mariadb.tar tiendalab-mariadb:11.4.13`: exportación real para traslado. No se exportaron secretos ni datos del volumen.
+9. `docker compose logs --no-color --tail 100 db` guardado en `REPORTES/evidencias/fase02-mariadb.log.txt`. Hay avisos de memory.pressure y fallback de io_uring a libaio; no se cambió la seguridad del host para suprimirlos. El servidor llega a ready for connections y Healthy.
+10. Suite mysqli final, compose ps/port, `Get-NetTCPConnection -State Listen -LocalPort 3306`, `Get-Item tmp/tiendalab-mariadb.tar` y `Get-FileHash ... -Algorithm SHA256` se guardaron en fase02-final.txt. Socket observado en Windows: 127.0.0.1:3306. El tar mide 105682432 bytes; hash en la evidencia. `git check-ignore .env tmp/tiendalab-mariadb.tar` confirma exclusión.
+
+### SQL realmente ejecutado
+
+El entrypoint ejecutó `01-schema.sql`, `02-seed.sql` y `03-permisos.sql` en el volumen nuevo. Los archivos contienen el DDL, INSERT/COMMIT y REVOKE/GRANT completos; no se ejecutó el seed contra un volumen preexistente. La suite ejecuta los SELECT y operaciones negativas exactas que se pueden estudiar en tests/database.test.php. Los cambios negativos están dentro de transacciones con rollback; los errores de permisos no se confunden con operaciones exitosas. El marcador cambia solo el nombre ficticio de Carla y lo restaura al terminar.
+
+Resultados: 5 usuarios, 9 productos, 4 facturas, 7 líneas, 4 FK, cinco hashes verificables, total 459.50, Ana propietaria de 1/3/4 y Luis de 2; 24 comprobaciones aprobadas antes y después de persistencia. Consulta mysqli preparada desde Windows devolvió el nombre con acento correctamente. Restricciones rechazaron stock negativo, precio cero, vendedor inexistente, correo repetido, rol desconocido, cantidad cero y eliminación de comprador referenciado. El usuario app no puede CREATE TABLE.
+
+### Límites que debes poder explicar
+
+- Escuchar en 0.0.0.0/:: **dentro** del contenedor, como indica el log, no equivale al binding del host. El host está limitado a 127.0.0.1 por Docker y fue observado con Get-NetTCPConnection. No se probaron conexiones desde otra computadora.
+- .env está ignorado y los valores no se imprimieron. Un administrador de Docker puede ver variables de contenedores: esto no promete protección frente al administrador del equipo.
+- FK asegura existencia, no rol; el subtotal debe coincidir con los detalles mediante una transacción futura. No se han implementado autorización web, sesiones, CSRF o compras.
+- La contraseña pública de demo jamás se usa como clave administrativa SQL. El hash verifica un ejemplo; no demuestra que el login web funcione.
+- Los avisos de io_uring no impidieron inicio ni pruebas; no se afirma ausencia total de advertencias.
+- El tar fue creado; `docker load` y una instalación desconectada en Ubuntu no se ejecutaron. Comandos recomendados se distinguen en BASE_DE_DATOS.md.
+- La comprobación de archivo nuevo y exportación de factura sigue pendiente de ejecución visual; se revisó su código, no se fabricó una prueba de navegador.
+- Las dos vulnerabilidades siguen reservadas a fase 4: no existe ruta IDOR ni servicio 8081. Preparar datos de distintos dueños no es introducir una omisión de autorización.
+
+Para practicar, iniciar Docker Compose, ejecutar el verificador y leer cada PASS junto al SQL correspondiente. Explicación: “La base ya tiene estructura y datos consistentes; los formularios aún no la utilizan. La siguiente fase tendrá que aplicar las reglas de negocio y permisos en PHP”. Detener al terminar con `docker compose stop db` conserva el volumen. Los comandos Ubuntu de la sección 8 continúan como recomendaciones no ejecutadas en Ubuntu.

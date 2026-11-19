@@ -13,5 +13,5 @@ try {
     $env:TIENDALAB_PROTOTIPO = if ($SinPrototipo) { '0' } else { '1' }
     Write-Host "TiendaLab: http://127.0.0.1:$Port/"
     Write-Host 'Vista previa local. Ctrl+C para detener. No inicia Apache, Docker ni base de datos.'
-    & $phpPath -S "127.0.0.1:$Port" -t (Join-Path $projectRoot 'public')
+    & $phpPath -S "127.0.0.1:$Port" -t (Join-Path $projectRoot 'public') (Join-Path $projectRoot 'scripts/router.php')
 } finally { $env:TIENDALAB_PROTOTIPO = $previousPrototype }

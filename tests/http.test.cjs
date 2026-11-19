@@ -6,7 +6,7 @@ const pages = ['/', '/login.php', '/register.php', ...['inicio','comprador','car
 let checks = 0;
 async function check(path, status, origin=base, options={}) {
     const response = await fetch(origin+path, options);
-    assert.equal(response.status, status, `${path}: HTTP esperado ${status}`);
+    assert.equal(response.status, status, `${path}: HTTP esperado ${status}; iniciar PHP con scripts/router.php. Un catalogo de respaldo HTTP 200 NO demuestra acceso al recurso solicitado.`);
     checks++;
     return response;
 }
