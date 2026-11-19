@@ -63,7 +63,7 @@ Carrito en sesión PHP: solo ID/cantidad, hasta 20 productos y 999 unidades por 
 
 El vendedor no puede elegir otro propietario. Las imágenes nuevas son JPG/PNG/WEBP auténticas, hasta 2 MB, 4096 px por lado y 16 millones de píxeles; se recodifican a PNG y guardan fuera de la raíz web. En edición puede conservarse la imagen anterior.
 
-Eliminar un usuario sin referencias lo borra; si tiene productos o facturas se desactiva. La baja de un producto conserva el nombre/precio histórico de sus detalles y deja `producto_id` NULL. El administrador no puede eliminarse ni quitarse su propio acceso. Las claves foráneas permanecen activas. No se añadió ninguna tabla ni migración.
+Eliminar un usuario sin referencias lo borra; si tiene productos o facturas se desactiva. La baja de un producto conserva el nombre/precio histórico de sus detalles y deja `producto_id` NULL. El administrador no puede eliminarse ni quitarse su propio acceso. Un vendedor con productos activos no puede cambiar de rol: el administrador debe retirarlos o reasignarlos antes (los productos retirados conservan su dueño histórico). Las claves foráneas permanecen activas. No se añadió ninguna tabla ni migración.
 
 ## Pruebas reproducibles
 
