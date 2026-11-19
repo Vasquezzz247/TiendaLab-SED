@@ -16,7 +16,14 @@ param(
 $ErrorActionPreference = 'Stop'
 $vbox = (Get-Command VBoxManage -ErrorAction SilentlyContinue).Source
 if (-not $vbox) { $vbox = 'C:\Program Files\Oracle\VirtualBox\VBoxManage.exe' }
-function Invoke-Vbox { & $vbox @args; if ($LASTEXITCODE -ne 0) { throw "VBoxManage fallo: $($args -join ' ')" } }
+# VBoxManage escribe el progreso por stderr: en PowerShell 5.1 eso cortaria el script con ErrorActionPreference=Stop.
+# Solo se mira el codigo de salida; el mensaje de error no incluye los argumentos (pueden llevar la contrasena).
+function Invoke-Vbox {
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    $salida = & $vbox @args 2>&1 | Out-String
+    $codigo = $LASTEXITCODE; $ErrorActionPreference = $previous
+    if ($codigo -ne 0) { throw "VBoxManage fallo en '$($args[0]) $($args[1])' (codigo $codigo): $salida" }
+}
 function New-Secret([int]$Length) { -join ((48..57) + (65..90) + (97..122) | Get-Random -Count $Length | ForEach-Object { [char]$_ }) }
 
 if (-not (Test-Path $Iso)) { throw "No existe el ISO: $Iso" }
