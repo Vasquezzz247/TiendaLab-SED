@@ -2,7 +2,7 @@
 
 Tienda académica de tecnología con **PHP puro, mysqli y MariaDB**, sin frameworks, ORM, CDN ni servicios en nube. El diseño de fase 1 ahora permite operaciones reales de laboratorio.
 
-**Estado: fase 3 implementada e integrada en develop mediante [PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7); fases 4 y 5 no iniciadas.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Desde la fase 4 `factura.php?id=` tiene el IDOR aprobado (vulnerabilidad A); el servicio 8081 aún no existe. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
+**Estado: fase 3 implementada e integrada en develop mediante [PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7); fase 4 (las dos vulnerabilidades aprobadas) en desarrollo y fase 5 no iniciada.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Desde la fase 4 `factura.php?id=` tiene el IDOR aprobado (vulnerabilidad A); el diagnóstico ficticio de la vulnerabilidad B está preparado para Apache en TCP/8081 (carpeta `diagnostico/` y `deploy/apache/`), probado con Apache 2.4 en contenedor, aún no en Ubuntu. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
 
 Repositorio [TiendaLab-SED](https://github.com/Vasquezzz247/TiendaLab-SED), **público por autorización previa**. Los PDF originales contienen nombres y carnets académicos; la documentación incluye rutas locales. Se conservan íntegros y su información es públicamente accesible. `.env`, sesiones, imágenes subidas, herramientas y temporales no se publican.
 
@@ -86,6 +86,17 @@ Para revisar las maquetas históricas sin confundirlas con permisos reales, inic
 
 Y en otra: `.\scripts\verificar-frontend.ps1`. Las maquetas solo se habilitan por opción explícita y loopback; sus POST siguen rechazados. La aplicación real funciona sin JavaScript salvo mejoras visuales e impresión.
 
+## Vulnerabilidades aprobadas (fase 4)
+
+Exactamente dos, ambas ficticias y acotadas; detalle, reproducción y mitigación en las secciones 20 y 21 de la [guía](docs/GUIA_SEGURIDAD_Y_DEFENSA.md):
+
+| Vulnerabilidad | Dónde | Qué omite |
+| --- | --- | --- |
+| A. IDOR en facturas | `factura.php?id=` (`invoice_detail()` en `app/shop.php`) | Solo la comprobación de propietario de la consulta individual; siguen sesión, rol y consulta preparada |
+| B. Servicio de diagnóstico expuesto | TCP/8081: `diagnostico/index.html` + `deploy/apache/tiendalab-diagnostico.conf` | Escucha en todas las interfaces y sin restricción por IP; página estática con datos inventados, sin enlace desde la tienda |
+
+Comprobar B (Apache 2.4 en contenedor efímero, solo en `127.0.0.1:8081`): `.\scripts\verificar-diagnostico.ps1`. En la VM se instala con Apache directo en Ubuntu en la fase 5. **Nunca exponer la VM a internet ni abrir el puerto en el router.**
+
 ## Exportar una copia limpia
 
 Comprimir la carpeta del proyecto arrastra `.env`, sesiones, `tmp/`, `tools/` y el volumen de pruebas. Usa en su lugar:
@@ -104,7 +115,7 @@ El ZIP sale de `git archive` (únicamente archivos versionados del commit indica
 Desarrollo comprobado: navegador → PHP Windows → mysqli → MariaDB Docker (127.0.0.1:3306)
 Entrega prevista fase 5: navegador autorizado → VM Ubuntu Server 24.04 → Apache/PHP host
                                                               → MariaDB Docker loopback
-Fase 4 pendiente: diagnóstico ficticio independiente en 8081
+Fase 4: diagnóstico ficticio independiente en 8081 (Apache; se instala en la fase 5)
 ```
 
 ```text
@@ -131,4 +142,4 @@ REPORTES/, docs/        Evidencias, alcance, requisitos y defensa
 - [GitFlow](docs/GITFLOW.md) y [estado del remoto](REPORTES/ESTADO_GITFLOW.md).
 - [Reporte fase 3](REPORTES/FASE_03_BACKEND.md), [cierre fase 2](REPORTES/CIERRE_FASE_02_GITFLOW.md), reportes históricos de fases 0/1.
 
-Detenerse para auditoría antes de fase 4. Pendientes: las dos vulnerabilidades aprobadas, Ubuntu/Apache/red/firewall, prueba desde otro equipo, instalación offline y cronometraje, impresión/PDF efectiva y revisión móvil completa. Nada de ello se presenta como ejecutado. `main` sigue reservada para entrega; esta fase se integra únicamente a `develop` mediante PR real.
+Pendientes: instalación del diagnóstico en Ubuntu/Apache, red/firewall, prueba desde otro equipo, instalación offline y cronometraje, impresión/PDF efectiva y revisión móvil completa. Nada de ello se presenta como ejecutado. `main` sigue reservada para entrega; esta fase se integra únicamente a `develop` mediante PR real.

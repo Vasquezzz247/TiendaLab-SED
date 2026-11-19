@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>TiendaLab · panel de diagnóstico</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 48px 16px; background: #0d1530; color: #cfd8ee; font: 13px/1.5 ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace; }
+  main { max-width: 720px; margin: 0 auto; }
+  h1 { margin: 0 0 14px; font-size: 15px; color: #e8edf9; letter-spacing: .02em; }
+  .aviso { margin-bottom: 18px; padding: 8px 12px; background: #8a3016; color: #ffd9a8; border-radius: 4px; }
+  table { width: 100%; margin-bottom: 18px; border-collapse: collapse; background: #17213f; }
+  caption { padding: 7px 12px; text-align: left; font-weight: 700; color: #e8edf9; background: #2b3a5c; }
+  th, td { padding: 6px 12px; text-align: left; font-weight: 400; border-top: 1px solid #243055; vertical-align: top; }
+  th { width: 38%; color: #8c9bc2; }
+  .ok { color: #4ade80; }
+  footer { margin-top: 8px; color: #6e7ca3; font-size: 11px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>TiendaLab · panel de diagnóstico (uso interno)</h1>
+  <p class="aviso">Solo para el equipo de desarrollo. No publicar.</p>
+
+  <table>
+    <caption>Servidor</caption>
+    <tr><th scope="row">Hostname</th><td>tiendalab-vm01</td></tr>
+    <tr><th scope="row">Sistema</th><td>Ubuntu Server 24.04 LTS</td></tr>
+    <tr><th scope="row">Servidor web</th><td>Apache/2.4 + PHP 8.3</td></tr>
+    <tr><th scope="row">Uptime</th><td>3 días, 4 h 12 min</td></tr>
+    <tr><th scope="row">Build</th><td>v0.3.1-dev (rama develop)</td></tr>
+  </table>
+
+  <table>
+    <caption>Base de datos</caption>
+    <tr><th scope="row">Motor</th><td>MariaDB 11.4 (contenedor tiendalab-db)</td></tr>
+    <tr><th scope="row">Host interno</th><td>127.0.0.1:3306</td></tr>
+    <tr><th scope="row">Usuario de servicio</th><td>diag_lectura</td></tr>
+    <tr><th scope="row">Clave de servicio</th><td>Diag#Ficticia-2026</td></tr>
+    <tr><th scope="row">Estado</th><td class="ok">● conectado</td></tr>
+  </table>
+
+  <table>
+    <caption>Rutas internas</caption>
+    <tr><th scope="row">Respaldo nocturno</th><td>/srv/backups/tiendalab_diario.sql.gz</td></tr>
+    <tr><th scope="row">Logs de la app</th><td>/var/log/tiendalab/app.log</td></tr>
+    <tr><th scope="row">Correo de soporte</th><td>soporte@tiendalab.test</td></tr>
+  </table>
+
+  <footer>LABORATORIO · todos los datos de esta página son ficticios y no corresponden a ningún servicio real.</footer>
+</main>
+</body>
+</html>
