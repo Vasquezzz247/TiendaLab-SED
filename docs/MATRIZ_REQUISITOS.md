@@ -15,7 +15,7 @@ Fuentes: D = definición oficial, P = propuesta; numeración física. Estado al 
 | R09 | D1; P8 | Factura detallada e imprimir | prototipo factura con aviso | Líneas, totales y estilos de impresión | V / generación 3 |
 | R10 | P9 | Historial de facturas del comprador | prototipo historial | Enlaces y totales consistentes; luego filtro por sesión | V / backend 3 |
 | R11 | D1; P2,10 | Vendedor: alta y edición de productos propios | prototipo vendedor; formulario compartido | Abrir edición, validación, preview local; propiedad futura | V / backend 3 |
-| R12 | P10 | Nombre, descripción, precio, stock e imagen | formulario-producto.php | Obligatorios, precio >0, stock entero >=0, JPG/PNG/WEBP <=2 MB | V / servidor 3 |
+| R12 | P10 | Nombre, descripción, precio, stock e imagen | app/components/product-form.php | Obligatorios, precio >0, stock entero >=0, JPG/PNG/WEBP <=2 MB | V / servidor 3 |
 | R13 | D1; P10 | Admin: CRUD de productos | prototipo admin-productos | Nuevo/editar/eliminar presentan borrador o aviso, sin éxito ficticio | V / backend 3 |
 | R14 | D1; P11 | Admin: CRUD de usuarios y roles | prototipo admin-usuarios | Alta, edición de datos, roles, aviso de eliminación | V / backend 3 |
 | R15 | P10,11 | Resumen general | tarjetas de métricas ficticias | Totales coherentes con datos demo | V / consulta 3 |
@@ -41,3 +41,7 @@ Fuentes: D = definición oficial, P = propuesta; numeración física. Estado al 
 | R35 | Instrucción adicional del usuario | Guía técnica sencilla de seguridad y defensa, actualizada por fase | docs/GUIA_SEGURIDAD_Y_DEFENSA.md | Comandos ejecutados separados de Ubuntu recomendado, archivos, pruebas, controles y mitigaciones | D / 1; mantener 2-7 |
 
 Las pruebas de fases futuras son criterios de aceptación, **no resultados ejecutados**. Las evidencias reales de fase 1 se enumeran en su reporte y archivos adjuntos.
+
+## Actualización fase 2
+
+Prevalece sobre los estados históricos de la tabla: R19 implementado y probado localmente (Compose/SQL/volumen, reinicio y recreación); R20 publicación loopback comprobada por Docker, red Ubuntu/segundo equipo pendiente; R28 cinco cuentas con hash verificadas en BD, login pendiente de fase 3; R32 imagen exportada, instalación offline Ubuntu pendiente; R25 GitHub público por autorización y PR 1-4 históricos, esta fase sin PR/integración; R35 guía actualizada. R01/R04/R34 usan router explícito en preview; suite Windows aprobada, Linux/Apache pendientes. R08, R21 y R22 no implementados. Evidencia en REPORTES/FASE_02_BASE_DATOS_DOCKER.md.
