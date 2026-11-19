@@ -671,3 +671,34 @@ sha256sum -c SHA256SUMS.txt && docker load -i tiendalab-mariadb.tar        # en 
 ```
 
 **Límites honestos.** `docker load` del tar en una máquina limpia **no se probó** (en este equipo la imagen ya existía; solo se comprobó el contenido del tar). Los paquetes de Ubuntu (Apache, PHP, Docker) y una instalación realmente desconectada siguen pendientes para la fase de despliegue. El auditor no detecta secretos desconocidos que no coincidan con el `.env` local ni con los patrones de tokens/llaves; no sustituye la revisión humana. La auditoría de historial de Git de `scripts/auditar-exportacion.py` (fases anteriores) sigue disponible y es complementaria.
+
+## 20. Fase 4 — Vulnerabilidad A: IDOR en `factura.php?id=` — ejecutado el 19/11/2026
+
+**Qué es.** IDOR (Insecure Direct Object Reference): la aplicación recibe un identificador (`id`) y entrega el objeto sin comprobar que el usuario tiene derecho a él. Aquí, cualquier comprador con sesión puede ver la factura de otro cambiando el número de la URL.
+
+**Qué se hizo.** Solo se cambió la consulta individual de facturas, tal como aprobó la propuesta:
+
+| Archivo | Cambio |
+| --- | --- |
+| `app/shop.php` | `buyer_invoice($id, $comprador)` pasa a `invoice_detail($id)`. La consulta ya no incluye `AND f.comprador_id=?`. Un comentario `VULNERABILIDAD A` marca la omisión y la corrección |
+| `app/web.php` | La ruta llama a `invoice_detail()` y ya no pasa el id de sesión |
+| `tests/backend.test.cjs` | La prueba que exigía 404 para factura ajena ahora exige el IDOR; se añaden 6 pruebas que demuestran que la debilidad queda acotada |
+
+**Qué NO cambió (a propósito).** La ruta sigue exigiendo sesión **y** rol comprador (`require_role` en `app/web.php`); el historial sigue filtrando por `comprador_id` de la sesión; el `id` se valida como entero y la consulta sigue preparada, así que **no hay inyección SQL**; la compra, el carrito, los productos y los usuarios mantienen sus controles. No se desactivó ninguna protección global.
+
+**Comandos realmente ejecutados y resultados.**
+
+| Comando | Resultado observado |
+| --- | --- |
+| `.\scripts\verificar-backend.ps1` | **120 HTTP/BD aprobadas** (114 previas − 1 prueba invertida + 7 nuevas), 8 PHP, 3 JS, 2 rollbacks, concurrencia; limpieza con SHA-256 idéntico del seed |
+| Reproducción con el seed (`REPORTES/evidencias/fase04-idor-reproduccion.txt`): login como `ana@tiendalab.test`, `GET /historial.php`, `GET /factura.php?id=1` y `id=2` | El historial de Ana lista solo las facturas 4, 3 y 1. `id=1` → 200 «Ana Martínez, $73.33». **`id=2` → 200 «Luis Hernández, luis@tiendalab.test, $145.77»**. Facturas sin cambios en la base |
+
+Las 6 pruebas de acotamiento: sin sesión → 303 a `/login.php`; vendedor → 403; administrador → 403; id inexistente → 404; `id=<n> OR 1=1` → 422 sin devolver la factura (no es SQLi); el parámetro `comprador_id` forjado en la URL se ignora.
+
+**Cómo reproducirlo (laboratorio).** 1) Inicia sesión como `ana@tiendalab.test`. 2) Abre `/historial.php` y anota los números de tus facturas. 3) Cambia el número en `/factura.php?id=2`. 4) Aparece la factura de Luis. Impacto: exposición de nombre, correo y compras de otro cliente; aquí todo es ficticio.
+
+**Cómo se corrige.** Volver a `WHERE f.id=? AND f.comprador_id=?` con `$_SESSION['uid']` (la versión de fase 3). Complementos: identificadores no secuenciales (UUID) y registro de accesos denegados.
+
+**Cómo explicarlo sencillamente.** «La página comprueba que eres un comprador, pero no que la factura sea tuya. Es como un hotel que revisa que tengas llave de *alguna* habitación pero te deja abrir *cualquiera* si cambias el número de la puerta.»
+
+**Límites honestos.** Se probó en Windows con el servidor integrado de PHP, no en Apache/Ubuntu. La reproducción manual se hizo con un script HTTP, no con capturas del navegador.

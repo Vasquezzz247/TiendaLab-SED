@@ -60,10 +60,13 @@ function purchase(int $buyerId, array $cart): int
         return $invoiceId;
     } catch (Throwable $error) { $db->rollback(); throw $error; }
 }
-function buyer_invoice(int $invoiceId, int $buyerId): array
+// VULNERABILIDAD A (aprobada en la propuesta, IDOR en factura.php?id=): esta consulta individual NO comprueba que la
+// factura pertenezca al comprador autenticado. Es la única omisión intencional del proyecto. El resto sigue protegido:
+// la ruta exige sesión y rol comprador (app/web.php), el historial filtra por comprador_id, el id se valida como
+// entero y la consulta es preparada (no hay inyección SQL). Corrección: añadir "AND f.comprador_id=?" con el id de sesión.
+function invoice_detail(int $invoiceId): array
 {
-    // Fase 3: la propiedad es obligatoria. Nunca tomar comprador_id del navegador.
-    $invoice = row('SELECT f.*,u.nombre,u.correo FROM facturas f JOIN usuarios u ON u.id=f.comprador_id WHERE f.id=? AND f.comprador_id=?', [$invoiceId, $buyerId]);
+    $invoice = row('SELECT f.*,u.nombre,u.correo FROM facturas f JOIN usuarios u ON u.id=f.comprador_id WHERE f.id=?', [$invoiceId]);
     if (!$invoice) { throw new AppError('Factura no encontrada.', 404); }
     $invoice['items'] = rows('SELECT * FROM detalle_facturas WHERE factura_id=? ORDER BY id', [$invoiceId]);
     return $invoice;

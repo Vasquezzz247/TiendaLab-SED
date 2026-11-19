@@ -115,7 +115,7 @@ function dispatch(string $page): void
         if ($page === 'factura' || $page === 'historial') {
             if ($method === 'POST') { throw new AppError('Método no permitido.', 405); }
             if ($page === 'factura') {
-                $invoice = buyer_invoice(integer_input($_GET['id'] ?? ''), (int) $user['id']);
+                $invoice = invoice_detail(integer_input($_GET['id'] ?? '')); // Vulnerabilidad A: sin comprobar propietario
                 live_page('factura', 'Factura', $user, ['invoice'=>$invoice]);
             } else {
                 live_page('historial', 'Mis facturas', $user, ['invoices'=>rows('SELECT f.*, (SELECT COUNT(*) FROM detalle_facturas d WHERE d.factura_id=f.id) AS lineas FROM facturas f WHERE comprador_id=? ORDER BY id DESC', [$user['id']])]);
