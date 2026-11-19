@@ -1,6 +1,8 @@
 # TiendaLab
 
-Repositorio público (cambio autorizado posteriormente): https://github.com/Vasquezzz247/TiendaLab-SED. El frontend integrado está en `develop`; `main` se reserva para entrega estable. Ver [estado actualizado de GitFlow](REPORTES/ESTADO_GITFLOW.md). Las menciones a remoto pendiente más abajo corresponden al cierre histórico de fase 1.
+Repositorio **público** por autorización del usuario: https://github.com/Vasquezzz247/TiendaLab-SED. Las fases 0, 1 y 2 están integradas en `develop`; `main` se reserva para entrega estable. Fase 2 integrada mediante [PR #5](https://github.com/Vasquezzz247/TiendaLab-SED/pull/5), merge `19adb71`. Ver [cierre de fase 2](REPORTES/CIERRE_FASE_02_GITFLOW.md) y [estado de GitFlow](REPORTES/ESTADO_GITFLOW.md).
+
+**Información académica pública:** los PDF originales contienen nombres y carnets del equipo; también existen rutas locales en la documentación. Cualquier persona con acceso a GitHub puede consultarlos y copiarlos. Se conservaron por instrucción del usuario, sin cambiar su contenido ni la visibilidad durante este cierre.
 
 Proyecto universitario de **Seguridad en Entornos de Desarrollo**. Tienda de tecnología con comprador, vendedor y administrador, según la definición oficial y la propuesta de los PDF de esta carpeta.
 
@@ -98,12 +100,12 @@ tools/php/               Intérprete local ignorado por Git
 - [Alcance y análisis de las capturas](docs/ALCANCE.md).
 - [Matriz de requisitos](docs/MATRIZ_REQUISITOS.md).
 - [Guía de seguridad y defensa](docs/GUIA_SEGURIDAD_Y_DEFENSA.md): controles actuales, comandos ejecutados, Apache/PHP/sesiones/roles/BD/Docker/red previstos y cómo explicarlos.
-- [GitFlow](docs/GITFLOW.md): `main`, `develop` y ramas feature locales; sin remoto ni PR aún.
+- [GitFlow](docs/GITFLOW.md): ramas locales/remotas e integraciones mediante PR reales.
 - [Reporte fase 0](REPORTES/FASE_00_PREPARACION.md) y [reporte fase 1](REPORTES/FASE_01_FRONTEND.md).
 
 ## Pendiente para la entrega final
 
-Fase 2 completada localmente: SQL, MariaDB/Compose y volumen; ver documentación de base. Fase 3: sesiones, autenticación, roles, mysqli, CRUD, transacciones, stock y facturas reales. Fase 4: únicamente IDOR de propiedad en factura autenticada y diagnóstico ficticio 8081. Fase 5: instalación Ubuntu/Apache, red autorizada, scripts de servicio y alternativa offline. Fase 6: pruebas funcionales y auditoría. Fase 7: README final, GitHub/PR, evidencias y simulación de instalación cronometrada.
+Fase 2 publicada e integrada: SQL, MariaDB/Compose y volumen, con pruebas repetidas tras el merge. **Esperar revisión antes de fase 3:** sesiones, autenticación, roles, CRUD, transacciones, stock y facturas reales. Fase 4: únicamente IDOR de propiedad en factura autenticada y diagnóstico ficticio 8081. Fase 5: instalación Ubuntu/Apache, red autorizada, scripts de servicio y alternativa offline. Fase 6: pruebas funcionales y auditoría. Fase 7: README final, release/PR hacia main, evidencias y simulación de instalación cronometrada.
 
 Entrega prevista: **27/11/2026**, Laboratorio 4, máximo 30 minutos de instalación. No se ha medido una instalación real ni se afirma cumplir ese tiempo. Pruebas del ejercicio: 30/11 y 01/12/2026, únicamente en los objetivos y horarios autorizados. Red de la VM y posibilidad de llevarla preconfigurada siguen pendientes de instrucciones del docente.
 

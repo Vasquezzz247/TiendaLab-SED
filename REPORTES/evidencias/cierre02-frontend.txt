@@ -1,0 +1,35 @@
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\bootstrap.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\admin-summary.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\footer.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\header.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\product-card.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\product-form.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\components\product-table.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\admin-productos.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\admin-usuarios.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\carrito.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\catalogo.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\factura.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\historial.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\login.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\prototipo.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\register.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\app\views\vendedor.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\demo\datos.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\index.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\login.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\register.php
+No syntax errors detected in C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex\public\prototipo\index.php
+PASS: 8 comprobaciones PHP de escape, guardia local y formato monetario.
+✔ anexo: 39.99 + 34.00, IVA 13%, total 83.61 (3.6974ms)
+✔ carrito vacío y redondeo al centavo (0.3343ms)
+✔ cantidades enteras entre uno y existencias, sin negativos ni fracciones (0.461ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 184.6625
+PASS: 53 comprobaciones HTTP; 11 pantallas, 13 assets únicos, enlaces, cabeceras, rutas negativas y factura del anexo.
