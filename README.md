@@ -86,6 +86,18 @@ Para revisar las maquetas históricas sin confundirlas con permisos reales, inic
 
 Y en otra: `.\scripts\verificar-frontend.ps1`. Las maquetas solo se habilitan por opción explícita y loopback; sus POST siguen rechazados. La aplicación real funciona sin JavaScript salvo mejoras visuales e impresión.
 
+## Exportar una copia limpia
+
+Comprimir la carpeta del proyecto arrastra `.env`, sesiones, `tmp/`, `tools/` y el volumen de pruebas. Usa en su lugar:
+
+```powershell
+.\scripts\exportar.ps1            # ZIP del código en dist/, solo lo versionado, auditado
+.\scripts\exportar.ps1 -Offline   # paquete aparte: imagen Docker de MariaDB + SHA-256 + LEEME
+python -I scripts/auditar-zip.py ruta\al.zip   # audita cualquier ZIP, también uno recibido
+```
+
+El ZIP sale de `git archive` (únicamente archivos versionados del commit indicado), se niega a exportar con cambios sin confirmar, y se elimina si la auditoría encuentra `.env`, sesiones, temporales, `.git`, tar, llaves o los secretos locales. `dist/` está ignorado por Git. El paquete offline contiene solo la imagen pública de MariaDB; los paquetes de Ubuntu (Apache, PHP, Docker) se preparan en la fase de despliegue. Detalle y resultados en la sección 19 de la [guía](docs/GUIA_SEGURIDAD_Y_DEFENSA.md).
+
 ## Arquitectura y carpetas
 
 ```text
