@@ -4,6 +4,7 @@ declare(strict_types=1);
 $path = rawurldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '');
 if (str_contains($path, "\0")) { http_response_code(404); exit('No encontrado.'); }
 $routes = ['/' => 'index.php', '/index.php' => 'index.php', '/login.php' => 'login.php', '/register.php' => 'register.php', '/prototipo/' => 'prototipo/index.php', '/prototipo/index.php' => 'prototipo/index.php'];
+foreach (['logout','carrito','factura','historial','vendedor','admin-productos','admin-usuarios','imagen'] as $page) { $routes['/' . $page . '.php'] = $page . '.php'; }
 if (isset($routes[$path])) {
     require __DIR__ . '/../public/' . $routes[$path];
     return true;

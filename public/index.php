@@ -1,3 +1,3 @@
 <?php
-require __DIR__ . '/../app/bootstrap.php';
-render_page('catalogo', 'Catálogo');
+require __DIR__ . '/../app/web.php';
+dispatch('catalogo');

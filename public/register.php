@@ -1,3 +1,3 @@
 <?php
-require __DIR__ . '/../app/bootstrap.php';
-render_page('register', 'Crear cuenta');
+require __DIR__ . '/../app/web.php';
+dispatch('register');

@@ -1,3 +1,3 @@
 <?php
-require __DIR__ . '/../app/bootstrap.php';
-render_page('login', 'Iniciar sesión');
+require __DIR__ . '/../app/web.php';
+dispatch('login');

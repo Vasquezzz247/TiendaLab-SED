@@ -4,7 +4,8 @@ declare(strict_types=1);
 function image_url(string $name): string
 {
     if (preg_match('/^[a-f0-9]{32}\.png$/D', $name)) { return '/imagen.php?id=' . $name; }
-    return '/assets/img/' . (preg_match('/^[a-z]+\.svg$/D', $name) ? $name : 'marca.svg');
+    // El seed conserva rutas /assets/img/...; los nombres de prueba pueden ser relativos.
+    return '/assets/img/' . (preg_match('#^(?:/assets/img/)?([a-z]+\.svg)$#D', $name, $match) ? $match[1] : 'marca.svg');
 }
 function save_image(?array $file): ?string
 {
