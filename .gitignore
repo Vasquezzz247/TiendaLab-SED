@@ -5,3 +5,13 @@
 *.log
 .DS_Store
 Thumbs.db
+.env.*
+!.env.example
+*.pem
+*.key
+/node_modules/
+/vendor/
+/.idea/
+/.vscode/
+/backups/
+/data/
