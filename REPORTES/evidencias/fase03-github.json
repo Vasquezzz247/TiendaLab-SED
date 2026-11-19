@@ -1,0 +1,52 @@
+{
+  "repositorio": "https://github.com/Vasquezzz247/TiendaLab-SED",
+  "publico": true,
+  "predeterminada": "main",
+  "pr": "https://github.com/Vasquezzz247/TiendaLab-SED/pull/7",
+  "fusionado": true,
+  "merge": "dc361c05d7ee0b7931c1088a160fcee8741e8062",
+  "head": "4edff06ddf64ece3a4e977d19d79f358bdcb145a",
+  "base": "develop",
+  "commits": [
+    "edf2df66b083369232e596f5e549f272b532cf98",
+    "930319bb8394f1ead7f214324922b7df4daedf2d",
+    "942eb79e9eccff88ee77e1f0ce13911db7ea1303",
+    "9fd70cedbe206743d150e4a29c61a373a6bb8ae4",
+    "4d28092ab2eb26147dd479d5e2a2b8fa457a8058",
+    "4edff06ddf64ece3a4e977d19d79f358bdcb145a"
+  ],
+  "ramas": [
+    {
+      "nombre": "develop",
+      "sha": "dc361c05d7ee0b7931c1088a160fcee8741e8062"
+    },
+    {
+      "nombre": "feature/cierre-fase-02",
+      "sha": "f2ff93bfd0729f4f320d1d71d2de321b0a4f0640"
+    },
+    {
+      "nombre": "feature/fase-00-preparacion",
+      "sha": "81e281403a67080b641fb8e9e982bae19789e862"
+    },
+    {
+      "nombre": "feature/fase-01-frontend",
+      "sha": "bd886607a3293e31030e172f43dd41843576cbce"
+    },
+    {
+      "nombre": "feature/fase-02-base-datos",
+      "sha": "da4e8b1246950b8ce85a4c6185987743bfd70327"
+    },
+    {
+      "nombre": "feature/fase-03-backend",
+      "sha": "4edff06ddf64ece3a4e977d19d79f358bdcb145a"
+    },
+    {
+      "nombre": "feature/gitflow-documentacion",
+      "sha": "1d029415cdb611ad8119bbe0f403a7559f22fa44"
+    },
+    {
+      "nombre": "main",
+      "sha": "98b499d01169def30fe277f0771efbaff903f8c7"
+    }
+  ]
+}

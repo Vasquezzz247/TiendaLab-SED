@@ -1,6 +1,6 @@
 # Estado de GitHub y GitFlow
 
-Actualizado el 18/11/2026 para el cierre de fase 2. Este documento sustituye el estado anterior de preparación; los reportes antiguos conservan su contexto histórico.
+Actualizado el 18/11/2026. **El estado vigente de fase 3 está al final de este documento.** Las secciones de fase 2 conservan su contexto histórico y no describen el backend actual.
 
 ## Repositorio y alcance
 
@@ -9,7 +9,7 @@ Actualizado el 18/11/2026 para el cierre de fase 2. Este documento sustituye el 
 - `origin`: https://github.com/Vasquezzz247/TiendaLab-SED.git
 - Predeterminada/entrega: `main`. Integración: `develop`.
 - Se reutilizó el mismo repositorio. Sin force push, rebase, squash, borrado de ramas ni pérdida de commits.
-- No se inició fase 3, no se implementaron vulnerabilidades ni se modificó la aplicación durante el cierre.
+- Durante el cierre histórico de fase 2 no se inició fase 3 ni se modificó la aplicación. La fase 3 fue autorizada e integrada posteriormente; las vulnerabilidades siguen pendientes.
 
 ## Commits publicados e integraciones
 
@@ -72,4 +72,13 @@ Evidencia y detalle: [cierre de fase 2](CIERRE_FASE_02_GITFLOW.md). Pendientes: 
 
 ## Actualización posterior: fase 3
 
-El estado de las secciones anteriores corresponde al cierre de fase 2. El usuario autorizó después fase 3: backend PHP/mysqli completo, sin fases 4/5. Se creó feature/fase-03-backend desde develop sincronizada en 4b5bbd5, con commits por módulo y pruebas contra MariaDB real. La publicación/PR/merge de esta fase se registran en REPORTES/FASE_03_BACKEND.md. Main conserva 98b499d01169def30fe277f0771efbaff903f8c7; la visibilidad sigue pública por autorización previa.
+El estado de las secciones anteriores corresponde al cierre de fase 2. El usuario autorizó después fase 3: backend PHP/mysqli completo, sin fases 4/5. Se creó `feature/fase-03-backend` desde develop sincronizada en `4b5bbd5`.
+
+- Commits publicados: `edf2df6`, `930319b`, `942eb79`, `9fd70ce`, `4d28092`, `4edff06`.
+- **[PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7)**: feature/fase-03-backend → develop, fusionado. Merge: `dc361c05d7ee0b7931c1088a160fcee8741e8062`.
+- `origin/develop` contiene el backend probado. El cierre documental continúa en la misma feature desde ese merge; develop local se sincroniza al terminar.
+- `main` y `origin/main`: `98b499d01169def30fe277f0771efbaff903f8c7`; predeterminada y sin cambios. Visibilidad pública, sin modificación.
+- Las ramas históricas locales/remotas permanecen: preparación `81e2814`, frontend `bd88660`, documentación `1d02941`, base de datos `da4e8b1`, cierre de fase 2 `f2ff93b`. No se borró ni reescribió ninguna.
+- Evidencia previa a publicación: 189 blobs históricos y dos secretos locales comparados sin divulgar valores; PDF íntegros, nombres preservados, archivos excluidos ausentes. [JSON](evidencias/fase03-publicacion.json).
+
+Pruebas reales: 107 HTTP/BD, 55 HTTP de regresión, 8 PHP, 3 JS y 24 de base original, con rollback, concurrencia y preservación de filas. Detalles y límites en [FASE_03_BACKEND.md](FASE_03_BACKEND.md). Pendientes vigentes: revisión externa de fase 3; fases 4/5/6, validaciones adicionales enumeradas allí y futura release hacia main. No hay protección obligatoria de ramas configurada.
