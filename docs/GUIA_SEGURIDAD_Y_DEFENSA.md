@@ -328,3 +328,15 @@ Resultado: commit local `5deaa9c`, 41 archivos de código, assets, scripts y tes
 Los dos servidores de prueba se detuvieron enviando Ctrl+C a sus procesos. El código de salida 1 corresponde a esa interrupción voluntaria, no a un error funcional de la tienda. Para practicar se deben iniciar de nuevo según README. No quedaron servicios de base de datos o diagnóstico creados por esta fase.
 
 La documentación y evidencias se guardan en un segundo commit local de cierre, sin push. Su identificador exacto puede consultarse con `git log --oneline -4`; no se incluye dentro del archivo para evitar una referencia circular al propio commit.
+
+## 13. Publicación privada y GitFlow (ejecutado posteriormente)
+
+Por autorización explícita se revisaron `git status --short --branch`, `git log --all --oneline --graph`, `git remote -v`, `git ls-files`, `.gitignore` y la disponibilidad de gh. gh no estaba instalado; `git config --get credential.helper` indicó manager. Se obtuvo la credencial mediante `git credential fill` exclusivamente en memoria y se consultó GET /user y GET /repos/Vasquezzz247/TiendaLab-SED. La segunda consulta devolvió 404 antes de crear el repositorio.
+
+Se añadieron exclusiones a .gitignore y se ejecutó `git add .gitignore`, commit bd88660 y búsqueda textual de patrones de tokens/claves privadas, sin coincidencias. No se subieron tmp ni herramientas. Los PDF y las rutas locales sí contienen información del equipo: permanecen en repositorio privado como fuentes autorizadas, no se publicaron en abierto.
+
+Orden posterior real: API POST /user/repos con private=true y auto_init=false; `git remote add origin https://github.com/Vasquezzz247/TiendaLab-SED.git`; `git push -u origin main develop feature/fase-00-preparacion feature/fase-01-frontend`; PATCH del repositorio con default_branch=main. POST /pulls creó PR #1 y #2 con base develop; PUT /pulls/numero/merge usó merge_method=merge y SHA esperado del head. Se conservan los commits originales.
+
+Se ejecutaron `git fetch origin`, `git switch develop`, `git merge --ff-only origin/develop`, `git switch -c feature/gitflow-documentacion`, commit documental y `git push -u origin feature/gitflow-documentacion`; el PR #3 se creó y fusionó del mismo modo. Luego fetch, switch develop, merge --ff-only, `git switch -c feature/fase-02-base-datos` y `git push -u origin feature/fase-02-base-datos`. API GET del repositorio, /branches y /pulls?state=all, más `git branch -vv` y `git ls-remote --heads origin`, verifican referencias y PR reales. El cierre documental se integra por PR adicional y las ramas develop/fase-02 se actualizan por fast-forward; no es implementación de fase 2.
+
+No hubo force push, reescritura de historial, cambios de permisos del sistema ni credenciales en archivos. No se configuraron protecciones obligatorias de ramas ni se afirma que existan. Main permanece como base reservada hasta preparar una entrega estable.
