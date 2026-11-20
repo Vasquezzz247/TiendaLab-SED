@@ -9,7 +9,7 @@ Repositorio público (por autorización previa): <https://github.com/Vasquezzz24
 | `main` | Entrega estable | Estuvo en `98b499d` (preparación inicial) hasta la entrega; recibe la versión 1.0.0 por PR desde `release/1.0.0` y se etiqueta `v1.0.0` |
 | `develop` | Integración | Contiene las fases 0 a 7 |
 | `feature/*` | Una por módulo o corrección, desde `develop` | Ver tabla; se conservan sin borrar |
-| `release/*` | Preparación de la entrega | `release/1.0.0` y `release/1.0.1`, con PR hacia `main` y, si llevan cambios propios, de vuelta hacia `develop` |
+| `release/*` | Preparación de la entrega | `release/1.0.0`, `release/1.0.1` y `release/1.0.2`, con PR hacia `main` y, si llevan cambios propios, de vuelta hacia `develop` |
 | `hotfix/*` | Correcciones urgentes sobre `main` | Aún no ha sido necesaria |
 
 ## Pull Requests reales hacia `develop`
@@ -32,13 +32,16 @@ Repositorio público (por autorización previa): <https://github.com/Vasquezzz24
 | [#16](https://github.com/Vasquezzz247/TiendaLab-SED/pull/16) | `feature/fase-07-entrega` | README de entrega, GitFlow y kit | `d23e3bc` |
 | [#18](https://github.com/Vasquezzz247/TiendaLab-SED/pull/18) | `release/1.0.0` | Devolución de la release 1.0.0 a `develop` (CHANGELOG) | `7c5187f` |
 | [#19](https://github.com/Vasquezzz247/TiendaLab-SED/pull/19) | `feature/ensayo-desde-cero` | Resultados reales del ensayo completo desde cero | `117bf46` |
+| [#21](https://github.com/Vasquezzz247/TiendaLab-SED/pull/21) | `release/1.0.1` | Devolución de la release 1.0.1 a `develop` | `eee1986` |
+| [#22](https://github.com/Vasquezzz247/TiendaLab-SED/pull/22) | `fix/verificar-curl-pipefail` | `verificar.sh` ya no falla por SIGPIPE de curl con pipefail | `7379b2f` |
 
 ## Entregas a `main` (releases)
 
 | PR | Rama | Versión | Merge en `main` | Etiqueta |
 | --- | --- | --- | --- | --- |
 | [#17](https://github.com/Vasquezzz247/TiendaLab-SED/pull/17) | `release/1.0.0` | 1.0.0: entrega de TiendaLab | `d3bfcc5` | `v1.0.0` |
-| (ver `git log main`) | `release/1.0.1` | 1.0.1: documentación del ensayo completo, sin cambios de código | (ver `git log main`) | `v1.0.1` |
+| [#20](https://github.com/Vasquezzz247/TiendaLab-SED/pull/20) | `release/1.0.1` | 1.0.1: documentación del ensayo completo, sin cambios de código | `c9eb5a9` | `v1.0.1` |
+| (ver `git log main`) | `release/1.0.2` | 1.0.2: corrección de una comprobación inestable de `verificar.sh`, sin cambios en la aplicación | (ver `git log main`) | `v1.0.2` |
 
 Los reportes `REPORTES/FASE_XX_*.md` registran las pruebas que precedieron a cada integración. Los commits y los Pull Requests de las fases 3 a 7 se hicieron con la cuenta SrGaray (Samuel Garay), sin force push, rebase ni squash.
 
