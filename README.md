@@ -161,7 +161,7 @@ Exactamente dos, acotadas, con datos inventados y documentadas con su reproducci
 
 ## 6. Flujo de trabajo en GitHub (GitFlow)
 
-Ramas permanentes `main` (entrega) y `develop` (integración); ramas de apoyo `feature/*` por módulo (login, catálogo, facturas, vulnerabilidades, despliegue), `release/*` y `hotfix/*`. Cada cambio entra por **Pull Request** con merge commit (sin force push, rebase ni squash), y las pruebas se ejecutan antes de fusionar. Hay 16 Pull Requests reales hacia `develop` (fases 0 a 7, correcciones de auditoría y despliegue) y la `release/1.0.0` hacia `main`; la versión entregada lleva la etiqueta `v1.0.0` y su resumen está en [CHANGELOG.md](CHANGELOG.md). Detalle, SHA y procedimiento: [docs/GITFLOW.md](docs/GITFLOW.md).
+Ramas permanentes `main` (entrega) y `develop` (integración); ramas de apoyo `feature/*` por módulo (login, catálogo, facturas, vulnerabilidades, despliegue), `release/*` y `hotfix/*`. Cada cambio entra por **Pull Request** con merge commit (sin force push, rebase ni squash), y las pruebas se ejecutan antes de fusionar. Hay 18 Pull Requests reales hacia `develop` (fases 0 a 7, correcciones de auditoría, despliegue y documentación del ensayo) y las releases `1.0.0` y `1.0.1` hacia `main`; la versión entregada lleva la etiqueta `v1.0.1` y su resumen está en [CHANGELOG.md](CHANGELOG.md). Detalle, SHA y procedimiento: [docs/GITFLOW.md](docs/GITFLOW.md).
 
 ## 7. Pruebas reproducibles
 
