@@ -1,0 +1,19 @@
+Fase 7 - Defecto encontrado en scripts/ubuntu/verificar.sh (20/11/2026) y su correccion
+Entorno: VM Ubuntu 24.04.5 del ensayo, tienda y base recien restauradas al seed.
+
+Sintoma: despues de restaurar la base, verificar.sh daba "33 de 34" por la comprobacion 10 ("catalogo muestra productos de MariaDB"),
+dos veces seguidas, aunque el catalogo respondia 200 con los 9 productos y "Audifonos" con su acento.
+
+Causa: la comprobacion usaba   curl -s URL | grep -q 'Audifonos'   con "set -o pipefail". grep -q termina en la primera coincidencia
+(el primer producto, arriba de la pagina de 6157 bytes); curl recibe un corte de tuberia (SIGPIPE) y la tuberia entera cuenta como fallo.
+Es una carrera: antes pasaba "de suerte" (en la fase 5 y 6 dio 32/32 y 34/34).
+
+Medicion en la VM (10 intentos cada una):
+  curl | grep -q (pipefail activo):                 2 fallos en 10
+  grep -q 'Aud' <(curl ...) (sustitucion de procesos): 0 fallos en 10
+
+Correccion: las tres comprobaciones que hacian curl | grep -q (catalogo, diagnostico 8081 y "la tienda no enlaza el 8081")
+usan ahora grep -q ... <(curl ...).
+Resultado tras la correccion: 5 corridas seguidas de verificar.sh con "TOTAL: 34 de 34 comprobaciones aprobadas en Ubuntu."
+
+Nota: no era un defecto de la tienda; el sitio funcionaba. Era una comprobacion inestable que podia dar un falso fallo el dia de la entrega.
