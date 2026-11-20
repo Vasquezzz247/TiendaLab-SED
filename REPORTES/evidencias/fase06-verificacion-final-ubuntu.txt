@@ -1,0 +1,37 @@
+Fase 6 - verificar.sh en la VM con la configuracion final de Apache (34 comprobaciones) - 19/11/2026
+
+PASS: 1 Apache activo
+PASS: 2 Docker activo
+PASS: 3 contenedor MariaDB saludable
+PASS: 4 TCP/80 escucha en todas las interfaces
+PASS: 5 TCP/8081 escucha en todas las interfaces (vulnerabilidad B)
+PASS: 6 TCP/3306 escucha solo en 127.0.0.1
+PASS: 7 firewall activo y sin regla para 3306
+PASS: 8 catalogo (/) responde 200
+PASS: 9 login responde 200
+PASS: 10 catalogo muestra productos de MariaDB
+PASS: 11 sin sesion /carrito.php redirige al login
+PASS: 12 sin sesion /admin-usuarios.php redirige al login
+PASS: 13 no se sirve /prototipo/index.php
+PASS: 14 no se sirve /app/web.php
+PASS: 15 no se sirve /storage/
+PASS: 16 no se sirve /database/init/01-schema.sql
+PASS: 17 no se sirve /.env
+PASS: 18 no se sirve /compose.yaml
+PASS: 19 cabecera Server sin version
+PASS: 20 sin cabecera X-Powered-By
+PASS: 21 cabecera nosniff presente una sola vez (sin duplicar)
+PASS: 22 archivos estaticos (CSS/JS) con nosniff y tipo correcto
+PASS: 23 sin listado de directorios en /assets/
+PASS: 24 token CSRF presente en el formulario de login
+PASS: 25 login con CSRF invalido rechazado (403)
+PASS: 26 login de Ana (comprador) correcto: 303 a /
+PASS: 27 historial de Ana accesible con sesion
+PASS: 28 vendedor.php rechazado para un comprador (403)
+PASS: 29 PHP (www-data) consulta MariaDB con el usuario tiendalab_app (tiendalab_app@%)
+PASS: 30 .env legible solo por root y www-data (640)
+PASS: 31 storage/ escribible por www-data y fuera de public
+PASS: 32 diagnostico (8081) responde 200 con datos ficticios
+PASS: 33 diagnostico rechaza POST (403)
+PASS: 34 la tienda no enlaza el 8081
+TOTAL: 34 de 34 comprobaciones aprobadas en Ubuntu.

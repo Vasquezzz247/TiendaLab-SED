@@ -34,7 +34,9 @@ done
 CAB=$(curl -sI $BASE/login.php)
 comprueba "cabecera Server sin version" "echo \"\$CAB\" | grep -i '^server:' | grep -qiv '[0-9]'"
 comprueba "sin cabecera X-Powered-By" "! echo \"\$CAB\" | grep -qi '^x-powered-by'"
-comprueba "cabecera nosniff presente" "echo \"\$CAB\" | grep -qi '^x-content-type-options: nosniff'"
+comprueba "cabecera nosniff presente una sola vez (sin duplicar)" "[ \"\$(echo \"\$CAB\" | grep -ci '^x-content-type-options:')\" = 1 ] && echo \"\$CAB\" | grep -qi '^x-content-type-options: nosniff'"
+comprueba "archivos estaticos (CSS/JS) con nosniff y tipo correcto" "h=\$(curl -sI $BASE/assets/css/styles.css); echo \"\$h\" | grep -qi '^x-content-type-options: nosniff' && echo \"\$h\" | grep -qi '^content-type: text/css'"
+comprueba "sin listado de directorios en /assets/" "c=\$(codigo $BASE/assets/); [ \"\$c\" = 403 ] || [ \"\$c\" = 404 ]"
 
 # Login real con una cuenta ficticia del seed (solo lecturas) y CSRF.
 JAR=$(mktemp); trap 'rm -f "$JAR"' EXIT

@@ -1,0 +1,14 @@
+Fase 6 - Auditoria estatica del codigo (busquedas con ripgrep sobre el repositorio) - 19/11/2026
+Limite: son busquedas por patron; no sustituyen una revision manual completa ni una prueba de penetracion.
+
+1) Marcas de debilidades deliberadas (VULNERABILIDAD / Vulnerabilidad A|B) en app/, public/, deploy/, diagnostico/, scripts/:
+   deploy/apache/tiendalab-diagnostico.conf:1   VULNERABILIDAD B (servicio de diagnostico ficticio en 8081)
+   deploy/apache/tiendalab-diagnostico.conf:31  VULNERABILIDAD B (acceso abierto, sin Require ip)
+   app/shop.php:63                              VULNERABILIDAD A (IDOR en factura.php?id=)
+   app/web.php:118                              Vulnerabilidad A (llamada a invoice_detail sin propietario)
+   => exactamente dos vulnerabilidades (A y B).
+
+2) SQL construido por interpolacion o concatenacion en app/ (sql|row|rows|query|execute_query|prepare con "...\$" ): 0 coincidencias.
+3) Funciones peligrosas o debiles en app/ (shell_exec, exec, system, passthru, eval, unserialize, include/require con entrada, md5, sha1): 0 coincidencias reales
+   (3 aciertos del patron amplio: hash_equals del token CSRF en app/auth.php:25 y dos usos de integer_input(\['editar']) en app/web.php:142-143).
+4) Hallazgos de la auditoria dinamica en la VM: archivos estaticos sin X-Content-Type-Options: nosniff (corregido) y, al corregirlo, cabecera duplicada en paginas PHP (corregido limitando el encabezado a /assets).
