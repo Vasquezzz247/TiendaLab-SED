@@ -6,10 +6,10 @@ Repositorio público (por autorización previa): <https://github.com/Vasquezzz24
 
 | Rama | Uso | Estado |
 | --- | --- | --- |
-| `main` | Entrega estable | Sigue en `98b499d` (preparación inicial). Solo recibe la versión de entrega por PR desde `release/*` |
-| `develop` | Integración | Contiene las fases 0 a 6 |
+| `main` | Entrega estable | Estuvo en `98b499d` (preparación inicial) hasta la entrega; recibe la versión 1.0.0 por PR desde `release/1.0.0` y se etiqueta `v1.0.0` |
+| `develop` | Integración | Contiene las fases 0 a 7 |
 | `feature/*` | Una por módulo o corrección, desde `develop` | Ver tabla; se conservan sin borrar |
-| `release/*` | Preparación de la entrega | Se crea en la fase 7 |
+| `release/*` | Preparación de la entrega | `release/1.0.0` (CHANGELOG), con PR hacia `main` y de vuelta hacia `develop` |
 | `hotfix/*` | Correcciones urgentes sobre `main` | Aún no ha sido necesaria |
 
 ## Pull Requests reales hacia `develop`
@@ -29,6 +29,7 @@ Repositorio público (por autorización previa): <https://github.com/Vasquezzz24
 | [#13](https://github.com/Vasquezzz247/TiendaLab-SED/pull/13) | `feature/fase-04-diagnostico-8081` | Vulnerabilidad B (diagnóstico 8081) y reporte de fase 4 | `bd19217` |
 | [#14](https://github.com/Vasquezzz247/TiendaLab-SED/pull/14) | `feature/fase-05-despliegue-ubuntu` | Despliegue en Ubuntu y scripts | `6d2916e` |
 | [#15](https://github.com/Vasquezzz247/TiendaLab-SED/pull/15) | `feature/fase-06-auditoria` | Auditoría final contra Ubuntu | `753cedf` |
+| [#16](https://github.com/Vasquezzz247/TiendaLab-SED/pull/16) | `feature/fase-07-entrega` | README de entrega, GitFlow y kit | `d23e3bc` |
 
 Los reportes `REPORTES/FASE_XX_*.md` registran las pruebas que precedieron a cada integración. Los commits y los Pull Requests de las fases 3 a 7 se hicieron con la cuenta SrGaray (Samuel Garay), sin force push, rebase ni squash.
 
@@ -51,6 +52,6 @@ gh pr create --base main --head release/1.0.0 --title "release 1.0.0"
 git tag -a v1.0.0 -m "TiendaLab 1.0.0" && git push origin v1.0.0
 ```
 
-`main` no se modifica hasta que el equipo autoriza esa fusión. Si aparece un fallo urgente en `main`, se corrige en `hotfix/*` y se integra en `main` y en `develop`.
+`main` no se modifica hasta que el equipo autoriza esa fusión (en la entrega 1.0.0 la autorizó el equipo en la conversación del proyecto). Si aparece un fallo urgente en `main`, se corrige en `hotfix/*` y se integra en `main` y en `develop`.
 
 Para inspeccionar el estado sin alterarlo: `git status -sb`, `git branch -vv`, `git log --oneline --all --graph`, `git ls-remote --heads origin`.
