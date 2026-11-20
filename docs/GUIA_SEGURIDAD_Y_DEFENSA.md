@@ -734,3 +734,42 @@ La prueba encontró y corrigió dos fallos reales de mi configuración inicial: 
 **Cómo explicarlo sencillamente.** «Dejé una página de administración interna escuchando en una puerta (8081) que nadie debería poder abrir desde fuera. No tiene enlace en la tienda, pero quien escanee la máquina encuentra la puerta abierta y entra. La solución es cerrar la puerta o permitir solo entrar desde la propia máquina.»
 
 **Límites honestos.** Probado con Apache 2.4.71 en contenedor sobre Windows, **no** en Ubuntu con el Apache del sistema y **no** desde otra máquina; el firewall (`ufw`) tampoco se configuró. No hay captura del navegador. La exposición real a la red del laboratorio se comprobará en la fase 5.
+
+## 22. Fase 5 — Ubuntu Server, Apache y despliegue — ejecutado el 19/11/2026
+
+**Qué se hizo.** Se montó el despliegue de entrega en una VM real de VirtualBox con Ubuntu Server 24.04.5: Apache y PHP 8.3 del sistema operativo (no en contenedor), MariaDB como único contenedor Docker publicado solo en `127.0.0.1:3306`, firewall UFW y el diagnóstico ficticio del 8081. Todo con un solo comando (`scripts/ubuntu/instalar.sh`) y una verificación automática (`scripts/ubuntu/verificar.sh`).
+
+| Archivo | Para qué sirve |
+| --- | --- |
+| `scripts/vm/crear-vm.ps1` | Crea la VM en VirtualBox con instalación desatendida, NAT con reenvíos solo a 127.0.0.1 y clave SSH generada fuera del repositorio |
+| `scripts/ubuntu/instalar.sh` | Instala paquetes, copia la aplicación a `/var/www/tiendalab` (raíz pública `public/`), crea el `.env` con secretos aleatorios, levanta MariaDB, configura Apache y UFW, y verifica. Idempotente: conserva `.env`, `storage/` y el volumen |
+| `scripts/ubuntu/verificar.sh` | 32 comprobaciones: servicios, puertos, cabeceras, rutas ocultas, login con CSRF, permisos por rol, conexión de PHP (www-data) a MariaDB con el usuario `tiendalab_app` |
+| `scripts/ubuntu/comprobar-red.sh` | Puertos abiertos vistos desde la IP no-loopback de la VM |
+| `deploy/apache/tiendalab.conf` | VirtualHost de la tienda: raíz `public/`, `Options None`, sin `.htaccess`, bloquea `prototipo/` y archivos ocultos |
+| `deploy/apache/tiendalab-seguridad.conf`, `deploy/php/99-tiendalab.ini` | `ServerTokens Prod`, sin firma ni `X-Powered-By`, `display_errors` apagado, subidas de 2 MB |
+
+**Qué controles de seguridad intervienen.**
+- `public/` es la única carpeta que Apache sirve: `app/`, `storage/`, `database/` y `.env` quedan fuera (la verificación comprueba que dan 404/403).
+- `.env` con permisos 640 `root:www-data`: solo root y el servidor web lo leen. `storage/` (sesiones, límites e imágenes) pertenece a `www-data` y está fuera de `public/`.
+- MariaDB solo escucha en `127.0.0.1`; UFW no tiene regla para el 3306; desde la IP de red de la VM el 3306 está cerrado.
+- Apache no revela su versión, no hay `X-Powered-By`, y se mantienen `nosniff` y la política de seguridad de contenido de la aplicación.
+- Las dos únicas puertas abiertas a propósito son las aprobadas: la tienda (80) y el diagnóstico ficticio (8081, vulnerabilidad B).
+
+**Comandos realmente ejecutados y resultados** (`REPORTES/evidencias/fase05-*.txt`).
+
+| Comando | Resultado observado |
+| --- | --- |
+| `crear-vm.ps1` (versión inicial) y dos reintentos | Instalación de Ubuntu ~25 min; la VM quedó sin SSH y luego el script falló al final por un error mío en el comando de post-instalación (`log_command` no admite `VAR=valor` como primer comando). Se rescató la VM desde la consola del instalador instalando `openssh-server` |
+| `instalar.sh` con apt (internet) | Interrumpido: el servidor de paquetes iba a ~56 kB/s (96 MB tardarían ~25 min) |
+| `instalar.sh` con `apt --no-download ./*.deb` | Falló a los 4 s (fase05-intento-fallido-apt.txt): apt no usa así los .deb locales |
+| `instalar.sh` con `dpkg -i` y el kit sin internet | **Completo en 4 min 54 s; 32 de 32 comprobaciones** (fase05-instalacion-sin-internet.txt) |
+| Reinicio de la VM y `verificar.sh` | SSH de vuelta a los 83 s; **32 de 32** (fase05-verificacion-tras-reinicio.txt) |
+| `comprobar-red.sh` desde `10.0.2.15` | 22, 80 y 8081 abiertos; 3306 cerrado; MariaDB `127.0.0.1:3306` (fase05-red.txt) |
+
+**Cómo comprobarlo tú.** En la VM: `sudo bash scripts/ubuntu/verificar.sh` debe terminar con «32 de 32»; desde Windows, `http://127.0.0.1:8080/` abre la tienda y `http://127.0.0.1:18081/` el diagnóstico ficticio.
+
+**Problemas encontrados y cómo se resolvieron.** (1) El instalador desatendido de VirtualBox no instala SSH → se añadió al post-instalación. (2) Mi comando de post-instalación fallaba por `log_command` → `env DEBIAN_FRONTEND=...`. (3) Los servidores oficiales de Ubuntu van a ~50 kB/s desde esta red → se descargaron los 29 paquetes en el anfitrión desde un espejo rápido y se verificó su MD5 contra el de la VM, instalándolos sin internet. (4) `apt` ignoraba los `.deb` locales → `dpkg -i`. (5) Una instantánea en vivo dejó colgada la VM y hubo que reiniciar los servicios de VirtualBox: no se tomó ninguna instantánea.
+
+**Cómo explicarlo sencillamente.** «La tienda corre en un servidor Ubuntu normal con Apache y PHP; solo la base de datos va en un contenedor, y ese contenedor solo escucha dentro de la propia máquina. Desde fuera solo se ven dos puertas: la tienda y el panel de diagnóstico, que es la debilidad que dejamos a propósito. Un script instala todo en menos de cinco minutos si lleva los paquetes consigo, y otro revisa 32 cosas para confirmar que quedó bien.»
+
+**Límites honestos.** La prueba de red se hizo desde dentro de la VM, no desde otro equipo real; la instalación con internet no se completó; el flujo completo de compras, edición de productos e imágenes sobre Ubuntu no se ejercitó (solo login, permisos y lectura; el flujo completo está cubierto por las 120 pruebas en Windows); `crear-vm.ps1` final y `preparar-offline.sh` no se han ejecutado de principio a fin; las comprobaciones de integridad de los `.deb` usan MD5 de un índice firmado y `dpkg -i` no vuelve a verificar firmas; no hay `.ova` ni instantánea; HTTPS no está configurado. La instalación de Ubuntu (~25 min) más el instalador (~5 min) está al borde de los 30 minutos si la red es lenta.

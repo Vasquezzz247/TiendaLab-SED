@@ -1,0 +1,16 @@
+Fase 5 - Exposicion de puertos medida DENTRO de la VM contra su IP no-loopback (equivale a lo que veria otro equipo) - 19/11/2026
+Comando: sudo bash scripts/ubuntu/comprobar-red.sh   (NO es una prueba desde otra maquina)
+
+IP de la VM (interfaz NAT): 10.0.2.15
+puerto 22: ABIERTO
+puerto 80: ABIERTO
+puerto 8081: ABIERTO
+puerto 3306: cerrado
+--- escuchando (ss):
+0.0.0.0:22 127.0.0.1:3306 127.0.0.1:44993 127.0.0.53%lo:53 127.0.0.54:53 [::]:22 *:80 *:8081
+--- MariaDB solo loopback: 3306/tcp -> 127.0.0.1:3306
+--- UFW: Status: active; ALLOW 22/tcp, 80/tcp, 8081/tcp (v4 y v6); sin regla para 3306
+
+Desde el anfitrion Windows por los reenvios NAT a 127.0.0.1:
+http://127.0.0.1:8080/login.php  -> 200 | Server: Apache | titulo: Iniciar sesion - TiendaLab
+http://127.0.0.1:18081/          -> 200 | Server: Apache | titulo: TiendaLab - panel de diagnostico
