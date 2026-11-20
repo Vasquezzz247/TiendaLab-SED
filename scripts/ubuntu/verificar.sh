@@ -25,7 +25,9 @@ comprueba "firewall activo y sin regla para 3306" "ufw status | grep -q 'Status:
 # Tienda
 comprueba "catalogo (/) responde 200" "[ \"\$(codigo $BASE/)\" = 200 ]"
 comprueba "login responde 200" "[ \"\$(codigo $BASE/login.php)\" = 200 ]"
-comprueba "catalogo muestra productos de MariaDB" "curl -s $BASE/ | grep -q 'Audífonos'"
+# OJO: no usar "curl | grep -q" con pipefail: grep -q sale en la primera coincidencia, curl recibe SIGPIPE y la tuberia
+# cuenta como fallo aunque el texto este (fallaba ~2 de cada 10 veces). Con <(curl ...) el estado de curl no cuenta.
+comprueba "catalogo muestra productos de MariaDB" "grep -q 'Audífonos' <(curl -s $BASE/)"
 comprueba "sin sesion /carrito.php redirige al login" "[ \"\$(codigo $BASE/carrito.php)\" = 303 ]"
 comprueba "sin sesion /admin-usuarios.php redirige al login" "[ \"\$(codigo $BASE/admin-usuarios.php)\" = 303 ]"
 for ruta in /prototipo/index.php /app/web.php /storage/ /database/init/01-schema.sql /.env /compose.yaml; do
@@ -54,9 +56,9 @@ comprueba ".env legible solo por root y www-data (640)" "[ \"\$(stat -c '%a %U:%
 comprueba "storage/ escribible por www-data y fuera de public" "sudo -u www-data test -w $APP/storage && [ ! -e $APP/public/storage ]"
 
 # Diagnostico ficticio (vulnerabilidad B)
-comprueba "diagnostico (8081) responde 200 con datos ficticios" "curl -s http://127.0.0.1:8081/ | grep -q 'todos los datos de esta página son ficticios'"
+comprueba "diagnostico (8081) responde 200 con datos ficticios" "grep -q 'todos los datos de esta página son ficticios' <(curl -s http://127.0.0.1:8081/)"
 comprueba "diagnostico rechaza POST (403)" "[ \"\$(codigo -X POST -d a=b http://127.0.0.1:8081/)\" = 403 ]"
-comprueba "la tienda no enlaza el 8081" "! curl -s $BASE/ | grep -q '8081'"
+comprueba "la tienda no enlaza el 8081" "! grep -q '8081' <(curl -s $BASE/)"
 
 echo
 echo "TOTAL: $((TOTAL-FALLOS)) de $TOTAL comprobaciones aprobadas en Ubuntu."
