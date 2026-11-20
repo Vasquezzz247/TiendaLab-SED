@@ -773,3 +773,29 @@ La prueba encontró y corrigió dos fallos reales de mi configuración inicial: 
 **Cómo explicarlo sencillamente.** «La tienda corre en un servidor Ubuntu normal con Apache y PHP; solo la base de datos va en un contenedor, y ese contenedor solo escucha dentro de la propia máquina. Desde fuera solo se ven dos puertas: la tienda y el panel de diagnóstico, que es la debilidad que dejamos a propósito. Un script instala todo en menos de cinco minutos si lleva los paquetes consigo, y otro revisa 32 cosas para confirmar que quedó bien.»
 
 **Límites honestos.** La prueba de red se hizo desde dentro de la VM, no desde otro equipo real; la instalación con internet no se completó; el flujo completo de compras, edición de productos e imágenes sobre Ubuntu no se ejercitó (solo login, permisos y lectura; el flujo completo está cubierto por las 120 pruebas en Windows); `crear-vm.ps1` final y `preparar-offline.sh` no se han ejecutado de principio a fin; las comprobaciones de integridad de los `.deb` usan MD5 de un índice firmado y `dpkg -i` no vuelve a verificar firmas; no hay `.ova` ni instantánea; HTTPS no está configurado. La instalación de Ubuntu (~25 min) más el instalador (~5 min) está al borde de los 30 minutos si la red es lenta.
+
+## 23. Fase 6 — Auditoría final — ejecutado el 19/11/2026
+
+**Qué se hizo.** Se comprobó que lo que funcionaba en el entorno de desarrollo (Windows) funciona igual en el despliegue real (Ubuntu + Apache + PHP del sistema + MariaDB en Docker), y se buscaron debilidades que no deberían existir.
+
+**Comandos realmente ejecutados y resultados** (`REPORTES/evidencias/fase06-*.txt`).
+
+| Comando | Resultado observado |
+| --- | --- |
+| `scripts/verificar-ubuntu.ps1` (túnel SSH solo local + reenvío 8080) | **120 de 120** pruebas HTTP/BD contra la tienda en Ubuntu, incluidos compra transaccional, dos solicitudes concurrentes al mismo Apache, rollback con timeout SQL 1205 real, subida de imágenes, IDOR (vulnerabilidad A), CSRF y permisos. Limpieza con SHA-256 idéntico del seed de la VM |
+| `scripts/verificar-backend.ps1` en Windows | **120 de 120**, 8 PHP, 3 JS; seed intacto |
+| `sudo bash scripts/ubuntu/verificar.sh` en la VM | **34 de 34** con la configuración final de Apache |
+| Búsquedas estáticas en el código | Exactamente **dos** marcas de debilidad deliberada (A y B); **0** SQL armado por concatenación; **0** funciones peligrosas (`exec`, `eval`, `unserialize`, `md5`…). Limitación: son búsquedas por patrón, no una revisión manual completa |
+| Revisión visual en navegador (móvil 375 px y escritorio) de los tres roles | Sin errores de consola, sin desbordes de página ni imágenes rotas |
+
+**Hallazgos de la auditoría y cómo se resolvieron.**
+1. **Archivos estáticos sin `X-Content-Type-Options: nosniff`.** Las páginas PHP lo enviaban (lo pone la aplicación), pero Apache no lo ponía a los CSS/JS/SVG. Eso es justo la debilidad «Content-Type» de la definición, que **no elegimos**. Se corrigió con un `Header` en `deploy/apache/tiendalab.conf`.
+2. **Cabecera duplicada.** Al corregir lo anterior, las páginas PHP salían con `nosniff,nosniff` y la propia suite lo detectó. Se limitó el encabezado de Apache a la carpeta de estáticos (`/assets`), y `verificar.sh` ahora comprueba que aparezca una sola vez.
+3. **Dos pruebas asumían el servidor de desarrollo** (404 para `/.env` y `/prototipo/`); Apache responde 403, igual de bloqueado y sin filtrar contenido. Las pruebas ahora aceptan 403 o 404 y exigen que no salga contenido sensible.
+4. **Interfaz móvil (menor, no corregido):** las tablas del historial, del vendedor y del administrador son más anchas que la pantalla y se desplazan dentro de su contenedor; algunas columnas quedan parcialmente ocultas hasta deslizar.
+
+**Cómo comprobarlo tú.** Con la VM encendida: `.\scripts\verificar-ubuntu.ps1` debe terminar con «120 comprobaciones HTTP/BD aprobadas»; `curl -I http://127.0.0.1:8080/assets/css/styles.css` debe mostrar un solo `X-Content-Type-Options: nosniff`.
+
+**Cómo explicarlo sencillamente.** «Probamos las mismas 120 comprobaciones en mi computadora y en el servidor Ubuntu, y pasaron en los dos. Además buscamos fallos que no pusimos a propósito: encontramos que los archivos estáticos no llevaban una cabecera de seguridad y lo arreglamos. Quedan exactamente dos debilidades, las dos acordadas.»
+
+**Límites honestos.** No se probó desde otro equipo real; la impresión de una factura a PDF no se generó (solo se revisó que exista CSS de impresión); solo se usó el navegador integrado; HTTPS no está configurado; la auditoría estática es por patrones; las pruebas de seguridad son las del propio proyecto, no una prueba de penetracion independiente.

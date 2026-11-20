@@ -48,9 +48,10 @@ class Browser {
         r=await guest.request(route);check(r.status===303&&r.headers.get('location')==='/login.php',`sin sesion no accede ${route.split('?')[0]}`);
     }
     for(const route of ['/.env','/app/database.php','/storage/sessions/','/tools/php/php.exe','/database/init/02-seed.sql','/no-existe.php']){
-        r=await guest.request(route);check(r.status===404,`ruta privada o inexistente bloqueada ${route}`);
+        // El servidor PHP de desarrollo responde 404; Apache responde 403 a archivos ocultos: ambos son "bloqueado".
+        r=await guest.request(route);check([403,404].includes(r.status)&&!/DB_PASSWORD|<\?php|CREATE TABLE|INSERT INTO/.test(r.body),`ruta privada o inexistente bloqueada ${route}`);
     }
-    r=await guest.request('/prototipo/');check(r.status===404,'maquetas deshabilitadas por defecto en servidor real');
+    r=await guest.request('/prototipo/');check([403,404].includes(r.status)&&!/Revisión de interfaces/.test(r.body),'maquetas deshabilitadas por defecto en servidor real');
     r=await guest.request('/?q[]=x');check(r.status===422&&!/Stack trace|Fatal error|mysqli_sql_exception|DB_PASSWORD/.test(r.body),'entrada de tipo incorrecto produce error controlado');
     const cookieCheck=new Browser();r=await cookieCheck.request('/login.php');
     const sessionCookies=r.headers.getSetCookie().filter(c=>c.startsWith('TiendaLabSID='));

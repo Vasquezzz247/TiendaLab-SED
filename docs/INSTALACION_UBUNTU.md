@@ -56,7 +56,7 @@ sudo bash scripts/ubuntu/verificar.sh      # 32 comprobaciones
 sudo bash scripts/ubuntu/comprobar-red.sh  # puertos vistos desde la IP no-loopback de la VM
 ```
 
-Resultado: **32 de 32** justo después de instalar y **32 de 32** después de reiniciar la VM (SSH de vuelta a los 83 s).
+Resultado: **32 de 32** justo después de instalar y **32 de 32** después de reiniciar la VM (SSH de vuelta a los 83 s). Con la configuración final de Apache (nosniff también en los archivos estáticos) son **34 de 34**. Repetir `instalar.sh` sobre una VM ya instalada tardó **3 min 39 s**, conservó el `.env` y el volumen de MariaDB, y dio 34/34.
 
 ## 5. Usar la tienda
 
@@ -91,12 +91,14 @@ Todo lo demás está denegado por UFW. **La VM nunca debe publicarse en internet
 | Sistema operativo | Ubuntu 24.04.5 LTS, kernel 6.8, Apache 2.4.58, PHP 8.3.6, Docker 29.1.3 (paquetes de Ubuntu) |
 | Instalación del sistema con `crear-vm.ps1` | ~25 min (descarga de actualizaciones lenta) |
 | `instalar.sh` sin internet | **4 min 54 s** |
-| `verificar.sh` tras instalar / tras reiniciar | **32/32** y **32/32** |
+| `verificar.sh` tras instalar / tras reiniciar / configuración final | **32/32**, **32/32** y **34/34** |
+| Suite de 120 pruebas HTTP/BD (`scripts/verificar-ubuntu.ps1`) contra la tienda en Ubuntu | **120/120**: compra, concurrencia, rollback, imágenes, IDOR, CSRF, permisos; seed de la VM idéntico por SHA-256 |
+| Repetir `instalar.sh` (idempotencia) | 3 min 39 s; `.env` y volumen idénticos |
 | Reinicio de la VM | SSH de vuelta a los 83 s; Apache, Docker y MariaDB arrancan solos |
 | Puertos vistos desde `10.0.2.15` (IP no-loopback de la VM) | 22, 80 y 8081 abiertos; 3306 cerrado |
 | Desde el anfitrión por los reenvíos | `/login.php` 200 y diagnóstico 200, `Server: Apache` sin versión |
 
-**No se probó:** acceso desde otro equipo real de la red del laboratorio (la prueba de puertos se hizo dentro de la VM), instalación con internet de principio a fin, compra completa, edición de productos e imágenes sobre Ubuntu (solo login, permisos y lectura; el flujo completo está cubierto por las 120 pruebas en Windows), impresión de facturas, HTTPS.
+**No se probó:** acceso desde otro equipo real de la red del laboratorio (la prueba de puertos se hizo dentro de la VM), instalación con internet de principio a fin, impresión de facturas a PDF, otros navegadores, HTTPS. La compra completa, la edición de productos con imágenes y los permisos sí se ejercitaron en Ubuntu con la suite de 120 pruebas (fase 6).
 
 ## 9. Riesgos para el día de la entrega (30 minutos)
 
