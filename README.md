@@ -99,7 +99,7 @@ Contraseñas con `password_hash`/`password_verify`; ID de sesión regenerado al 
 
 ## 3. Instalación paso a paso (desde la creación de la VM)
 
-Guía ampliada, tiempos y riesgos: [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md). Todo lo descrito aquí se **ejecutó de verdad** en una VM de VirtualBox con Ubuntu 24.04.5 (resultados en `REPORTES/evidencias/fase05-*.txt` y `fase06-*.txt`).
+Guía ampliada, tiempos y riesgos: [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md). Los pasos 2 a 5 se **ejecutaron de verdad** en una VM de VirtualBox con Ubuntu 24.04.5 (resultados en `REPORTES/evidencias/fase05-*.txt` y `fase06-*.txt`). El paso 1 (crear la VM con el script) se probó **solo en parte**: el script crea la VM sin errores, pero un ensayo completo desde cero con la versión final no pudo terminar porque el instalador de Ubuntu se bloqueó dentro de VirtualBox (ver sección 9). Si eso pasa, usa la alternativa manual.
 
 **Qué llevar (kit sin internet):** el ISO `ubuntu-24.04.5-live-server-amd64.iso` (SHA-256 oficial `97f3d7ffb032c3eb3b23d2c8be9cc76e60c2c1f2c0146ba5ba9fe01cafae0fd8`), el ZIP limpio del proyecto y la carpeta `offline/` (29 paquetes `.deb` y `tiendalab-mariadb.tar`). `scripts/exportar.ps1` genera el ZIP; ver [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md) para armar `offline/`.
 
@@ -181,6 +181,7 @@ Cada suite crea datos ficticios aislados, prueba contra MariaDB real y comprueba
 
 ## 9. Límites y pendientes (sin maquillar)
 
+- **Ensayo completo desde cero no completado:** al repetir la creación de la VM con la versión final de `crear-vm.ps1`, la instalación de Ubuntu se bloqueó (avisos de kernel dentro del instalador; había otra VM encendida en el mismo equipo) y se canceló. Lo validado es: la creación de la VM (16 s), la instalación de Ubuntu con una versión anterior del script, y los pasos 2 a 5 sobre esa VM. Antes de la entrega conviene repetir el ensayo con **una sola VM encendida**.
 - La prueba de puertos se hizo **desde dentro de la VM**, no desde otro equipo real de la red del laboratorio.
 - **Riesgo de los 30 minutos:** instalar Ubuntu consumió unos 25 minutos en la red de pruebas; el instalador del proyecto, unos 5. Conviene confirmar con el docente cómo se cuenta el tiempo y llevar el kit sin internet completo.
 - No se generó un PDF de factura (solo se verificó que existe CSS de impresión); HTTPS no está configurado; en móvil algunas tablas se desplazan horizontalmente.
