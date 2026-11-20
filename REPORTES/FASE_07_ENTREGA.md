@@ -16,7 +16,7 @@ Dejar el repositorio listo para la entrega: README completo según la definició
 | README: usuarios y credenciales de prueba por rol | Hecho |
 | README: vulnerabilidades (cuáles, dónde, cómo se introdujeron) con reproducción y mitigación | Hecho |
 | README: flujo de trabajo en GitHub | Hecho, más `docs/GITFLOW.md` con los 15 PR reales |
-| Instalación en menos de 30 minutos, ensayada | **Parcial**: `instalar.sh` 4 min 54 s; el ensayo completo desde cero no terminó |
+| Instalación en menos de 30 minutos, ensayada | **Ensayada desde cero (20/11/2026): ~31 min en total** (Ubuntu 26,5 min + kit 21 s + `instalar.sh` 4 min 21 s, 34/34); ~5 min si Ubuntu ya está instalado |
 | `main` y `develop`, `feature/*`, `release/*`, PR | `feature/*` y PR a `develop` hechos; `release/*` y PR a `main`: ver sección 10 |
 
 ## 3. Archivos creados y modificados
@@ -41,19 +41,20 @@ Requiere que `offline/debs/` (29 paquetes) exista; la forma de prepararlo está 
 | Prueba | Resultado |
 | --- | --- |
 | `exportar.ps1 -Kit` (sin ISO) | Kit de **199,4 MB** en 9 s; auditoría del ZIP sin hallazgos; **33 archivos con suma SHA-256 y 0 sumas que no coinciden** al recalcularlas |
-| `crear-vm.ps1` con la versión final | Creó la VM `TiendaLab-Ensayo` sin errores en 16 s |
+| `crear-vm.ps1` con la versión final | Primer intento (dos VMs encendidas): creó la VM en 16 s pero el instalador se bloqueó. **Segundo intento (una sola VM, 2 GB, 20/11/2026): instaló Ubuntu y dejó SSH y `sudo` listos a los 26,5 min, sin rescates** |
+| Ensayo con el kit (`TiendaLab-kit-d3bfcc5`) sobre esa VM | Copiar ZIP 2 s, descomprimir 1 s, copiar `offline/` 18 s, `instalar.sh` **4 min 21 s** con **34/34** comprobaciones; puertos desde `10.0.2.15`: 22, 80, 8081 abiertos y 3306 cerrado (fase07-ensayo-desde-cero.txt) |
 | Suite de 120 pruebas, `verificar.sh` 34/34, instalador | Sin cambios de código en esta fase; resultados de las fases 5 y 6 siguen vigentes |
 
 ## 7. Problemas encontrados y soluciones
 
-1. **Ensayo desde cero interrumpido.** La VM de ensayo (creada con la versión final de `crear-vm.ps1`) no avanzó en el instalador de Ubuntu: a los 10 minutos su disco seguía en 2 MB y la consola mostraba trazas de kernel de tareas bloqueadas (el mismo síntoma visto antes en otra VM). Había otra VM encendida en el mismo equipo. Se apagó con normalidad y se eliminó. **El ensayo completo sigue pendiente.**
+1. **Primer ensayo interrumpido.** Con dos VMs encendidas y poca memoria libre en el anfitrión (~1 GB disponibles), el instalador de Ubuntu de la VM de ensayo se bloqueó (disco en 2 MB a los 10 minutos y trazas de kernel de tareas bloqueadas). Se apagó y se eliminó. **Se repitió con una sola VM de 2 GB (20/11/2026) y completó sin problemas**: la causa era la falta de memoria del anfitrión, no el proyecto.
 2. El `Write` de la herramienta exigía releer `README.md` antes de reemplazarlo; sin impacto.
 
 ## 8. Pendientes
 
-- **Repetir el ensayo completo desde cero con una sola VM encendida** (crear VM, copiar kit, instalar, verificar) y registrar los tiempos reales. Hasta entonces, la instalación de Ubuntu con el script final sigue sin validarse de principio a fin.
-- Añadir el ISO al kit para el USB (`-Iso`, 4 GB).
-- Confirmar con el docente cómo se cuentan los 30 minutos (instalar Ubuntu tardó ~25 min en la red de pruebas).
+- ~~Repetir el ensayo completo~~ **Hecho el 20/11/2026** (ver sección 6).
+- ~~Añadir el ISO al kit para el USB~~ **Hecho:** `dist/TiendaLab-kit-d3bfcc5` (4,09 GB) incluye el ISO verificado contra su hash oficial.
+- Confirmar con el docente cómo se cuentan los 30 minutos: desde cero el total medido fue de ~31 min (Ubuntu 26,5 min); desde Ubuntu ya instalado, ~5 min.
 - Probar desde otro equipo real del Laboratorio 4.
 - VM exportada (`.ova`) e instantánea limpia, con la VM apagada.
 - Opcionales: PDF de factura, HTTPS, tablas en móvil.

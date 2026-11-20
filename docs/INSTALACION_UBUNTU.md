@@ -23,9 +23,9 @@ Guía paso a paso desde la creación de la máquina virtual hasta la tienda func
 
 Crea la VM `TiendaLab-Ubuntu2404` (2 CPU, 3 GB, 30 GB), red NAT con reenvíos **solo a 127.0.0.1** (SSH 2222, web 8080, diagnóstico 18081) y red solo-anfitrión; genera contraseña y clave SSH en `Downloads\TiendaLab-VM` (fuera del repositorio). El usuario `tiendalab` recibe `sudo` sin contraseña: **solo es aceptable porque esta VM no tiene otro uso**.
 
-> **Tiempo medido: la instalación del sistema tardó unos 25 minutos** en esta red, porque el instalador descarga las actualizaciones de seguridad desde servidores de Ubuntu que respondieron a ~50 kB/s. Es la parte más lenta de todo el proceso.
+> **Tiempo medido (ensayo del 20/11/2026): 26,5 minutos** hasta tener SSH y `sudo` listos, con la VM sola y 2 GB de memoria. La mayor parte es la descarga de las actualizaciones de seguridad desde servidores de Ubuntu que respondieron a ~50 kB/s: es la parte más lenta de todo el proceso.
 >
-> **Estado del script:** la versión final de `crear-vm.ps1` (que instala `openssh-server` con `env DEBIAN_FRONTEND=...`) **no se ha ejecutado de principio a fin**; la VM de las pruebas se rescató a mano desde la consola del instalador (el SSH se instaló con un comando equivalente). Conviene repetir una instalación limpia con el script antes de depender de él.
+> **Estado del script:** la versión final de `crear-vm.ps1` se ejecutó **de principio a fin** en el ensayo del 20/11/2026: creó la VM en 23 s, instaló Ubuntu y `openssh-server` y dejó el acceso por clave con `sudo` sin contraseña, sin rescates manuales. **Requiere memoria libre:** un intento previo con dos VMs encendidas y poca RAM disponible bloqueó el instalador; con una sola VM de 2 GB funcionó.
 
 **Opción B, a mano** (cualquier sistema, no ejecutada): VM Ubuntu 64-bit, 2 CPU, 3 GB, 30 GB; adaptador 1 NAT; instalar Ubuntu Server con el asistente, usuario `tiendalab`, **marcar «Install OpenSSH server»**.
 
@@ -89,7 +89,8 @@ Todo lo demás está denegado por UFW. **La VM nunca debe publicarse en internet
 | Qué | Resultado |
 | --- | --- |
 | Sistema operativo | Ubuntu 24.04.5 LTS, kernel 6.8, Apache 2.4.58, PHP 8.3.6, Docker 29.1.3 (paquetes de Ubuntu) |
-| Instalación del sistema con `crear-vm.ps1` | ~25 min (descarga de actualizaciones lenta) |
+| Instalación del sistema con `crear-vm.ps1` | **26,5 min** hasta SSH y `sudo` (ensayo del 20/11; descarga de actualizaciones lenta) |
+| Ensayo completo desde cero con el kit (20/11/2026, una sola VM de 2 GB) | Copiar el kit 21 s; `instalar.sh` **4 min 21 s**, **34/34**; total desde cero **~31 min** (fase07-ensayo-desde-cero.txt) |
 | `instalar.sh` sin internet | **4 min 54 s** |
 | `verificar.sh` tras instalar / tras reiniciar / configuración final | **32/32**, **32/32** y **34/34** |
 | Suite de 120 pruebas HTTP/BD (`scripts/verificar-ubuntu.ps1`) contra la tienda en Ubuntu | **120/120**: compra, concurrencia, rollback, imágenes, IDOR, CSRF, permisos; seed de la VM idéntico por SHA-256 |
@@ -102,5 +103,5 @@ Todo lo demás está denegado por UFW. **La VM nunca debe publicarse en internet
 
 ## 9. Riesgos para el día de la entrega (30 minutos)
 
-- **Instalar Ubuntu consume ~25 de los 30 minutos** si el instalador descarga actualizaciones por una red lenta. `instalar.sh` solo necesita ~5 min con el kit offline. Antes del viernes hay que confirmar con el docente si los 30 minutos empiezan con la VM vacía o con Ubuntu ya instalado, y considerar llevar la VM exportada (`.ova`, **no creada todavía**) o instalar Ubuntu sin actualizaciones.
+- **Desde cero el total fue de ~31 minutos** (Ubuntu 26,5 min + kit 21 s + `instalar.sh` 4 min 21 s), un poco por encima de los 30 del enunciado. `instalar.sh` solo necesita ~4,5 min con el kit offline. Hay que confirmar con el docente si los 30 minutos empiezan con la VM vacía o con Ubuntu ya instalado, y considerar llevar la VM exportada (`.ova`, **no creada todavía**) o instalar Ubuntu a mano sin actualizaciones.
 - El kit sin internet debe viajar completo: ZIP del proyecto, `offline/debs/`, `tiendalab-mariadb.tar` y el ISO.
