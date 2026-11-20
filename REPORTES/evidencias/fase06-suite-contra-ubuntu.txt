@@ -1,0 +1,131 @@
+Fase 6 - Suite HTTP/BD (tests/backend.test.cjs, 120 comprobaciones) contra la tienda REAL en la VM Ubuntu 24.04.5 (Apache 2.4.58 + PHP 8.3.6 + MariaDB 11.4 en Docker) - 19/11/2026
+Comando: .\scripts\verificar-ubuntu.ps1  (HTTP por 127.0.0.1:8080; SQL de los datos de prueba por tunel SSH que escucha solo en 127.0.0.1; la clave SQL se lee de la VM y no se imprime)
+Incluye: registro/login, roles, carrito, IVA, compra transaccional, concurrencia (dos solicitudes simultaneas al mismo Apache), rollback con timeout SQL 1205 real, subida de imagenes, IDOR (vulnerabilidad A), CSRF, sesiones y limpieza con SHA-256 identico del seed de la VM.
+Estado de Apache: configuracion final (nosniff solo en /assets).
+
+PASS: datos de prueba aislados creados en la MariaDB de la VM con el usuario de la aplicacion.
+PASS: 1 catalogo consulta productos reales
+PASS: 2 catalogo conserva las rutas de imagen del seed
+PASS: 3 cabeceras y formularios restringidos a mismo origen
+PASS: 4 busqueda real literal
+PASS: 5 consulta preparada: texto SQL no altera busqueda
+PASS: 6 entrada escapada al renderizar
+PASS: 7 sin sesion no accede /carrito.php
+PASS: 8 sin sesion no accede /factura.php
+PASS: 9 sin sesion no accede /historial.php
+PASS: 10 sin sesion no accede /vendedor.php
+PASS: 11 sin sesion no accede /admin-productos.php
+PASS: 12 sin sesion no accede /admin-usuarios.php
+PASS: 13 ruta privada o inexistente bloqueada /.env
+PASS: 14 ruta privada o inexistente bloqueada /app/database.php
+PASS: 15 ruta privada o inexistente bloqueada /storage/sessions/
+PASS: 16 ruta privada o inexistente bloqueada /tools/php/php.exe
+PASS: 17 ruta privada o inexistente bloqueada /database/init/02-seed.sql
+PASS: 18 ruta privada o inexistente bloqueada /no-existe.php
+PASS: 19 maquetas deshabilitadas por defecto en servidor real
+PASS: 20 entrada de tipo incorrecto produce error controlado
+PASS: 21 atributos de una cookie nueva de sesion
+PASS: 22 modo estricto rechaza ID de sesion no inicializado
+PASS: 23 login protegido contra CSRF
+PASS: 24 login incorrecto rechazado
+PASS: 25 login comprador y regeneracion de ID
+PASS: 26 sesion previa a login no autentica
+PASS: 27 comprador sin permiso /vendedor.php
+PASS: 28 comprador sin permiso /admin-productos.php
+PASS: 29 comprador sin permiso /admin-usuarios.php
+PASS: 30 cuenta inactiva no inicia sesion
+PASS: 31 registro real
+PASS: 32 registro fuerza comprador activo y hash verificable
+PASS: 33 correo duplicado rechazado
+PASS: 34 confirmacion de contraseña validada
+PASS: 35 cuenta registrada puede iniciar sesion
+PASS: 36 logout por POST
+PASS: 37 cookie de sesion destruida no permite reingreso
+PASS: 38 login y destino rol seller
+PASS: 39 login y destino rol seller2
+PASS: 40 login y destino rol admin
+PASS: 41 login y destino rol other
+PASS: 42 vendedor no administra usuarios
+PASS: 43 administrador no simula comprador
+PASS: 44 metricas administrativas reales
+PASS: 45 listado real de usuarios
+PASS: 46 cantidades fraccionarias rechazadas
+PASS: 47 cantidades negativas rechazadas
+PASS: 48 stock insuficiente al agregar
+PASS: 49 agregar ignora precio y stock enviados
+PASS: 50 modificacion del carrito
+PASS: 51 segundo producto
+PASS: 52 eliminacion del carrito
+PASS: 53 subtotal IVA y total del anexo calculados por PHP
+PASS: 54 compra real genera factura
+PASS: 55 precio y comprador salen del servidor
+PASS: 56 stock descontado una vez
+PASS: 57 detalle completo guardado
+PASS: 58 repeticion del POST de compra no duplica factura
+PASS: 59 consulta factura propia
+PASS: 60 IDOR A: otro comprador autenticado ve la factura ajena (nombre, correo y total)
+PASS: 61 IDOR acotado: sin sesion no se ve ninguna factura
+PASS: 62 IDOR acotado: un vendedor autenticado sigue sin acceso a facturas
+PASS: 63 IDOR acotado: el administrador sigue sin acceso a facturas
+PASS: 64 IDOR acotado: factura inexistente devuelve 404
+PASS: 65 IDOR acotado: no se convierte en inyeccion SQL
+PASS: 66 IDOR acotado: el parametro comprador_id del navegador se ignora
+PASS: 67 historial incluye compra propia
+PASS: 68 historial no filtra facturas de otro comprador
+PASS: 69 carrito concurrente preparado
+PASS: 70 carrito concurrente preparado
+PASS: 71 dos procesos PHP: una compra gana y otra recibe stock insuficiente
+PASS: 72 concurrencia sin stock negativo ni doble factura
+PASS: 73 archivo ejecutable disfrazado rechazado
+PASS: 74 extension no permitida rechazada
+PASS: 75 archivo mayor de 2 MB rechazado
+PASS: 76 precio cero rechazado en servidor
+PASS: 77 vendedor crea producto con imagen autentica
+PASS: 78 vendedor no puede falsificar dueño al crear
+PASS: 79 salida persistida escapada
+PASS: 80 imagen recodificada y servida como PNG sin contenido añadido
+PASS: 81 traversal en imagen rechazado
+PASS: 82 vendedor no abre editor ajeno
+PASS: 83 vendedor no modifica producto ajeno por POST
+PASS: 84 CSRF de producto rechazado
+PASS: 85 vendedor edita producto propio conservando imagen
+PASS: 86 administrador crea producto
+PASS: 87 administrador edita y retira producto
+PASS: 88 producto retirado no aparece en catalogo
+PASS: 89 administrador elimina producto
+PASS: 90 eliminar producto facturado conserva historia
+PASS: 91 FK SET NULL conserva nombre y precio del detalle
+PASS: 92 factura sigue consultable tras eliminar producto
+PASS: 93 administrador crea usuario
+PASS: 94 administrador cambia rol y conserva hash
+PASS: 95 rol fuera de lista rechazado
+PASS: 96 usuario sin referencias eliminado fisicamente
+PASS: 97 desactivar usuario
+PASS: 98 desactivacion revoca sesion existente
+PASS: 99 reactivar usuario
+PASS: 100 cambio de rol real
+PASS: 101 rol se consulta en BD por solicitud
+PASS: 102 nuevo rol permite su panel
+PASS: 103 usuario con facturas se desactiva sin romper FK
+PASS: 104 baja logica revoca acceso del comprador
+PASS: 105 administrador no elimina su propio acceso
+PASS: 106 CSRF de usuarios rechazado
+PASS: 107 cambio de contraseña administrativo
+PASS: 108 cambio de contraseña invalida sesion previa
+PASS: 109 administrador publica un producto a nombre de un vendedor
+PASS: 110 vendedor con productos activos no cambia de rol
+PASS: 111 rol y propiedad del producto conservados tras el rechazo
+PASS: 112 administrador retira el producto del vendedor
+PASS: 113 sin productos activos el rol si puede cambiar
+PASS: 114 limite de cinco intentos por correo aun sin cuenta
+PASS: 115 limite persiste al cambiar cookie
+PASS: 116 ocho accesos correctos seguidos no activan el limite
+PASS: 117 un acceso correcto reinicia el contador de fallos del correo
+PASS: 118 error controlado para parametros anidados
+PASS: 119 error controlado para parametros anidados
+PASS: 120 conexion SQL no disponible devuelve 503 sin informacion interna
+TOTAL: 120 comprobaciones HTTP/BD aprobadas.
+PASS: rollback tras modificar primer producto y detectar stock insuficiente en segundo.
+PASS: error SQL 1205 real despues del primer UPDATE; stock y facturas revertidos.
+PASS: suite HTTP/BD y rollbacks contra Apache/PHP/MariaDB de la VM Ubuntu (127.0.0.1:8080).
+PASS: limpieza de fixtures y SHA-256 de todas las filas previas identico (incluye seed).

@@ -1,0 +1,25 @@
+name: tiendalab
+services:
+  db:
+    image: ${MARIADB_IMAGE:-mariadb@sha256:5e73baf8179b29f115101bb102763a47a017361f3e9792daccba6646c3ab1532}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Genera .env con scripts/preparar-entorno.php}
+      MARIADB_ROOT_HOST: localhost
+      MARIADB_DATABASE: tiendalab
+      MARIADB_USER: tiendalab_app
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Genera .env con scripts/preparar-entorno.php}
+      TZ: America/El_Salvador
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+volumes:
+  db_data:

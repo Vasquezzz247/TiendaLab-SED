@@ -1,0 +1,18 @@
+Fase 5 - Intento fallido previo (conservado a proposito): apt con --no-download rechazo los .deb locales. Corregido: instalar.sh usa dpkg -i.
+
+INICIO: 11/19/2026 18:14:47
+
+[0 s] 1/7 Paquetes (Apache, PHP 8.3 con mysqli/mbstring/gd, Docker, UFW)
+Modo sin internet: instalando desde /home/tiendalab/TiendaLab-SED/offline/debs
+Leyendo lista de paquetes...
+Creando árbol de dependencias...
+Leyendo la información de estado...
+Paquetes sugeridos:
+  apache2-doc apache2-suexec-pristine | apache2-suexec-custom www-browser
+  ifupdown aufs-tools cgroupfs-mount | cgroup-lite debootstrap docker-buildx
+  docker-doc rinse zfs-fuse | zfsutils php-pear
+E: No se pudieron obtener algunos archivos, ¿quizás deba ejecutar «apt-get update» o deba intentarlo de nuevo con --fix-missing?
+real	0m2.756s
+user	0m2.196s
+sys	0m0.552s
+FIN: 11/19/2026 18:14:51 | duracion total: 0.1 min

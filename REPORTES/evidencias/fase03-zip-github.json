@@ -1,0 +1,30 @@
+{
+  "commit": "dc361c05d7ee0b7931c1088a160fcee8741e8062",
+  "zip": "tiendalab-auditoria.zip",
+  "historial_blobs_revisados": 189,
+  "secretos_locales_comparados": 2,
+  "archivos_excluidos_en_git": 0,
+  "pdfs": [
+    {
+      "nombre": "DefinicióndelProyecto(1).pdf",
+      "sha256": "4c13c5dd8ddc4e371dc6d6c4664c02afc3ff8424e9b864c77d37a1b534d02e50",
+      "utf8_flag": true,
+      "copias": 1,
+      "contenido_igual": true
+    },
+    {
+      "nombre": "Propuesta_TiendaLab.pdf",
+      "sha256": "a20a48ccbf99f0ee12b84a52fcedbc06583403c3b9b059c8ed15552215757d9b",
+      "utf8_flag": false,
+      "copias": 1,
+      "contenido_igual": true
+    }
+  ],
+  "github_zip": {
+    "archivo": "fase03-github.zip",
+    "pdfs_nombres_y_bytes_iguales": true,
+    "entradas_duplicadas": false,
+    "archivos_excluidos": 0
+  },
+  "estado_git_sin_cambios_por_exportacion": true
+}

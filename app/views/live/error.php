@@ -1,0 +1,1 @@
+<section class="panel form-panel"><h1>No se completó la solicitud</h1><p role="alert"><?= e($message) ?></p><p><a href="/">Volver al catálogo</a> · <a href="/login.php">Iniciar sesión</a></p><p class="form-help">Puedes regresar al formulario con el botón Atrás de tu navegador para corregirlo.</p></section>

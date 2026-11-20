@@ -1,0 +1,11 @@
+Reproduccion real de la vulnerabilidad A (IDOR en factura.php?id=) - 19/11/2026
+Entorno: PHP 8.3 (servidor integrado, 127.0.0.1:8031) + MariaDB 11.4 en Docker; cuentas ficticias del seed; solo lecturas.
+Script: login como ana@tiendalab.test (comprador), consulta de su historial y de factura.php?id=1 y id=2.
+
+login Ana: 303 /
+historial de Ana incluye ids: 4,3,1
+GET factura.php?id=1 -> 200 | facturado a: Ana Martínez ana@tiendalab.test | total: $73.33
+GET factura.php?id=2 -> 200 | facturado a: Luis Hernández luis@tiendalab.test | total: $145.77
+
+Estado de facturas despues (sin cambios): 1->comprador 3 ($73.33), 2->comprador 4 ($145.77), 3->comprador 3 ($156.79), 4->comprador 3 ($83.61).
+Interpretacion: Ana (id 3) abre la factura 2, que pertenece a Luis (id 4), cambiando solo el numero de la URL.

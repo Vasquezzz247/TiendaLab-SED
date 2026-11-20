@@ -1,0 +1,6 @@
+<div class="page-heading"><div><span class="eyebrow">FASE 1 · REVISIÓN LOCAL</span><h1>Las pantallas de TiendaLab</h1><p>Recorre las interfaces con datos ficticios. Elegir una vista no inicia sesión ni asigna permisos.</p></div></div>
+<div class="review-grid">
+<?php foreach ([['comprador','Comprador','Catálogo, cantidades y carrito de muestra.'],['carrito','Carrito','Resumen con subtotal, IVA de 13 % y total.'],['factura','Factura','Detalle de un documento ficticio e impresión.'],['historial','Mis facturas','Historial de ejemplos del comprador.'],['vendedor','Vendedor','Formulario de producto, imagen y edición visual.'],['admin-productos','Administración de productos','Resumen y vistas de alta, edición y eliminación.'],['admin-usuarios','Administración de usuarios','Formularios de usuario y selección de roles.']] as [$route,$name,$description]): ?>
+<a class="panel review-card" href="<?= e(demo_url($route)) ?>"><h2><?= e($name) ?></h2><p><?= e($description) ?></p><span>Abrir pantalla</span></a>
+<?php endforeach; ?></div>
+<p class="notice">Los formularios no envían información. El carrito es una selección temporal de esta pestaña; no reserva existencias. Las cuentas, operaciones y permisos reales se implementarán en fase 3.</p>
