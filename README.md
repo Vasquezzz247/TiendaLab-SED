@@ -2,7 +2,7 @@
 
 Tienda académica de tecnología con **PHP puro, mysqli y MariaDB**, sin frameworks, ORM, CDN ni servicios en nube. El diseño de fase 1 ahora permite operaciones reales de laboratorio.
 
-**Estado: fase 3 implementada e integrada en develop mediante [PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7); fase 4 (las dos vulnerabilidades aprobadas) en desarrollo y fase 5 no iniciada.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Desde la fase 4 `factura.php?id=` tiene el IDOR aprobado (vulnerabilidad A); el diagnóstico ficticio de la vulnerabilidad B está preparado para Apache en TCP/8081 (carpeta `diagnostico/` y `deploy/apache/`), probado con Apache 2.4 en contenedor, aún no en Ubuntu. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
+**Estado: fase 3 implementada e integrada en develop mediante [PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7); fase 4 (las dos vulnerabilidades aprobadas, PR #12 y #13) integrada en develop; fase 5 (Ubuntu/Apache) probada en una VM real de VirtualBox y en revisión.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Desde la fase 4 `factura.php?id=` tiene el IDOR aprobado (vulnerabilidad A); el diagnóstico ficticio de la vulnerabilidad B está preparado para Apache en TCP/8081 (carpeta `diagnostico/` y `deploy/apache/`), probado con Apache 2.4 en contenedor, aún no en Ubuntu. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
 
 Repositorio [TiendaLab-SED](https://github.com/Vasquezzz247/TiendaLab-SED), **público por autorización previa**. Los PDF originales contienen nombres y carnets académicos; la documentación incluye rutas locales. Se conservan íntegros y su información es públicamente accesible. `.env`, sesiones, imágenes subidas, herramientas y temporales no se publican.
 
@@ -86,6 +86,17 @@ Para revisar las maquetas históricas sin confundirlas con permisos reales, inic
 
 Y en otra: `.\scripts\verificar-frontend.ps1`. Las maquetas solo se habilitan por opción explícita y loopback; sus POST siguen rechazados. La aplicación real funciona sin JavaScript salvo mejoras visuales e impresión.
 
+## Instalación en Ubuntu Server 24.04 (laboratorio)
+
+Guía completa, tiempos y riesgos en [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md). Resumen (probado en una VM de VirtualBox con Ubuntu 24.04.5):
+
+1. **Crear la VM** (Windows): `.\scripts\vm\crear-vm.ps1 -Iso <ISO 24.04.5> -IsoSha256 <hash oficial>`. Instala Ubuntu sola (~25 min en la red de pruebas) con SSH por clave. O bien instalar Ubuntu a mano marcando «OpenSSH server».
+2. **Copiar** el ZIP limpio (`scripts/exportar.ps1`) y, para instalar sin internet, el kit `offline/` (`debs/` y `tiendalab-mariadb.tar`) a la carpeta `~/TiendaLab-SED` de la VM.
+3. **Instalar con un comando**: `cd ~/TiendaLab-SED && sudo bash scripts/ubuntu/instalar.sh` (**4 min 54 s** sin internet, medidos). Instala Apache y PHP 8.3 del sistema, Docker con MariaDB solo en `127.0.0.1:3306`, el firewall y el diagnóstico del 8081, y verifica.
+4. **Comprobar**: `sudo bash scripts/ubuntu/verificar.sh` (32 comprobaciones) y `scripts/ubuntu/comprobar-red.sh`.
+
+Puertos: 80 (tienda) y 8081 (diagnóstico, vulnerabilidad B) abiertos; 3306 solo en loopback. **Nunca exponer la VM a internet.**
+
 ## Vulnerabilidades aprobadas (fase 4)
 
 Exactamente dos, ambas ficticias y acotadas; detalle, reproducción y mitigación en las secciones 20 y 21 de la [guía](docs/GUIA_SEGURIDAD_Y_DEFENSA.md):
@@ -142,4 +153,4 @@ REPORTES/, docs/        Evidencias, alcance, requisitos y defensa
 - [GitFlow](docs/GITFLOW.md) y [estado del remoto](REPORTES/ESTADO_GITFLOW.md).
 - [Reporte fase 3](REPORTES/FASE_03_BACKEND.md), [cierre fase 2](REPORTES/CIERRE_FASE_02_GITFLOW.md), reportes históricos de fases 0/1.
 
-Pendientes: instalación del diagnóstico en Ubuntu/Apache, red/firewall, prueba desde otro equipo, instalación offline y cronometraje, impresión/PDF efectiva y revisión móvil completa. Nada de ello se presenta como ejecutado. `main` sigue reservada para entrega; esta fase se integra únicamente a `develop` mediante PR real.
+Pendientes: prueba desde un equipo real del laboratorio, VM exportada, prueba desde otro equipo, instalación offline y cronometraje, impresión/PDF efectiva y revisión móvil completa. Nada de ello se presenta como ejecutado. `main` sigue reservada para entrega; esta fase se integra únicamente a `develop` mediante PR real.
