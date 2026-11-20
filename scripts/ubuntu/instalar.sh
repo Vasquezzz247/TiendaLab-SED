@@ -28,7 +28,8 @@ done
 paso "1/7 Paquetes (Apache, PHP 8.3 con mysqli/mbstring/gd, Docker, UFW)"
 if compgen -G "$DEBS_DIR/*.deb" > /dev/null; then
   echo "Modo sin internet: instalando desde $DEBS_DIR"
-  (cd "$DEBS_DIR" && apt-get install -y --no-download ./*.deb)
+  # dpkg instala exactamente los .deb entregados (apt, aun con rutas locales, volvia a pedirlos al servidor).
+  (cd "$DEBS_DIR" && dpkg -i ./*.deb)
 else
   apt-get update -y
   apt-get install -y apache2 php8.3 libapache2-mod-php8.3 php8.3-mysql php8.3-mbstring php8.3-gd php8.3-cli \
