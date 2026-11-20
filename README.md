@@ -99,7 +99,7 @@ Contraseñas con `password_hash`/`password_verify`; ID de sesión regenerado al 
 
 ## 3. Instalación paso a paso (desde la creación de la VM)
 
-Guía ampliada, tiempos y riesgos: [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md). Los pasos 2 a 5 se **ejecutaron de verdad** en una VM de VirtualBox con Ubuntu 24.04.5 (resultados en `REPORTES/evidencias/fase05-*.txt` y `fase06-*.txt`). El paso 1 (crear la VM con el script) se probó **solo en parte**: el script crea la VM sin errores, pero un ensayo completo desde cero con la versión final no pudo terminar porque el instalador de Ubuntu se bloqueó dentro de VirtualBox (ver sección 9). Si eso pasa, usa la alternativa manual.
+Guía ampliada, tiempos y riesgos: [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md). Todos los pasos se **ejecutaron de verdad**, incluido un **ensayo completo desde cero el 20/11/2026** (una sola VM de VirtualBox con 2 CPU y 2 GB, usando el kit de entrega): resultados en `REPORTES/evidencias/fase05-*.txt`, `fase06-*.txt` y `fase07-ensayo-desde-cero.txt`.
 
 **Qué llevar (kit sin internet):** el ISO `ubuntu-24.04.5-live-server-amd64.iso` (SHA-256 oficial `97f3d7ffb032c3eb3b23d2c8be9cc76e60c2c1f2c0146ba5ba9fe01cafae0fd8`), el ZIP limpio del proyecto y la carpeta `offline/` (29 paquetes `.deb` y `tiendalab-mariadb.tar`). `scripts/exportar.ps1` genera el ZIP; ver [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md) para armar `offline/`.
 
@@ -121,7 +121,7 @@ Guía ampliada, tiempos y riesgos: [docs/INSTALACION_UBUNTU.md](docs/INSTALACION
 4. **Verificar:** `sudo bash scripts/ubuntu/verificar.sh` (34 comprobaciones) y `sudo bash scripts/ubuntu/comprobar-red.sh`.
 5. **Usar:** <http://127.0.0.1:8080/> desde el anfitrión (o `http://<IP de la VM>/` desde otro equipo de la red).
 
-**Tiempos medidos** (VM de VirtualBox, 2 CPU): `instalar.sh` sin internet **4 min 54 s** (3 min 39 s al repetirlo); instalar el sistema Ubuntu con `crear-vm.ps1` tardó **unos 25 min** porque el instalador descarga actualizaciones por una red lenta. El total puede acercarse a los 30 minutos: ver los riesgos en la sección 9.
+**Tiempos medidos en el ensayo completo desde cero** (20/11/2026, VM de VirtualBox con 2 CPU y 2 GB, una sola VM encendida): crear la VM e instalar Ubuntu con `crear-vm.ps1` **26,5 min** (hasta tener SSH y `sudo`); copiar el kit **21 s**; `instalar.sh` sin internet **4 min 21 s**, con **34 de 34** comprobaciones. **Total desde cero: unos 31 minutos**, ligeramente por encima de los 30 del enunciado; si el tiempo se cuenta desde que la VM ya tiene Ubuntu, son **unos 5 minutos**. Ver los riesgos en la sección 9.
 
 **Desarrollo local en Windows:** `php scripts/preparar-entorno.php` (crea `.env`), `docker compose up -d --wait`, `.\scripts\iniciar-frontend.ps1` y <http://127.0.0.1:8000/>. Requiere PHP 8.3 con mysqli, mbstring, fileinfo y gd.
 
@@ -161,7 +161,7 @@ Exactamente dos, acotadas, con datos inventados y documentadas con su reproducci
 
 ## 6. Flujo de trabajo en GitHub (GitFlow)
 
-Ramas permanentes `main` (entrega) y `develop` (integración); ramas de apoyo `feature/*` por módulo (login, catálogo, facturas, vulnerabilidades, despliegue), `release/*` y `hotfix/*`. Cada cambio entra por **Pull Request** con merge commit (sin force push, rebase ni squash), y las pruebas se ejecutan antes de fusionar. Hay 16 Pull Requests reales hacia `develop` (fases 0 a 7, correcciones de auditoría y despliegue) y la `release/1.0.0` hacia `main`; la versión entregada lleva la etiqueta `v1.0.0` y su resumen está en [CHANGELOG.md](CHANGELOG.md). Detalle, SHA y procedimiento: [docs/GITFLOW.md](docs/GITFLOW.md).
+Ramas permanentes `main` (entrega) y `develop` (integración); ramas de apoyo `feature/*` por módulo (login, catálogo, facturas, vulnerabilidades, despliegue), `release/*` y `hotfix/*`. Cada cambio entra por **Pull Request** con merge commit (sin force push, rebase ni squash), y las pruebas se ejecutan antes de fusionar. Hay 18 Pull Requests reales hacia `develop` (fases 0 a 7, correcciones de auditoría, despliegue y documentación del ensayo) y las releases `1.0.0` y `1.0.1` hacia `main`; la versión entregada lleva la etiqueta `v1.0.1` y su resumen está en [CHANGELOG.md](CHANGELOG.md). Detalle, SHA y procedimiento: [docs/GITFLOW.md](docs/GITFLOW.md).
 
 ## 7. Pruebas reproducibles
 
@@ -181,9 +181,9 @@ Cada suite crea datos ficticios aislados, prueba contra MariaDB real y comprueba
 
 ## 9. Límites y pendientes (sin maquillar)
 
-- **Ensayo completo desde cero no completado:** al repetir la creación de la VM con la versión final de `crear-vm.ps1`, la instalación de Ubuntu se bloqueó (avisos de kernel dentro del instalador; había otra VM encendida en el mismo equipo) y se canceló. Lo validado es: la creación de la VM (16 s), la instalación de Ubuntu con una versión anterior del script, y los pasos 2 a 5 sobre esa VM. Antes de la entrega conviene repetir el ensayo con **una sola VM encendida**.
+- **Memoria del equipo anfitrión:** un primer intento de ensayo, con dos VMs encendidas y poca memoria libre, bloqueó el instalador de Ubuntu dentro de VirtualBox. Con **una sola VM** (2 GB) el ensayo completó sin problemas; conviene cerrar aplicaciones pesadas (navegador, etc.) antes de crear la VM.
 - La prueba de puertos se hizo **desde dentro de la VM**, no desde otro equipo real de la red del laboratorio.
-- **Riesgo de los 30 minutos:** instalar Ubuntu consumió unos 25 minutos en la red de pruebas; el instalador del proyecto, unos 5. Conviene confirmar con el docente cómo se cuenta el tiempo y llevar el kit sin internet completo.
+- **Riesgo de los 30 minutos (medido):** desde cero el total fue de unos 31 minutos, casi todos en instalar Ubuntu (26,5 min) porque el instalador descarga actualizaciones por una red lenta; el instalador del proyecto tarda unos 4,5 min. Conviene confirmar con el docente cómo se cuenta el tiempo y, si cuenta desde la VM vacía, llevar la VM ya instalada o instalar Ubuntu a mano sin actualizaciones.
 - No se generó un PDF de factura (solo se verificó que existe CSS de impresión); HTTPS no está configurado; en móvil algunas tablas se desplazan horizontalmente.
 - Las pruebas de seguridad son las del propio proyecto, no una prueba de penetración independiente; la auditoría estática es por patrones.
 - El repositorio es público (por autorización previa) y conserva los PDF originales, que contienen nombres y carnets académicos. `.env`, sesiones, imágenes subidas, herramientas y temporales no se publican.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 — documentación del ensayo completo (20/11/2026)
+
+Sin cambios de código. El README, la guía de instalación y el reporte de la fase 7 reemplazan el aviso de ensayo incompleto por los resultados reales del **ensayo completo desde cero** con una sola VM: Ubuntu instalado por `crear-vm.ps1` en 26,5 min, kit copiado en 21 s, `instalar.sh` en 4 min 21 s con 34/34 comprobaciones (≈31 min en total, ≈5 min si Ubuntu ya está instalado). Evidencia: `REPORTES/evidencias/fase07-ensayo-desde-cero.txt`.
+
 ## 1.0.0 — entrega (20/11/2026)
 
 Primera versión completa de TiendaLab: tienda con tres roles en PHP puro y MariaDB, desplegable en Ubuntu Server 24.04 LTS, con exactamente dos vulnerabilidades deliberadas y documentadas.
