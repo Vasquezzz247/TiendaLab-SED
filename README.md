@@ -1,158 +1,190 @@
 # TiendaLab
 
-Tienda académica de tecnología con **PHP puro, mysqli y MariaDB**, sin frameworks, ORM, CDN ni servicios en nube. El diseño de fase 1 ahora permite operaciones reales de laboratorio.
+Tienda en línea sencilla con tres roles (comprador, vendedor y administrador), hecha con **PHP puro, HTML/CSS/JavaScript nativo y MariaDB con mysqli**, sin frameworks, ORM ni servicios en la nube. Es un proyecto de la materia *Seguridad en Entornos de Desarrollo* (UCA): se despliega en una máquina virtual **Ubuntu Server 24.04 LTS** y deja **exactamente dos vulnerabilidades deliberadas y documentadas** para la práctica de pentesting en el laboratorio.
 
-**Estado: fase 3 implementada e integrada en develop mediante [PR #7](https://github.com/Vasquezzz247/TiendaLab-SED/pull/7); fase 4 (las dos vulnerabilidades aprobadas, PR #12 y #13) integrada en develop; fase 5 (Ubuntu/Apache, PR #14) integrada; fase 6 (auditoría final) en revisión. La suite de 120 pruebas pasa en Windows y contra la tienda instalada en Ubuntu.** Registro/login, sesiones, tres roles, carrito, compra transaccional, facturas y gestión funcionan contra MariaDB. Desde la fase 4 `factura.php?id=` tiene el IDOR aprobado (vulnerabilidad A); el diagnóstico ficticio de la vulnerabilidad B está preparado para Apache en TCP/8081 (carpeta `diagnostico/` y `deploy/apache/`), probado con Apache 2.4 en contenedor, aún no en Ubuntu. La integración y las pruebas están en [FASE_03_BACKEND.md](REPORTES/FASE_03_BACKEND.md).
+> **Uso exclusivamente académico.** Todos los datos y cuentas son ficticios. La VM solo debe conectarse a la red autorizada del laboratorio y **nunca** exponerse a internet ni abrirse puertos en el router.
 
-Repositorio [TiendaLab-SED](https://github.com/Vasquezzz247/TiendaLab-SED), **público por autorización previa**. Los PDF originales contienen nombres y carnets académicos; la documentación incluye rutas locales. Se conservan íntegros y su información es públicamente accesible. `.env`, sesiones, imágenes subidas, herramientas y temporales no se publican.
+**Integrantes:** Samuel Rodríguez (00016420), Alejandro Vasquez (00081320), Evan Cruz (00076523). Repositorio: <https://github.com/Vasquezzz247/TiendaLab-SED>.
 
-## Ejecutar en esta computadora
+---
 
-Requisitos disponibles y utilizados: Docker Desktop con Compose, PHP 8.3 portátil y extensiones **mysqli, mbstring, fileinfo y gd**. Node solo se necesita para las pruebas, no para servir la aplicación. No cambies ni regeneres el `.env` existente ni el volumen de MariaDB.
+## 1. Descripción del proyecto y roles
 
-Desde PowerShell:
+| Vista | Acceso | Qué se puede hacer |
+| --- | --- | --- |
+| Index (`/`) | Pública | Ver el catálogo real de MariaDB y buscar productos |
+| Login (`/login.php`) | Pública | Iniciar sesión con correo y contraseña; cada rol va a su página |
+| Registro (`/register.php`) | Pública | Crear una cuenta; **siempre queda como comprador** |
+| Comprador | Con sesión | Elegir cantidades, carrito (modificar/quitar), subtotal + IVA 13 % + total, confirmar la compra, ver y imprimir sus facturas |
+| Vendedor | Con sesión | Publicar y editar **sus** productos (nombre, descripción, precio, existencias, imagen) |
+| Administrador | Con sesión | Métricas, CRUD completo de productos y de usuarios, cambio de roles, activar/desactivar usuarios |
 
-```powershell
-Set-Location 'C:\Users\aleja\Desktop\TiendaLab_Documentos_Codex'
-& 'C:\Program Files\Docker\Docker\resources\bin\docker.exe' compose up -d --wait --wait-timeout 180
-.\scripts\iniciar-frontend.ps1
+Cada vista revisa en el servidor la sesión y el rol; no se confía en nada que envíe el navegador. La compra es una **transacción SQL**: verifica existencias y precios en la base, descuenta el stock, crea la factura y su detalle, y confirma todo o revierte todo.
+
+## 2. Arquitectura
+
+### Tecnologías
+
+| Parte | Tecnología | Por qué |
+| --- | --- | --- |
+| Sistema | Ubuntu Server 24.04 LTS en una VM (VirtualBox) | Es el servidor Linux que pide el proyecto |
+| Servidor web | Apache 2.4 instalado en Ubuntu (puertos 80 y 8081) | Corre la tienda y el servicio de diagnóstico |
+| Backend / frontend | PHP 8.3 puro (mod_php), HTML, CSS y JavaScript nativo | Sin framework, para entender y explicar todo el código |
+| Base de datos | MariaDB 11.4 en un contenedor Docker (solo `127.0.0.1:3306`), acceso con `mysqli` y consultas preparadas | Aislada y reproducible, sin ORM |
+| Versiones | GitHub con GitFlow | Historial ordenado por ramas y Pull Requests |
+
+No se contenerizó la aplicación: solo MariaDB va en Docker.
+
+### Diagrama de arquitectura
+
+```mermaid
+flowchart LR
+    N["Navegador<br/>(red autorizada del laboratorio)"] -->|"TCP 80"| A
+    N -->|"TCP 8081<br/>(vulnerabilidad B)"| D
+    subgraph VM["VM Ubuntu Server 24.04 LTS (UFW: 22, 80, 8081)"]
+        A["Apache 2.4 + PHP 8.3<br/>/var/www/tiendalab/public"]
+        D["Apache: diagnóstico ficticio<br/>/var/www/tiendalab-diagnostico"]
+        A -->|"mysqli · consultas preparadas"| M
+        subgraph DK["Docker"]
+            M[("MariaDB 11.4<br/>127.0.0.1:3306")]
+        end
+    end
+    I(["Internet"]) -. "sin conexión" .- VM
 ```
 
-Abre [TiendaLab local](http://127.0.0.1:8000/). El nombre del script se conserva por compatibilidad: ahora inicia la aplicación real con las extensiones requeridas. Escucha solo en loopback. `Ctrl+C` detiene PHP. Si el puerto está ocupado usa `-Port 8015`. Detener la base sin borrar datos: `docker compose stop db`. **No usar `down -v`, `volume rm` ni volver a ejecutar el seed.**
+| Puerto | Servicio | Alcance |
+| --- | --- | --- |
+| TCP/80 | Tienda | Red del laboratorio |
+| TCP/8081 | Diagnóstico de laboratorio (**vulnerabilidad B**, ficticio) | Red del laboratorio, a propósito |
+| TCP/3306 | MariaDB | Solo `127.0.0.1` dentro de la VM |
+| TCP/22 | SSH (administración) | Red del laboratorio |
 
-En una copia nueva sin `.env`, ejecutar **una sola vez** antes de Compose:
+### Base de datos
 
-```powershell
-& .\tools\php\php.exe scripts/preparar-entorno.php
+```mermaid
+erDiagram
+    usuarios ||--o{ productos : "vende"
+    usuarios ||--o{ facturas : "compra"
+    facturas ||--|{ detalle_facturas : "contiene"
+    productos o|--o{ detalle_facturas : "referencia"
 ```
 
-Genera dos secretos aleatorios locales y se niega a sobrescribir el archivo. PHP usa exclusivamente `DB_PASSWORD` para `tiendalab_app`, nunca la clave root. Las variables de inicialización no cambian contraseñas de un volumen existente. Consultar [base de datos](docs/BASE_DE_DATOS.md).
+Cuatro tablas InnoDB con claves foráneas activas (`database/init/01-schema.sql`): `usuarios` (rol ENUM, correo único, `password_hash`, `activo`), `productos` (precio > 0, stock ≥ 0, imagen, dueño `vendedor_id`), `facturas` (subtotal; IVA 13 % y total son columnas generadas) y `detalle_facturas` (conserva nombre y precio históricos). Un usuario con facturas o productos no se borra físicamente: se **desactiva**; un producto eliminado deja `producto_id` en NULL pero conserva su historia. Usuario SQL de la aplicación (`tiendalab_app`): solo SELECT/INSERT/UPDATE/DELETE sobre `tiendalab.*`. Detalles en [docs/BASE_DE_DATOS.md](docs/BASE_DE_DATOS.md).
 
-PHP portátil no está versionado. En otra instalación se necesita PHP 8.3 con mysqli, mbstring, fileinfo y gd; el directorio `storage/` fuera de `public/` debe ser escribible por PHP. Se crea localmente para sesiones, límites e imágenes. La instalación en Ubuntu/Apache se realizará en fase 5: no está ejecutada ni certificada todavía.
+### Estructura de carpetas
 
-## Cuentas ficticias del seed
+```text
+public/                 Única raíz web de Apache (rutas reales y assets)
+app/                    Lógica PHP: web.php (rutas y roles), auth.php (sesiones, CSRF, límites),
+                        database.php (mysqli), shop.php (carrito, compras, facturas),
+                        management.php (productos y usuarios), images.php, views/live/ (vistas)
+database/init/          Esquema, datos ficticios y privilegios del usuario SQL
+diagnostico/            Página estática del servicio de diagnóstico ficticio (puerto 8081)
+deploy/                 Configuración de Apache y PHP para Ubuntu
+scripts/ubuntu/         instalar.sh, verificar.sh, comprobar-red.sh, preparar-offline.sh
+scripts/vm/             crear-vm.ps1 (VM de VirtualBox)
+scripts/                exportar.ps1, auditar-*.py, verificar-*.ps1 (pruebas)
+tests/                  Pruebas HTTP/BD, PHP y JavaScript
+compose.yaml            Solo MariaDB: imagen fijada por digest, salud, puerto local y volumen
+docs/, REPORTES/        Guías, matriz de requisitos, reportes por fase y evidencias reales
+app/views/, demo/, public/prototipo/   Maquetas históricas de la fase 1, apagadas por defecto
+storage/ (no versionada) Sesiones, límites e imágenes subidas; fuera de public/
+```
 
-Contraseña pública de demostración para las cinco cuentas: `TiendaLab-Demo-2026!`. **No es una contraseña administrativa SQL.** Úsalas únicamente en el laboratorio; no introduzcas contraseñas personales.
+### Seguridad implementada (controles normales)
+
+Contraseñas con `password_hash`/`password_verify`; ID de sesión regenerado al autenticar, cookies HttpOnly/SameSite, caducidad por 30 min de inactividad u 8 h, rol y estado consultados en la base en cada petición; token CSRF en todo POST; consultas SQL preparadas; escape de salida HTML; validación de entradas en el servidor; límite de intentos de login (5 fallos por correo y 60 por IP en 15 minutos; solo cuentan los fallos); imágenes JPG/PNG/WEBP de hasta 2 MB que se re-codifican a PNG y se guardan fuera de `public/`; errores controlados sin información interna; `.env` con permisos 640 y secretos aleatorios; cabeceras `nosniff` y política de contenido. La explicación sencilla de cada control está en [docs/GUIA_SEGURIDAD_Y_DEFENSA.md](docs/GUIA_SEGURIDAD_Y_DEFENSA.md).
+
+---
+
+## 3. Instalación paso a paso (desde la creación de la VM)
+
+Guía ampliada, tiempos y riesgos: [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md). Los pasos 2 a 5 se **ejecutaron de verdad** en una VM de VirtualBox con Ubuntu 24.04.5 (resultados en `REPORTES/evidencias/fase05-*.txt` y `fase06-*.txt`). El paso 1 (crear la VM con el script) se probó **solo en parte**: el script crea la VM sin errores, pero un ensayo completo desde cero con la versión final no pudo terminar porque el instalador de Ubuntu se bloqueó dentro de VirtualBox (ver sección 9). Si eso pasa, usa la alternativa manual.
+
+**Qué llevar (kit sin internet):** el ISO `ubuntu-24.04.5-live-server-amd64.iso` (SHA-256 oficial `97f3d7ffb032c3eb3b23d2c8be9cc76e60c2c1f2c0146ba5ba9fe01cafae0fd8`), el ZIP limpio del proyecto y la carpeta `offline/` (29 paquetes `.deb` y `tiendalab-mariadb.tar`). `scripts/exportar.ps1` genera el ZIP; ver [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md) para armar `offline/`.
+
+1. **Crear la máquina virtual** (Windows con VirtualBox 7):
+
+   ```powershell
+   .\scripts\vm\crear-vm.ps1 -Iso C:\ruta\ubuntu-24.04.5-live-server-amd64.iso -IsoSha256 97f3d7ffb032c3eb3b23d2c8be9cc76e60c2c1f2c0146ba5ba9fe01cafae0fd8
+   ```
+
+   Crea la VM (2 CPU, 3 GB de RAM, 30 GB), red NAT con reenvíos solo a `127.0.0.1` (SSH 2222, tienda 8080, diagnóstico 18081) e instala Ubuntu sola con SSH por clave. Alternativa manual: instalar Ubuntu Server 24.04 marcando «OpenSSH server» con el usuario `tiendalab`.
+2. **Copiar el proyecto y el kit** a `~/TiendaLab-SED` en la VM (`scp` con la clave generada, o `git clone https://github.com/Vasquezzz247/TiendaLab-SED.git`).
+3. **Instalar con un solo comando** dentro de la VM:
+
+   ```sh
+   cd ~/TiendaLab-SED && sudo bash scripts/ubuntu/instalar.sh
+   ```
+
+   Instala Apache y PHP 8.3, Docker y UFW; despliega la tienda con `public/` como raíz; crea el `.env` con secretos aleatorios; levanta MariaDB en Docker solo en loopback con el seed ficticio; publica el diagnóstico del 8081; y ejecuta la verificación. Con la carpeta `offline/` no usa internet. Se puede repetir sin perder datos.
+4. **Verificar:** `sudo bash scripts/ubuntu/verificar.sh` (34 comprobaciones) y `sudo bash scripts/ubuntu/comprobar-red.sh`.
+5. **Usar:** <http://127.0.0.1:8080/> desde el anfitrión (o `http://<IP de la VM>/` desde otro equipo de la red).
+
+**Tiempos medidos** (VM de VirtualBox, 2 CPU): `instalar.sh` sin internet **4 min 54 s** (3 min 39 s al repetirlo); instalar el sistema Ubuntu con `crear-vm.ps1` tardó **unos 25 min** porque el instalador descarga actualizaciones por una red lenta. El total puede acercarse a los 30 minutos: ver los riesgos en la sección 9.
+
+**Desarrollo local en Windows:** `php scripts/preparar-entorno.php` (crea `.env`), `docker compose up -d --wait`, `.\scripts\iniciar-frontend.ps1` y <http://127.0.0.1:8000/>. Requiere PHP 8.3 con mysqli, mbstring, fileinfo y gd.
+
+## 4. Usuarios y credenciales de prueba
+
+Contraseña de demostración, pública y ficticia, para las cinco cuentas: `TiendaLab-Demo-2026!` (no sirve para administrar MariaDB).
 
 | Correo | Rol |
 | --- | --- |
-| admin@tiendalab.test | Administrador |
-| vendedor@tiendalab.test | Vendedor |
-| ana@tiendalab.test | Comprador |
-| luis@tiendalab.test | Comprador |
-| carla@tiendalab.test | Comprador |
+| `admin@tiendalab.test` | Administrador |
+| `vendedor@tiendalab.test` | Vendedor |
+| `ana@tiendalab.test` | Comprador (facturas 1, 3 y 4) |
+| `luis@tiendalab.test` | Comprador (factura 2) |
+| `carla@tiendalab.test` | Comprador |
 
-Los nuevos registros públicos siempre son compradores. La contraseña nueva admite 12–72 bytes. El login admite cinco intentos por correo y 60 por dirección de conexión en una ventana de 15 minutos; solo cuentan los intentos fallidos (un acceso correcto devuelve su intento y reinicia el contador del correo). El límite se comparte entre cookies y procesos locales. Una cuenta inactiva no puede entrar. Las sesiones caducan por 30 minutos de inactividad o a las 8 horas; logout las destruye.
+El registro público siempre crea compradores. Las claves SQL del `.env` se generan al azar en cada instalación y no están en el repositorio.
 
-## Uso y rutas reales
+## 5. Vulnerabilidades implementadas
 
-| Ruta | Acceso y operación |
-| --- | --- |
-| `/` | Catálogo de MariaDB y búsqueda pública; comprador puede agregar cantidades |
-| `/register.php` | Registro comprador con correo único y hash |
-| `/login.php`, `/logout.php` | Autenticación y salida por POST protegido |
-| `/carrito.php` | Comprador: modificar/quitar y confirmar compra |
-| `/historial.php` | Comprador: solo sus facturas |
-| `/factura.php?id=...` | Comprador autenticado; impresión del documento. **Vulnerabilidad A (IDOR aprobada): no comprueba el propietario** |
-| `/vendedor.php` | Alta, listado y edición solo de productos propios |
-| `/admin-productos.php` | Administrador: métricas, alta/edición/baja de productos |
-| `/admin-usuarios.php` | Administrador: altas/edición/roles/activación/baja de usuarios |
-| `/imagen.php?id=...` | Sirve únicamente PNG procesados, sin ejecutar archivos |
+Exactamente dos, acotadas, con datos inventados y documentadas con su reproducción, impacto y mitigación (secciones 20 y 21 de [docs/GUIA_SEGURIDAD_Y_DEFENSA.md](docs/GUIA_SEGURIDAD_Y_DEFENSA.md)). No se desactivó ninguna protección global para introducirlas.
 
-Carrito en sesión PHP: solo ID/cantidad, hasta 20 productos y 999 unidades por producto. No reserva existencias. Al confirmar, una transacción bloquea las filas, relee precios y stock, descuenta, inserta factura y detalles y confirma todo o revierte todo. IVA 13 %, importes en centavos/DECIMAL. No hay procesamiento de pagos.
+### A. IDOR en `factura.php?id=` (nivel de código)
 
-El vendedor no puede elegir otro propietario. Las imágenes nuevas son JPG/PNG/WEBP auténticas, hasta 2 MB, 4096 px por lado y 16 millones de píxeles; se recodifican a PNG y guardan fuera de la raíz web. En edición puede conservarse la imagen anterior.
+- **Dónde:** `invoice_detail()` en `app/shop.php` (marcada `VULNERABILIDAD A`), llamada desde `app/web.php`.
+- **Cómo se introdujo:** la consulta individual de facturas **no comprueba que la factura pertenezca al comprador autenticado** (se quitó el `AND comprador_id=?`). Siguen intactos la sesión, el rol comprador, el historial por usuario, la validación del `id` como entero y la consulta preparada, así que **no es una inyección SQL**.
+- **Reproducción:** iniciar sesión como `ana@tiendalab.test`, abrir `/historial.php` (ve las facturas 4, 3 y 1) y cambiar la URL a `/factura.php?id=2`: aparece la factura de Luis. Evidencia real: `REPORTES/evidencias/fase04-idor-reproduccion.txt`.
+- **Impacto:** exposición del nombre, correo y compras de otro cliente (datos ficticios aquí).
+- **Mitigación:** volver a `WHERE f.id=? AND f.comprador_id=?` con el usuario de la sesión; opcionalmente usar identificadores no secuenciales.
 
-Eliminar un usuario sin referencias lo borra; si tiene productos o facturas se desactiva. La baja de un producto conserva el nombre/precio histórico de sus detalles y deja `producto_id` NULL. El administrador no puede eliminarse ni quitarse su propio acceso. Un vendedor con productos activos no puede cambiar de rol: el administrador debe retirarlos o reasignarlos antes (los productos retirados conservan su dueño histórico). Las claves foráneas permanecen activas. No se añadió ninguna tabla ni migración.
+### B. Servicio de diagnóstico expuesto en TCP/8081 (nivel de servidor)
 
-## Pruebas reproducibles
+- **Dónde:** `diagnostico/index.html` (página estática) y `deploy/apache/tiendalab-diagnostico.conf` (marcada `VULNERABILIDAD B`).
+- **Cómo se introdujo:** un sitio de Apache independiente de la tienda, **sin enlace desde ella**, que escucha en todas las interfaces y no restringe por IP. Muestra información interna **inventada** (hostname, usuario y clave ficticios, rutas). No ejecuta PHP ni comandos, no lista directorios y solo acepta GET/HEAD/OPTIONS.
+- **Reproducción:** desde otro equipo autorizado, `nmap -p 80,8081,3306 <IP de la VM>` muestra el 80 y el 8081 abiertos y el 3306 no; abrir `http://<IP de la VM>:8081/` muestra el panel. (En las pruebas se comprobó dentro de la VM y por el reenvío local; ver los límites en la sección 9.)
+- **Impacto:** divulgación de información interna (inventada).
+- **Mitigación:** `sudo a2dissite tiendalab-diagnostico` y `sudo ufw deny 8081`, o restringir con `Require ip 127.0.0.1`.
 
-Con MariaDB iniciada:
+## 6. Flujo de trabajo en GitHub (GitFlow)
 
-```powershell
-.\scripts\verificar-backend.ps1
-```
+Ramas permanentes `main` (entrega) y `develop` (integración); ramas de apoyo `feature/*` por módulo (login, catálogo, facturas, vulnerabilidades, despliegue), `release/*` y `hotfix/*`. Cada cambio entra por **Pull Request** con merge commit (sin force push, rebase ni squash), y las pruebas se ejecutan antes de fusionar. Hasta ahora hay 15 Pull Requests reales hacia `develop` (fases 0 a 6, correcciones de auditoría y despliegue). Detalle, SHA y procedimiento: [docs/GITFLOW.md](docs/GITFLOW.md).
 
-El script inicia sus propios servidores en 8010/8011 y uno de error controlado en 8012; exige puertos libres y los detiene al terminar. Crea datos ficticios con prefijo exclusivo, prueba por HTTP y SQL, verifica compra concurrente con dos procesos PHP, provoca rollback real y limpia solo sus fixtures. Compara SHA-256 de todas las filas previas antes/después, incluido el seed; no reinicia el volumen. Los autoincrementos pueden dejar huecos después de las pruebas: no se reinician para aparentar un historial sin pruebas.
+## 7. Pruebas reproducibles
 
-Si una ejecución interrumpida deja `tmp/fase03-fixtures.json`, revisar primero su estado; no lanzar otra preparación encima. La limpieza recuperable está documentada en la guía. No ejecutar el verificador de fase 2 contra una base con compras propias esperando los conteos originales del seed.
-
-Para correr **la misma suite de 120 pruebas contra la tienda instalada en la VM Ubuntu** (HTTP por el reenvío `127.0.0.1:8080`; SQL de los datos de prueba por un túnel SSH solo local): `\scripts\verificar-ubuntu.ps1`. Usa datos aislados con prefijo propio y comprueba el SHA-256 del seed de la VM al limpiar.
-
-Para revisar las maquetas históricas sin confundirlas con permisos reales, iniciar en dos terminales:
-
-```powershell
-.\scripts\iniciar-frontend.ps1 -Prototipo -Port 8000
-.\scripts\iniciar-frontend.ps1 -SinPrototipo -Port 8002
-```
-
-Y en otra: `.\scripts\verificar-frontend.ps1`. Las maquetas solo se habilitan por opción explícita y loopback; sus POST siguen rechazados. La aplicación real funciona sin JavaScript salvo mejoras visuales e impresión.
-
-## Instalación en Ubuntu Server 24.04 (laboratorio)
-
-Guía completa, tiempos y riesgos en [docs/INSTALACION_UBUNTU.md](docs/INSTALACION_UBUNTU.md). Resumen (probado en una VM de VirtualBox con Ubuntu 24.04.5):
-
-1. **Crear la VM** (Windows): `.\scripts\vm\crear-vm.ps1 -Iso <ISO 24.04.5> -IsoSha256 <hash oficial>`. Instala Ubuntu sola (~25 min en la red de pruebas) con SSH por clave. O bien instalar Ubuntu a mano marcando «OpenSSH server».
-2. **Copiar** el ZIP limpio (`scripts/exportar.ps1`) y, para instalar sin internet, el kit `offline/` (`debs/` y `tiendalab-mariadb.tar`) a la carpeta `~/TiendaLab-SED` de la VM.
-3. **Instalar con un comando**: `cd ~/TiendaLab-SED && sudo bash scripts/ubuntu/instalar.sh` (**4 min 54 s** sin internet, medidos). Instala Apache y PHP 8.3 del sistema, Docker con MariaDB solo en `127.0.0.1:3306`, el firewall y el diagnóstico del 8081, y verifica.
-4. **Comprobar**: `sudo bash scripts/ubuntu/verificar.sh` (34 comprobaciones) y `scripts/ubuntu/comprobar-red.sh`.
-
-Puertos: 80 (tienda) y 8081 (diagnóstico, vulnerabilidad B) abiertos; 3306 solo en loopback. **Nunca exponer la VM a internet.**
-
-## Vulnerabilidades aprobadas (fase 4)
-
-Exactamente dos, ambas ficticias y acotadas; detalle, reproducción y mitigación en las secciones 20 y 21 de la [guía](docs/GUIA_SEGURIDAD_Y_DEFENSA.md):
-
-| Vulnerabilidad | Dónde | Qué omite |
+| Qué | Comando | Resultado registrado |
 | --- | --- | --- |
-| A. IDOR en facturas | `factura.php?id=` (`invoice_detail()` en `app/shop.php`) | Solo la comprobación de propietario de la consulta individual; siguen sesión, rol y consulta preparada |
-| B. Servicio de diagnóstico expuesto | TCP/8081: `diagnostico/index.html` + `deploy/apache/tiendalab-diagnostico.conf` | Escucha en todas las interfaces y sin restricción por IP; página estática con datos inventados, sin enlace desde la tienda |
+| Suite HTTP/BD (120 comprobaciones), PHP y JS, en Windows | `.\scripts\verificar-backend.ps1` | 120/120, 8 PHP, 3 JS |
+| La misma suite contra la tienda instalada en Ubuntu | `.\scripts\verificar-ubuntu.ps1` | 120/120 |
+| Base de datos (24 comprobaciones) | `.\scripts\verificar-base.ps1` | 24/24 (base sin compras) |
+| Servicio de diagnóstico (Apache real en contenedor) | `.\scripts\verificar-diagnostico.ps1` | 24/24 |
+| Instalación en la VM | `sudo bash scripts/ubuntu/verificar.sh` | 34/34 |
 
-Comprobar B (Apache 2.4 en contenedor efímero, solo en `127.0.0.1:8081`): `.\scripts\verificar-diagnostico.ps1`. En la VM se instala con Apache directo en Ubuntu en la fase 5. **Nunca exponer la VM a internet ni abrir el puerto en el router.**
+Cada suite crea datos ficticios aislados, prueba contra MariaDB real y comprueba el SHA-256 del seed al limpiar.
 
-## Exportar una copia limpia
+## 8. Documentación
 
-Comprimir la carpeta del proyecto arrastra `.env`, sesiones, `tmp/`, `tools/` y el volumen de pruebas. Usa en su lugar:
+[Guía de seguridad y defensa](docs/GUIA_SEGURIDAD_Y_DEFENSA.md) · [Instalación en Ubuntu](docs/INSTALACION_UBUNTU.md) · [Base de datos](docs/BASE_DE_DATOS.md) · [Matriz de requisitos](docs/MATRIZ_REQUISITOS.md) · [Alcance](docs/ALCANCE.md) · [GitFlow](docs/GITFLOW.md) · reportes por fase en [REPORTES/](REPORTES/) (`FASE_00` a `FASE_07`).
 
-```powershell
-.\scripts\exportar.ps1            # ZIP del código en dist/, solo lo versionado, auditado
-.\scripts\exportar.ps1 -Offline   # paquete aparte: imagen Docker de MariaDB + SHA-256 + LEEME
-python -I scripts/auditar-zip.py ruta\al.zip   # audita cualquier ZIP, también uno recibido
-```
+## 9. Límites y pendientes (sin maquillar)
 
-El ZIP sale de `git archive` (únicamente archivos versionados del commit indicado), se niega a exportar con cambios sin confirmar, y se elimina si la auditoría encuentra `.env`, sesiones, temporales, `.git`, tar, llaves o los secretos locales. `dist/` está ignorado por Git. El paquete offline contiene solo la imagen pública de MariaDB; los paquetes de Ubuntu (Apache, PHP, Docker) se preparan en la fase de despliegue. Detalle y resultados en la sección 19 de la [guía](docs/GUIA_SEGURIDAD_Y_DEFENSA.md).
-
-## Arquitectura y carpetas
-
-```text
-Desarrollo comprobado: navegador → PHP Windows → mysqli → MariaDB Docker (127.0.0.1:3306)
-Entrega prevista fase 5: navegador autorizado → VM Ubuntu Server 24.04 → Apache/PHP host
-                                                              → MariaDB Docker loopback
-Fase 4: diagnóstico ficticio independiente en 8081 (Apache; se instala en la fase 5)
-```
-
-```text
-public/                 Única raíz web; rutas reales y assets locales
-app/web.php             Rutas, roles, POST/CSRF, redirecciones y errores controlados
-app/database.php        Configuración mysqli y validación de entradas
-app/auth.php            Sesiones, autenticación, registro y límites
-app/shop.php            Carrito, compras transaccionales y consulta de facturas (IDOR, vulnerabilidad A)
-app/management.php      Gestión de productos y usuarios con integridad referencial
-app/images.php          Validación, recodificación y rutas de imágenes
-app/views/live/         Vistas reales con el diseño y componentes compartidos
-app/views/, demo/       Maquetas históricas aisladas, sin participar en operaciones reales
-storage/                Sesiones, límites e imágenes privadas del host; ignorado por Git
-compose.yaml            Solo MariaDB: digest, salud, puerto local y volumen persistente
-database/init/          Esquema, seed ficticio y privilegios del usuario SQL
-scripts/, tests/        Inicio, comprobaciones y datos aislados de pruebas
-REPORTES/, docs/        Evidencias, alcance, requisitos y defensa
-```
-
-## Documentación y próximos pasos
-
-- [Guía de seguridad y defensa](docs/GUIA_SEGURIDAD_Y_DEFENSA.md): controles, comandos reales, pruebas y límites; fase 3 en secciones 16–17.
-- [Matriz](docs/MATRIZ_REQUISITOS.md), [alcance](docs/ALCANCE.md), [base](docs/BASE_DE_DATOS.md).
-- [GitFlow](docs/GITFLOW.md) y [estado del remoto](REPORTES/ESTADO_GITFLOW.md).
-- [Reporte fase 3](REPORTES/FASE_03_BACKEND.md), [cierre fase 2](REPORTES/CIERRE_FASE_02_GITFLOW.md), reportes históricos de fases 0/1.
-
-Pendientes: prueba desde un equipo real del laboratorio, VM exportada, prueba desde otro equipo, instalación offline y cronometraje, impresión/PDF efectiva y revisión móvil completa. Nada de ello se presenta como ejecutado. `main` sigue reservada para entrega; esta fase se integra únicamente a `develop` mediante PR real.
+- **Ensayo completo desde cero no completado:** al repetir la creación de la VM con la versión final de `crear-vm.ps1`, la instalación de Ubuntu se bloqueó (avisos de kernel dentro del instalador; había otra VM encendida en el mismo equipo) y se canceló. Lo validado es: la creación de la VM (16 s), la instalación de Ubuntu con una versión anterior del script, y los pasos 2 a 5 sobre esa VM. Antes de la entrega conviene repetir el ensayo con **una sola VM encendida**.
+- La prueba de puertos se hizo **desde dentro de la VM**, no desde otro equipo real de la red del laboratorio.
+- **Riesgo de los 30 minutos:** instalar Ubuntu consumió unos 25 minutos en la red de pruebas; el instalador del proyecto, unos 5. Conviene confirmar con el docente cómo se cuenta el tiempo y llevar el kit sin internet completo.
+- No se generó un PDF de factura (solo se verificó que existe CSS de impresión); HTTPS no está configurado; en móvil algunas tablas se desplazan horizontalmente.
+- Las pruebas de seguridad son las del propio proyecto, no una prueba de penetración independiente; la auditoría estática es por patrones.
+- El repositorio es público (por autorización previa) y conserva los PDF originales, que contienen nombres y carnets académicos. `.env`, sesiones, imágenes subidas, herramientas y temporales no se publican.
+- Las maquetas históricas de la fase 1 (`public/prototipo/`, `app/views/`, `demo/`) siguen en el repositorio pero están apagadas y bloqueadas en Apache.
